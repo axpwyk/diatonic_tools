@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="b10fd947-ee36-45f6-b79e-19a814d3992a" name="Default Changelist" comment="" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="diatonic" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="226">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/consts.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret line="19" column="20" selection-start-line="19" selection-start-column="20" selection-end-line="19" selection-end-column="20" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="153">
+              <caret line="329" column="18" selection-start-line="329" selection-start-column="18" selection-end-line="329" selection-end-column="18" />
+              <folding>
+                <element signature="e#178#322#0" />
+                <element signature="e#374#695#0" />
+                <element signature="e#758#1226#0" />
+                <element signature="e#874#1042#0" />
+                <element signature="e#881#1042#0" />
+                <element signature="e#1061#1226#0" />
+                <element signature="e#1068#1226#0" />
+                <element signature="e#1285#4963#0" />
+                <element signature="e#1936#4240#0" />
+                <element signature="e#2212#2218#0" />
+                <element signature="e#2518#2706#0" />
+                <element signature="e#2789#2991#0" />
+                <element signature="e#4317#4582#0" />
+                <element signature="e#5027#5167#0" />
+                <element signature="e#5209#5411#0" />
+                <element signature="e#5449#5577#0" />
+                <element signature="e#5629#6281#0" />
+                <element signature="e#5629#6006#1" />
+                <element signature="e#6321#6604#0" />
+                <element signature="e#6647#6695#0" />
+                <element signature="e#6737#6830#0" />
+                <element signature="e#6875#6925#0" />
+                <element signature="e#6979#7253#0" />
+                <element signature="e#7294#7580#0" />
+                <element signature="e#7294#7338#0" />
+                <element signature="e#7612#7899#0" />
+                <element signature="e#7612#7656#0" />
+                <element signature="e#7930#10438#0" />
+                <element signature="e#7979#8144#0" />
+                <element signature="e#8182#9535#0" />
+                <element signature="e#8212#8744#0" />
+                <element signature="e#8772#9535#0" />
+                <element signature="e#9474#9535#0" />
+                <element signature="e#9570#9700#0" />
+                <element signature="e#9734#9868#0" />
+                <element signature="e#9902#9963#0" />
+                <element signature="e#10007#10438#0" />
+                <element signature="e#10480#10517#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://C:/Anaconda3/envs/music/Lib/site-packages/matplotlib/figure.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="58">
+              <caret line="1084" column="8" selection-start-line="1084" selection-start-column="8" selection-end-line="1084" selection-end-column="8" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/_test_draw_guitar.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="204">
+              <caret line="12" column="24" lean-forward="true" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
+              <folding>
+                <element signature="e#0#19#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/_re_test.py" />
+        <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/_draw_guitar_test.py" />
+        <option value="$PROJECT_DIR$/consts.py" />
+        <option value="$PROJECT_DIR$/_test_draw_guitar.py" />
+        <option value="$PROJECT_DIR$/utils.py" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="953" />
+    <option name="width" value="974" />
+    <option name="height" value="1047" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="diatonic" type="b2602c69:ProjectViewProjectNode" />
+              <item name="diatonic" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="diatonic" type="b2602c69:ProjectViewProjectNode" />
+              <item name="diatonic" type="462c0819:PsiDirectoryNode" />
+              <item name="results" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ykykyukai\Desktop\diatonic\results\old" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python._test_draw_guitar">
+    <configuration name="_draw_guitar_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="diatonic" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\ykykyukai\Desktop\diatonic\_test_draw_guitar.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="_re_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="diatonic" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\ykykyukai\Desktop\diatonic\_test_re.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="_test_draw_guitar" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="diatonic" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/_test_draw_guitar.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="diatonic" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\ykykyukai\Desktop\diatonic\_test_diatonic_chords.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="utils" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="diatonic" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/utils.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python._test_draw_guitar" />
+        <item itemvalue="Python._draw_guitar_test" />
+        <item itemvalue="Python.utils" />
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python._re_test" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="StructureViewFactory">
+    <option name="AUTOSCROLL_FROM_SOURCE" value="true" />
+    <option name="ACTIVE_ACTIONS" value=",ALPHA_COMPARATOR" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b10fd947-ee36-45f6-b79e-19a814d3992a" name="Default Changelist" comment="" />
+      <created>1555838069694</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1555838069694</updated>
+      <workItem from="1555838072459" duration="27704000" />
+      <workItem from="1555896323880" duration="6652000" />
+      <workItem from="1555903885942" duration="24444000" />
+      <workItem from="1555942826672" duration="7850000" />
+      <workItem from="1555983559614" duration="182000" />
+      <workItem from="1556020678782" duration="4497000" />
+      <workItem from="1556078119587" duration="5875000" />
+      <workItem from="1556088614508" duration="3373000" />
+      <workItem from="1556109584724" duration="3216000" />
+      <workItem from="1556125369724" duration="797000" />
+      <workItem from="1556167939150" duration="573000" />
+      <workItem from="1556200859421" duration="11483000" />
+      <workItem from="1556256276127" duration="1439000" />
+      <workItem from="1556277286888" duration="1708000" />
+      <workItem from="1556610123320" duration="83000" />
+      <workItem from="1556639321651" duration="351000" />
+      <workItem from="1556988274632" duration="262000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="100489000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4951246" visible="true" weight="0.20149253" />
+      <window_info id="Structure" order="1" sideWeight="0.5048754" side_tool="true" visible="true" weight="0.20149253" />
+      <window_info id="Favorites" order="2" sideWeight="0.50080776" side_tool="true" weight="0.19509594" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4488273" weight="0.47778982" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32936078" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Database Changes" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32936078" />
+      <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.49200428" weight="0.32936078" />
+      <window_info anchor="bottom" id="SciView" order="13" sideWeight="0.55117273" side_tool="true" weight="0.47778982" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Database" order="3" />
+    </layout>
+    <layout-to-restore>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19296375" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4488273" weight="0.47778982" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Database Changes" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32936078" />
+      <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.49200428" weight="0.32936078" />
+      <window_info anchor="bottom" id="SciView" order="13" sideWeight="0.55117273" side_tool="true" weight="0.47778982" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Database" order="3" />
+    </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/_test_diatonic_chords.py</url>
+          <line>11</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/_test_diatonic_chords.py</url>
+          <line>12</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/_test_diatonic_chords.py</url>
+          <line>13</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/diatonic$_re_test.coverage" NAME="_re_test Coverage Results" MODIFIED="1555919930181" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/diatonic$main.coverage" NAME="main Coverage Results" MODIFIED="1555924769215" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/diatonic$_draw_guitar_test.coverage" NAME="_draw_guitar_test Coverage Results" MODIFIED="1555950083738" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/diatonic$_test_draw_guitar.coverage" NAME="_test_draw_guitar Coverage Results" MODIFIED="1556988487645" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/diatonic$utils.coverage" NAME="utils Coverage Results" MODIFIED="1555942810936" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_18_53_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_20_45_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_22_08_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_22_53_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_23_29_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_24_12_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_31_21_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_32_23_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_31_55_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_32_49_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_34_40_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_39_49_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_40_03_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_40_18_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_42_37_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_43_00_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_45_44_2019_['D7', 'C7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_49_04_2019_['F#', 'Gb'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_00_49_59_2019_['F#', 'Gb'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_00_46_16_2019_['D7', 'C7'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_00_57_39_2019_['FM7', 'G6'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_58_37_2019_['FM7', 'G6', 'Em7', 'Am'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_59_31_2019_['FM7', 'G6', 'Em7', 'Am'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_01_00_26_2019_['FM7', 'G6', 'Em7', 'Am'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_01_02_01_2019_['FM7', 'G6', 'Em7', 'Am'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_01_04_50_2019_['CM7', 'D6', 'Bm7', 'Em'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_01_36_18_2019_['C', 'E', 'F'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_01_38_44_2019_['C', 'E', 'F'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_01_42_54_2019_['Fsus2', 'Em7', 'Am'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_01_44_36_2019_['FM7', 'Em7', 'Am'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_27_53_2019_['FM7', 'Em7', 'Am'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_31_10_2019_['FM7', 'Em7', 'Am'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_31_53_2019_['FM7', 'Em7', 'Am'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_32_16_2019_['FM7', 'Em7', 'Am'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_34_31_2019_['CM7', 'Dm7', 'Em7', 'FM7', 'G7', 'Am7', 'Bdim7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_35_21_2019_['CM7', 'Dm7', 'Em7', 'FM7', 'G7', 'Am7', 'Bdim7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_35_34_2019_['CM7', 'Dm7', 'Em7', 'FM7', 'G7', 'Am7', 'Bdim7'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_36_47_2019_['C', 'D'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_36_56_2019_['C', 'D'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_39_35_2019_['C', 'D'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_41_07_2019_['C', 'D'].svg" />
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_45_17_2019_['C', 'D'].svg" />
+    <entry file="file://$PROJECT_DIR$/consts.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="19" column="20" selection-start-line="19" selection-start-column="20" selection-end-line="19" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_46_36_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/_test_draw_guitar.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="24" lean-forward="true" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/Sun_May__5_00_46_41_2019_['Esus4'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/Sun_May__5_00_47_26_2019_['Esus4'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/Sun_May__5_00_48_07_2019_['Esus4'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/results/Sun_May__5_00_46_10_2019_['Esus4'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://C:/Anaconda3/envs/music/Lib/site-packages/matplotlib/figure.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="58">
+          <caret line="1084" column="8" selection-start-line="1084" selection-start-column="8" selection-end-line="1084" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="329" column="18" selection-start-line="329" selection-start-column="18" selection-end-line="329" selection-end-column="18" />
+          <folding>
+            <element signature="e#178#322#0" />
+            <element signature="e#374#695#0" />
+            <element signature="e#758#1226#0" />
+            <element signature="e#874#1042#0" />
+            <element signature="e#881#1042#0" />
+            <element signature="e#1061#1226#0" />
+            <element signature="e#1068#1226#0" />
+            <element signature="e#1285#4963#0" />
+            <element signature="e#1936#4240#0" />
+            <element signature="e#2212#2218#0" />
+            <element signature="e#2518#2706#0" />
+            <element signature="e#2789#2991#0" />
+            <element signature="e#4317#4582#0" />
+            <element signature="e#5027#5167#0" />
+            <element signature="e#5209#5411#0" />
+            <element signature="e#5449#5577#0" />
+            <element signature="e#5629#6281#0" />
+            <element signature="e#5629#6006#1" />
+            <element signature="e#6321#6604#0" />
+            <element signature="e#6647#6695#0" />
+            <element signature="e#6737#6830#0" />
+            <element signature="e#6875#6925#0" />
+            <element signature="e#6979#7253#0" />
+            <element signature="e#7294#7580#0" />
+            <element signature="e#7294#7338#0" />
+            <element signature="e#7612#7899#0" />
+            <element signature="e#7612#7656#0" />
+            <element signature="e#7930#10438#0" />
+            <element signature="e#7979#8144#0" />
+            <element signature="e#8182#9535#0" />
+            <element signature="e#8212#8744#0" />
+            <element signature="e#8772#9535#0" />
+            <element signature="e#9474#9535#0" />
+            <element signature="e#9570#9700#0" />
+            <element signature="e#9734#9868#0" />
+            <element signature="e#9902#9963#0" />
+            <element signature="e#10007#10438#0" />
+            <element signature="e#10480#10517#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
