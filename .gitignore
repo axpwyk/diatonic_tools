@@ -1,5 +1,6 @@
 # 放弃同步 pycharm 文件
 .idea/
 __pycache__/
+*.xml
 # 但是同步字典
 # !.idea/dictionaries/*.xml
