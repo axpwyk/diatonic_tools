@@ -308,9 +308,7 @@ class Guitar(object):
 
     def draw_guitar(self, hue=0.0, low=-1, high=24, pos_offset=0, radius_offset=0):
         t = np.power(1/2, 1/12)
-        w_over_h = 610 / 44
-        h = 5
-        w = h * w_over_h
+        h, w = 5, 610/44*5
         # 弦绘图位置（y）
         strings = [h/5*k for k in range(6)]
         # 品柱绘图位置（x）
@@ -327,13 +325,13 @@ class Guitar(object):
 
         # 判断是否存在已绘制吉他图形，存在的话则在原图的基础上添加新圆点
         if not plt.fignum_exists(1):
-            fig = plt.figure(figsize=(width, height), dpi=200, frameon=False)
-            # ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], aspect='equal')
+            fig = plt.figure(figsize=(width, height), dpi=50, frameon=False)
             ax = plt.gca(aspect='equal')
-            ax.set_xticks([]), ax.set_yticks([])
             ax.set_frame_on(False)
+            ax.axis('off')
             ax.set_xlim([frets[low+1]-0.1, frets[high+1]+0.1])
             ax.set_ylim([-0.6, h+0.6])
+            plt.subplots_adjust(right=0.97, left=0.03, bottom=0.03, top=0.97, wspace=0.1, hspace=0.1)
 
             # 绘制品柱
             # 头部加粗

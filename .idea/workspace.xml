@@ -2,9 +2,33 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b10fd947-ee36-45f6-b79e-19a814d3992a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/diatonic.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/diatonic_tools.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/ykykyukai.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/ykykyukai.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/_test_diatonic_chords.py" beforeDir="false" afterPath="$PROJECT_DIR$/codes_test/_test_diatonic_chords.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/_test_draw_guitar.py" beforeDir="false" afterPath="$PROJECT_DIR$/codes_test/_test_draw_guitar.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/_test_re.py" beforeDir="false" afterPath="$PROJECT_DIR$/codes_test/_test_re.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Fri_Apr_26_13_46_36_2019_['C', 'D'].svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Sun_May__5_00_46_10_2019_['Esus4'].svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Sun_May__5_00_46_41_2019_['Esus4'].svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Sun_May__5_00_47_26_2019_['Esus4'].svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/Sun_May__5_00_48_07_2019_['Esus4'].svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/1_Full_Straight_Front_NA-611485b27201f285cf8827982c9bb8e1.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/F#sus4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/Fri_Apr_26_00_46_16_2019_['D7', 'C7'].svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/Fri_Apr_26_00_49_59_2019_['F#', 'Gb'].svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/Fri_Apr_26_00_57_39_2019_['FM7', 'G6'].svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/Fri_Apr_26_01_02_01_2019_['FM7', 'G6', 'Em7', 'Am'].svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/Fri_Apr_26_01_04_50_2019_['CM7', 'D6', 'Bm7', 'Em'].svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/Fri_Apr_26_01_38_44_2019_['C', 'E', 'F'].svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/Fri_Apr_26_01_42_54_2019_['Fsus2', 'Em7', 'Am'].svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/Fri_Apr_26_01_44_36_2019_['FM7', 'Em7', 'Am'].svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/Gbsus4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/Thu_Apr_25_22_04_48_2019_C#mM7.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/Thu_Apr_25_23_40_35_2019_G Ionian.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/Thu_Apr_25_23_42_26_2019_C Dorian.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/old/chromatic_scale.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,20 +40,7 @@
     <favorites_list name="diatonic" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="226">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/_test_draw_guitar.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="546">
-              <caret line="30" lean-forward="true" selection-start-line="30" selection-end-line="30" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="226" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -48,8 +59,9 @@
         <option value="$PROJECT_DIR$/main.py" />
         <option value="$PROJECT_DIR$/_draw_guitar_test.py" />
         <option value="$PROJECT_DIR$/consts.py" />
-        <option value="$PROJECT_DIR$/_test_draw_guitar.py" />
+        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/utils.py" />
+        <option value="$PROJECT_DIR$/_test_draw_guitar.py" />
       </list>
     </option>
   </component>
@@ -63,7 +75,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -75,6 +86,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -87,6 +99,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ykykyukai\Desktop\diatonic_tools\codes_test" />
       <recent name="C:\Users\ykykyukai\Desktop\diatonic\results\old" />
     </key>
   </component>
@@ -160,7 +173,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/_test_draw_guitar.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\ykykyukai\Desktop\diatonic_tools\codes_test\_test_draw_guitar.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -255,11 +268,12 @@
       <workItem from="1556639321651" duration="351000" />
       <workItem from="1556988274632" duration="262000" />
       <workItem from="1560664444645" duration="424000" />
+      <workItem from="1561052697560" duration="2218000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="100913000" />
+    <option name="totallyTimeSpent" value="103131000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -271,15 +285,14 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49433428" visible="true" weight="0.20442359" />
-      <window_info id="Structure" order="1" sideWeight="0.5056657" side_tool="true" visible="true" weight="0.20442359" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4934924" visible="true" weight="0.20628998" />
+      <window_info id="Structure" order="1" sideWeight="0.5065076" side_tool="true" visible="true" weight="0.20628998" />
       <window_info id="Favorites" order="2" sideWeight="0.50080776" side_tool="true" weight="0.19509594" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4488273" weight="0.47778982" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4488273" weight="0.47722343" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -327,17 +340,17 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/_test_diatonic_chords.py</url>
+          <url>file://$PROJECT_DIR$/codes_test/_test_diatonic_chords.py</url>
           <line>11</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/_test_diatonic_chords.py</url>
+          <url>file://$PROJECT_DIR$/codes_test/_test_diatonic_chords.py</url>
           <line>12</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/_test_diatonic_chords.py</url>
+          <url>file://$PROJECT_DIR$/codes_test/_test_diatonic_chords.py</url>
           <line>13</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
@@ -345,63 +358,14 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/diatonic$_draw_guitar_test.coverage" NAME="_draw_guitar_test Coverage Results" MODIFIED="1555950083738" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/diatonic$utils.coverage" NAME="utils Coverage Results" MODIFIED="1555942810936" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/diatonic$_re_test.coverage" NAME="_re_test Coverage Results" MODIFIED="1555919930181" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/diatonic_tools$_test_draw_guitar.coverage" NAME="_test_draw_guitar Coverage Results" MODIFIED="1561054895124" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/diatonic$main.coverage" NAME="main Coverage Results" MODIFIED="1555924769215" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/diatonic$_draw_guitar_test.coverage" NAME="_draw_guitar_test Coverage Results" MODIFIED="1555950083738" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/diatonic$_test_draw_guitar.coverage" NAME="_test_draw_guitar Coverage Results" MODIFIED="1556988487645" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/diatonic$utils.coverage" NAME="utils Coverage Results" MODIFIED="1555942810936" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_18_53_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_20_45_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_22_08_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_22_53_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_23_29_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_24_12_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_31_21_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_32_23_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_31_55_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_32_49_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_34_40_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_39_49_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_40_03_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_40_18_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_42_37_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_43_00_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_45_44_2019_['D7', 'C7'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_49_04_2019_['F#', 'Gb'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_00_49_59_2019_['F#', 'Gb'].svg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_00_46_16_2019_['D7', 'C7'].svg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_00_57_39_2019_['FM7', 'G6'].svg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_58_37_2019_['FM7', 'G6', 'Em7', 'Am'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_00_59_31_2019_['FM7', 'G6', 'Em7', 'Am'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_01_00_26_2019_['FM7', 'G6', 'Em7', 'Am'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_01_02_01_2019_['FM7', 'G6', 'Em7', 'Am'].svg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_01_04_50_2019_['CM7', 'D6', 'Bm7', 'Em'].svg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_01_36_18_2019_['C', 'E', 'F'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_01_38_44_2019_['C', 'E', 'F'].svg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_01_42_54_2019_['Fsus2', 'Em7', 'Am'].svg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/results/old/Fri_Apr_26_01_44_36_2019_['FM7', 'Em7', 'Am'].svg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_27_53_2019_['FM7', 'Em7', 'Am'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_31_10_2019_['FM7', 'Em7', 'Am'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_31_53_2019_['FM7', 'Em7', 'Am'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_32_16_2019_['FM7', 'Em7', 'Am'].svg" />
     <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_34_31_2019_['CM7', 'Dm7', 'Em7', 'FM7', 'G7', 'Am7', 'Bdim7'].svg" />
     <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_35_21_2019_['CM7', 'Dm7', 'Em7', 'FM7', 'G7', 'Am7', 'Bdim7'].svg" />
     <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_35_34_2019_['CM7', 'Dm7', 'Em7', 'FM7', 'G7', 'Am7', 'Bdim7'].svg" />
@@ -410,25 +374,159 @@
     <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_39_35_2019_['C', 'D'].svg" />
     <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_41_07_2019_['C', 'D'].svg" />
     <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_45_17_2019_['C', 'D'].svg" />
-    <entry file="file://$PROJECT_DIR$/results/Fri_Apr_26_13_46_36_2019_['C', 'D'].svg">
+    <entry file="file://$PROJECT_DIR$/outputs/Sun_May__5_00_46_41_2019_['Esus4'].svg">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/results/Sun_May__5_00_46_41_2019_['Esus4'].svg">
+    <entry file="file://$PROJECT_DIR$/outputs/Sun_May__5_00_47_26_2019_['Esus4'].svg">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/results/Sun_May__5_00_47_26_2019_['Esus4'].svg">
+    <entry file="file://$PROJECT_DIR$/outputs/Sun_May__5_00_48_07_2019_['Esus4'].svg">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/results/Sun_May__5_00_48_07_2019_['Esus4'].svg">
+    <entry file="file://$PROJECT_DIR$/outputs/Sun_May__5_00_46_10_2019_['Esus4'].svg">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/results/Sun_May__5_00_46_10_2019_['Esus4'].svg">
+    <entry file="file://$PROJECT_DIR$/consts.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="19">
+          <caret line="19" column="20" selection-start-line="19" selection-start-column="20" selection-end-line="19" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Anaconda3/envs/music/Lib/site-packages/matplotlib/figure.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="58">
+          <caret line="1084" column="8" selection-start-line="1084" selection-start-column="8" selection-end-line="1084" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_01_48_57_2019_['Esus4'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_01_49_18_2019_['Esus4', 'F6'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_01_49_49_2019_['Esus4', 'F6'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_01_51_15_2019_['Esus4', 'F6'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="76">
+            <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/old/chromatic_scale.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/old/F#sus4.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/old/Fri_Apr_26_01_02_01_2019_['FM7', 'G6', 'Em7', 'Am'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/old/Fri_Apr_26_00_57_39_2019_['FM7', 'G6'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_01_56_15_2019_['Esus4', 'F6'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/codes_test/_test_diatonic_chords.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="8" column="22" lean-forward="true" selection-start-line="8" selection-start-column="22" selection-end-line="8" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_01_58_52_2019_['Esus4', 'F6'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_01_59_30_2019_['Esus4', 'C'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_01_01_2019_['Esus4', 'C'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_02_35_2019_['Esus4', 'C'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_03_13_2019_['FM7', 'G6', 'Em7', 'Am7'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_04_42_2019_['F', 'G', 'E', 'A'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_04_52_2019_['F', 'G', 'Em', 'Am'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_05_54_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Apr_26_13_46_36_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="5" lean-forward="true" selection-start-column="5" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_08_34_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_10_41_2019_['C'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_11_16_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_11_36_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_15_29_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_15_08_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_15_47_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_16_40_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_17_00_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_17_45_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_18_16_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_18_51_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_19_21_2019_['C', 'D'].svg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outputs/Fri_Jun_21_02_20_31_2019_['C', 'D'].svg">
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="329" column="18" selection-start-line="329" selection-start-column="18" selection-end-line="329" selection-end-column="18" />
+        <state relative-caret-position="337">
+          <caret line="332" column="38" lean-forward="true" selection-start-line="332" selection-start-column="38" selection-end-line="332" selection-end-column="38" />
           <folding>
             <element signature="e#178#322#0" />
             <element signature="e#374#695#0" />
@@ -438,11 +536,12 @@
             <element signature="e#1061#1226#0" />
             <element signature="e#1068#1226#0" />
             <element signature="e#1285#4963#0" />
-            <element signature="e#1936#4240#0" />
             <element signature="e#2212#2218#0" />
             <element signature="e#2518#2706#0" />
             <element signature="e#2789#2991#0" />
             <element signature="e#4317#4582#0" />
+            <element signature="e#4666#4963#0" />
+            <element signature="e#4811#4963#0" />
             <element signature="e#5027#5167#0" />
             <element signature="e#5209#5411#0" />
             <element signature="e#5449#5577#0" />
@@ -468,28 +567,16 @@
             <element signature="e#9902#9963#0" />
             <element signature="e#10007#10438#0" />
             <element signature="e#10480#10517#0" />
+            <element signature="e#10581#10990#0" />
+            <element signature="e#11035#11155#0" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/consts.py">
+    <entry file="file://$PROJECT_DIR$/codes_test/_test_draw_guitar.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="19">
-          <caret line="19" column="20" selection-start-line="19" selection-start-column="20" selection-end-line="19" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Anaconda3/envs/music/Lib/site-packages/matplotlib/figure.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="58">
-          <caret line="1084" column="8" selection-start-line="1084" selection-start-column="8" selection-end-line="1084" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/_test_draw_guitar.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="546">
-          <caret line="30" lean-forward="true" selection-start-line="30" selection-end-line="30" />
+        <state relative-caret-position="95">
+          <caret line="5" column="17" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
