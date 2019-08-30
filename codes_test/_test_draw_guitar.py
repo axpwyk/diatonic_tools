@@ -25,6 +25,6 @@ for i in range(len(triples_lst)):
 # 输出
 t = ctime()
 t = t.replace(':', ' ').replace(' ', '_')
-plt.savefig(path.join('outputs', '{}_{}.svg'.format(t, chdlst)))
+plt.savefig(path.join('output', '{}_{}.svg'.format(t, chdlst)))
 plt.clf()
 plt.close()
