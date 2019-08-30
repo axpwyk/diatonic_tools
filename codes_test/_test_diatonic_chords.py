@@ -1,5 +1,5 @@
 from termcolor import cprint
-from utils import *
+from theories import *
 
 s = Tonality('Ab Locrian')
 

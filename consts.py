@@ -3,6 +3,8 @@ NOTES = ['C', '', 'D', '', 'E', 'F', '', 'G', '', 'A', '', 'B']
 MODES = ['Lydian', 'Ionian', 'Mixolydian', 'Dorian', 'Aeolian', 'Phrygian', 'Locrian',
          'HMinor', 'MMinor', 'HMinor3', 'HMinor7']
 
+T = 2**(1/12)
+
 # 用于从 triple 辨认和弦
 CHORDS = {'44': 'aug',
           '43': '',
