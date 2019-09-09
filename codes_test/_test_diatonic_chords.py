@@ -1,7 +1,7 @@
 from termcolor import cprint
 from theories import *
 
-s = Tonality('Ab Locrian')
+s = Tonality('Db Locrian')
 
 for i in range(21):
     print('{:14s}'.format(s.tonality()), end='')
@@ -10,7 +10,7 @@ for i in range(21):
     # for t in s.scale:
     #     print('{:4s}'.format(triple2note(t)), end='')
     for t in range(7):
-        chord, chord_type = s.chord(t)
+        chord, chord_type = s.chord([k % 7 for k in [0+t, 2+t, 4+t, 6+t, 8+t]])
         chord_name = triple_to_note_name(chord[0])
 
         cprint('{:8s}'.format(chord_name+chord_type), CHORD_TYPE_COLORS[chord_type], end='')
