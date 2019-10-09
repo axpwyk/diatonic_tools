@@ -56,7 +56,7 @@ def msgd_list_to_note_list(msgd_list, ticks_per_beat):
     return note_list
 
 
-def midi_to_sheet(filename):
+def midi_to_note_list(filename):
     mid = MidiFile(filename)
     ticks_per_beat = mid.ticks_per_beat
 
@@ -75,4 +75,5 @@ def midi_to_sheet(filename):
     return sheet
 
 
-midi_to_sheet(None)
+def pianoroll(note_list):
+    pass

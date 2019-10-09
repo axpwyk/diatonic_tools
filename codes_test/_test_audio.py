@@ -12,7 +12,7 @@ plt.title('wavetable')
 plt.show()
 
 # 合成 wav
-sheet = midi_to_sheet(r'..\midi\magnet.mid')[2]
+sheet = midi_to_note_list(r'..\midi\magnet.mid')[2]
 print(sheet)
 sheet = [[ts-min([note[0] for note in sheet]), tl, nn, vel, ch] for [ts, tl, nn, vel, ch] in sheet]
 print(sheet)
