@@ -92,3 +92,16 @@ def add_reverb_m2s(wav, ir, decay=0.0):
     #ir_new[0] = np.exp(-decay*np.arange(ir.shape[1])) * ir[0]
     #ir_new[1] = np.exp(-decay*np.arange(ir.shape[1])) * ir[1]
     return np.stack([ss.fftconvolve(wav, ir_new[:, 0]), ss.fftconvolve(wav, ir_new[:, 1])], axis=0)
+
+
+def draw_spectrum_mono(wav, sampling_frequency, window_samples):
+    N = np.max(np.shape(wav))
+    N_secs = N/sampling_frequency
+    stride = 16
+    starting_poses = [k*stride for k in range(N//stride)]
+    t = np.linspace(-1, 1, window_samples)
+    delta = 0.02
+    gaussian_mask = 1/np.sqrt(delta)*np.exp(-np.pi/delta*np.power(t, 2))
+    pieces = [gaussian_mask*wav[tick:tick+window_samples] for tick in starting_poses if tick+window_samples<N]
+    pieces_fft = [np.abs(np.fft.fftshift(np.fft.fft(piece))) for piece in pieces]
+    return np.transpose(np.array(pieces_fft))[:window_samples//2, :]
