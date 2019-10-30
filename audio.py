@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.fftpack.basic as sfb
 import scipy.signal as ss
 from theories import *
 SF = 44100
@@ -94,14 +93,26 @@ def add_reverb_m2s(wav, ir, decay=0.0):
     return np.stack([ss.fftconvolve(wav, ir_new[:, 0]), ss.fftconvolve(wav, ir_new[:, 1])], axis=0)
 
 
-def draw_spectrum_mono(wav, sampling_frequency, window_samples):
+def draw_spectrum_mono(wav, sampling_frequency, window_samples=1024, time_step=0.002):
     N = np.max(np.shape(wav))
     N_secs = N/sampling_frequency
-    stride = 16
+    stride = int(time_step*sampling_frequency)
     starting_poses = [k*stride for k in range(N//stride)]
-    t = np.linspace(-1, 1, window_samples)
-    delta = 0.02
-    gaussian_mask = 1/np.sqrt(delta)*np.exp(-np.pi/delta*np.power(t, 2))
-    pieces = [gaussian_mask*wav[tick:tick+window_samples] for tick in starting_poses if tick+window_samples<N]
-    pieces_fft = [np.abs(np.fft.fftshift(np.fft.fft(piece))) for piece in pieces]
-    return np.transpose(np.array(pieces_fft))[:window_samples//2, :]
+
+    # t = np.linspace(-0.1, 0.1, window_samples)
+    # delta = 0.01
+    # gaussian_mask = 1/np.sqrt(2*np.pi*delta**2)*np.exp(-1/(2*delta**2)*np.power(t, 2))
+
+    t = np.arange(window_samples)
+    a0 = 0.35875
+    a1 = 0.48829
+    a2 = 0.14128
+    a3 = 0.01168
+    bh_mask = a0-a1*np.cos(2*np.pi*t/window_samples)+a2*np.cos(4*np.pi*t/window_samples)-a3*np.cos(6*np.pi*t/window_samples)
+
+    pieces = np.array([bh_mask*wav[tick:tick+window_samples] for tick in starting_poses if tick+window_samples<N])
+    # pieces_fft = [np.abs(np.fft.fftshift(np.fft.fft(piece))) for piece in pieces]
+    pieces_fft = np.abs(np.fft.fftshift(np.fft.fft(pieces), axes=1))
+    spectrum = np.transpose(np.array(pieces_fft))[window_samples//2:, :]
+
+    return spectrum

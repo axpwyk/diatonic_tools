@@ -1,12 +1,9 @@
-from mido import MidiFile
-from mido import Message
+from mido import MidiFile, MidiTrack
+from mido import Message, MetaMessage
 from mido import bpm2tempo, tempo2bpm, tick2second, second2tick
 
 
-# sheet = [ts (starting time in seconds), tl (lasting time in seconds), note, velocity, channel]
-
-
-def msgd_list_to_note_list(msgd_list, ticks_per_beat):
+def msgd_list_to_track(msgd_list):
     """
     Ideas from Askmyc. Coded by Axpwyk.
 
@@ -75,5 +72,5 @@ def midi_to_note_list(filename):
     return sheet
 
 
-def pianoroll(note_list):
+def pianoroll(sheet):
     pass
