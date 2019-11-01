@@ -138,21 +138,44 @@ class Pianoroll(object):
     '''
 
     Generate a pianoroll using matplotlib.
-    Meta messages should be put into msglist[0].
-    msglist[1], msglist[2], ... only contain notes.
 
     '''
-    def __init__(self, sheet, nn_interval=(50, 70), tick_interval=(0, 960*4), channel=0):
-        ## getting meta params dict
-        self.meta_params = {'tick_max': max_tick(sheet),
-                            'tick_start': tick_interval[0],
-                            'tick_end': tick_interval[1],
-                            'nn_start': nn_interval[0],
-                            'nn_end': nn_interval[1],
-                            'time_signatures': None}
+    def __init__(self, sheet):
+        self.sheet = sheet
+        self.max_tick = max_tick(sheet)
+        ## meta-messages
+        self.msglist_tpo = [msg for msg in [msglist for msglist in sheet] if msg['type'] == 'set_tempo']
+        self.msglist_tpo = sorted(self.msglist_tpo, key=lambda msg: msg['stt'])
+        self.msglist_ts = [msg for msg in [msglist for msglist in sheet] if msg['type'] == 'set_tempo']
+        self.msglist_ts = sorted(self.msglist_ts, key=lambda msg: msg['stt'])
+        ## ccs and pitchwheels (sorted by channels)
+        self.sheet_cc = [[msg for msg in [msglist for msglist in sheet] if msg['type'] == 'control_change' and msg['ch'] == k] for k in range(16)]
+        self.sheet_pw = [[msg for msg in [msglist for msglist in sheet] if msg['type'] == 'pitchwheel' and msg['ch'] == k] for k in range(16)]
+        ## notes (sorted by channels)
+        self.sheet_note_c = [[msg for msg in [msglist for msglist in sheet] if msg['type'] == 'note' and msg['ch'] == k] for k in range(16)]
+        ## notes (sorted by tracks)
+        self.sheet_note_t = [[msg for msg in sheet[k] if msg['type'] == 'note'] for k in range(len(sheet))]
 
-    def add_notelist(self, notelist):
+    def _clean(self):
+        self.sheet = []
+
+    def add_msglist(self, msglist):
         pass
+
+    def set_msglist(self, msglist):
+        self.clean()
+        pass
+
+    def clean(self):
+        self._clean()
+
+    def draw(self, nn_interval=(50, 70), tick_interval=(0, 960*4), channel=(0, 1, 2)):
+        ## getting meta params dict
+        meta_params = {'tick_start': tick_interval[0],
+                       'tick_end': tick_interval[1],
+                       'nn_start': nn_interval[0],
+                       'nn_end': nn_interval[1],
+                       'time_signatures': None}
 
     def show(self):
         pass
