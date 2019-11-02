@@ -209,14 +209,19 @@ class Pianoroll(object):
         self.clean()
         pass
 
+    def set_default_time_signature(self, numerator=4, denominator=4):
+        self.msglist_ts = [dict(type='time_signature', stt=0, nu=numerator, de=denominator)]
+
     def clean(self):
         self._clean()
 
     def draw(self, nn_interval=(48, 72), tick_interval=(0, 960*4), splits_per_beat=4, channel=0):
         # getting meta params
         note_names = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+        note_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+        note_names = ['x', '7', '1', 'x', '2', 'x', '3', '4', 'x', '5', 'x', '6']
         velocity_lane_h = 5
-        keyboard_w = 480
+        keyboard_w = 1920
         bottom = nn_interval[0] - velocity_lane_h
         left = tick_interval[0] - keyboard_w
         # finding vertical lines' position (bar_line, beat_line, split_line)
@@ -240,47 +245,49 @@ class Pianoroll(object):
         l1s0 = list(enumerate(x1s0))
         l1s = [l[0] for l in l1s0 if l[1] in range(*tick_interval)]
         # initializing pianoroll
-        get_figure(12, 5, 144)
+        get_figure(12, 4, 144)
         # main area bounding box
         _ = plt.plot([left, tick_interval[1], tick_interval[1], left, left],
                      [bottom, bottom, nn_interval[1], nn_interval[1], bottom],
-                     c='#555555', linewidth=0.75, solid_capstyle='round', zorder=7)
+                     color='#555555', linewidth=0.75, solid_capstyle='round', zorder=7)
         # main area face color
         plt.fill([tick_interval[0], tick_interval[1], tick_interval[1], tick_interval[0]],
-                 [nn_interval[0], nn_interval[0], nn_interval[1], nn_interval[1]], c='#ddeeff', lw=0.0, zorder=0)
+                 [nn_interval[0], nn_interval[0], nn_interval[1], nn_interval[1]], color='#ddeeff', lw=0.0, zorder=0)
         # velocity lane face color
         plt.fill([tick_interval[0], tick_interval[1], tick_interval[1], tick_interval[0]],
-                 [bottom, bottom, nn_interval[0], nn_interval[0]], c='#ccddee', lw=0.0, zorder=0)
+                 [bottom, bottom, nn_interval[0], nn_interval[0]], color='#ccddee', lw=0.0, zorder=0)
         # background keys
         _ = [plt.fill([tick_interval[0], tick_interval[1], tick_interval[1], tick_interval[0]],
-                      [nn, nn, nn+1, nn+1], c='#ffffff', lw=0.0, zorder=1) for nn in range(*nn_interval) if nn % 12 in [0, 2, 4, 5, 7, 9, 11]]
+                      [nn, nn, nn+1, nn+1], color='#ffffff', lw=0.0, zorder=1) for nn in range(*nn_interval) if nn % 12 in [0, 2, 4, 5, 7, 9, 11]]
         _ = [plt.fill([tick_interval[0], tick_interval[1], tick_interval[1], tick_interval[0]],
-                      [nn, nn, nn+1, nn+1], c='#ddcccc', lw=0.0, zorder=1) for nn in range(*nn_interval) if nn % 12 in [1, 3, 6, 8, 10]]
+                      [nn, nn, nn+1, nn+1], color='#ddcccc', lw=0.0, zorder=1) for nn in range(*nn_interval) if nn % 12 in [1, 3, 6, 8, 10]]
         # keyboard
         plt.fill([left, tick_interval[0], tick_interval[0], left],
-                 [bottom, bottom, nn_interval[0], nn_interval[0]], c='#ffffff', lw=0.0, zorder=4)
+                 [bottom, bottom, nn_interval[0], nn_interval[0]], color='#ffffff', lw=0.0, zorder=4)
         _ = [plt.fill([tick_interval[0], left, left, tick_interval[0]],
-                      [nn, nn, nn+1, nn+1], c='#ffffff', lw=0.0, zorder=1) for nn in range(*nn_interval) if nn % 12 in [0, 2, 4, 5, 7, 9, 11]]
+                      [nn, nn, nn+1, nn+1], color='#ffffff', lw=0.0, zorder=1) for nn in range(*nn_interval) if nn % 12 in [0, 2, 4, 5, 7, 9, 11]]
         _ = [plt.fill([tick_interval[0], left, left, tick_interval[0]],
-                      [nn, nn, nn+1, nn+1], c='#222222', lw=0.0, zorder=1) for nn in range(*nn_interval) if nn % 12 in [1, 3, 6, 8, 10]]
-        _ = [plt.plot([left, tick_interval[0]], [nn, nn], c='#222222', linewidth=0.5, zorder=2) for nn in range(nn_interval[0]+1, nn_interval[1])]
+                      [nn, nn, nn+1, nn+1], color='#222222', lw=0.0, zorder=1) for nn in range(*nn_interval) if nn % 12 in [1, 3, 6, 8, 10]]
+        _ = [plt.plot([left, tick_interval[0]], [nn, nn], color='#222222', linewidth=0.5, zorder=2) for nn in range(nn_interval[0]+1, nn_interval[1])]
         ## texts
         _ = [plt.text(left+keyboard_w//8, nn+0.5, f'[{nn}]{note_names[nn%12]}{nn//12-1}',
                       color='#555555', va='center', zorder=1.1) for nn in range(*nn_interval) if nn % 12 in [0, 2, 4, 5, 7, 9, 11]]
         _ = [plt.text(left+keyboard_w//8, nn+0.5, f'[{nn}]{note_names[nn%12]}{nn//12-1}',
                       color='#ffffff', va='center', zorder=1.1) for nn in range(*nn_interval) if nn % 12 in [1, 3, 6, 8, 10]]
         # horizontal lines
-        plt.plot([left, tick_interval[1]], [nn_interval[0], nn_interval[0]], c='#555555', linewidth=0.5, solid_capstyle='butt', zorder=6)
-        _ = [plt.plot(tick_interval, [nn, nn], c='#999999', linewidth=0.5, solid_capstyle='butt', zorder=2) for nn in range(nn_interval[0]+1, nn_interval[1])]
+        plt.plot([left, tick_interval[1]], [nn_interval[0], nn_interval[0]], color='#555555', linewidth=0.5, solid_capstyle='butt', zorder=6)
+        _ = [plt.plot(tick_interval, [nn, nn], color='#999999', linewidth=0.5, solid_capstyle='butt', zorder=2) for nn in range(nn_interval[0]+1, nn_interval[1])]
         # vertical lines
-        plt.plot([tick_interval[0], tick_interval[0]], [bottom, nn_interval[1]], c='#ee2222', linewidth=1.0, solid_capstyle='butt', zorder=6.1)
-        _ = [plt.plot([x, x], [bottom, nn_interval[1]], c='#aaaaaa', linewidth=0.5, solid_capstyle='butt', zorder=2.1) for x in x3s]
-        _ = [plt.plot([x, x], [bottom, nn_interval[1]], c='#555555', linewidth=0.5, solid_capstyle='butt', zorder=2.1) for x in x2s]
-        _ = [plt.plot([x, x], [bottom, nn_interval[1]], c='#222222', linewidth=1.0, solid_capstyle='butt', zorder=2.1) for x in x1s]
+        plt.plot([tick_interval[0], tick_interval[0]], [bottom, nn_interval[1]], color='#ee2222', linewidth=1.0, solid_capstyle='butt', zorder=6.1)
+        _ = [plt.plot([x, x], [bottom, nn_interval[1]], color='#aaaaaa', linewidth=0.5, solid_capstyle='butt', zorder=2.1) for x in x3s]
+        _ = [plt.plot([x, x], [bottom, nn_interval[1]], color='#555555', linewidth=0.5, solid_capstyle='butt', zorder=2.1) for x in x2s]
+        _ = [plt.plot([x, x], [bottom, nn_interval[1]], color='#222222', linewidth=1.0, solid_capstyle='butt', zorder=2.1) for x in x1s]
         ## texts
         _ = [plt.text(x, nn_interval[1]+0.5, l, color='#555555', va='center', ha='center') for (x, l) in zip(x1s, l1s)]
         # notes
-        notes = [note for note in self.sheet_note_c[channel] if note['stt'] in range(*tick_interval) or note['stt']+note['lst'] in range(*tick_interval)]
+
+        notes = [note for note in self.sheet_note_c[channel] if inrange(note['stt'], *tick_interval) or inrange(note['stt']+note['lst'], *tick_interval)]
+        notes = [note for note in notes if inrange(note['nn'], *nn_interval)]
         notes_full = [note for note in notes if note['stt'] in range(*tick_interval) and note['stt']+note['lst'] in range(*tick_interval)]
         notes_left = [note for note in notes if note['stt'] < tick_interval[0] <= note['stt'] + note['lst']]
         notes_right = [note for note in notes if note['stt'] < tick_interval[1] <= note['stt'] + note['lst']]
@@ -296,16 +303,16 @@ class Pianoroll(object):
         ## note edge
         _ = [plt.plot([note['stt'], note['stt']+note['lst'], note['stt']+note['lst'], note['stt'], note['stt']],
                       [note['nn'], note['nn'], note['nn']+1, note['nn']+1, note['nn']],
-                      c='#123456', linewidth=0.5, solid_capstyle='round', zorder=5.1) for note in notes_full]
+                      color='#123456', linewidth=0.5, solid_capstyle='round', zorder=5.1) for note in notes_full]
         _ = [plt.plot([tick_interval[0], note['stt']+note['lst'], note['stt']+note['lst'], tick_interval[0]],
                       [note['nn'], note['nn'], note['nn']+1, note['nn']+1],
-                      c='#123456', linewidth=0.5, solid_capstyle='round', zorder=5.1) for note in notes_left]
+                      color='#123456', linewidth=0.5, solid_capstyle='round', zorder=5.1) for note in notes_left]
         _ = [plt.plot([tick_interval[1], note['stt'], note['stt'], tick_interval[1]],
                       [note['nn']+1, note['nn']+1, note['nn'], note['nn']],
-                      c='#123456', linewidth=0.5, solid_capstyle='round', zorder=5.1) for note in notes_right]
+                      color='#123456', linewidth=0.5, solid_capstyle='round', zorder=5.1) for note in notes_right]
         ## note text
         _ = [plt.text(note['stt']+self.ticks_per_beat//16, note['nn']+0.5, note_names[note['nn']%12],
-                      c='#ffffff', va='center', zorder=5.2) for note in notes_full+notes_left+notes_right]
+                      color='#ffffff', va='center', zorder=5.2) for note in notes_full+notes_left+notes_right]
         ## note on-velocity
         ax = plt.gca()
         marker = 'x'
@@ -316,9 +323,12 @@ class Pianoroll(object):
         # pitchwheels
         pw = [[msg['stt'] for msg in self.sheet_pw[channel] if msg['stt'] in range(*tick_interval)],
               [msg['pit']/8192*length(*nn_interval)+nn_interval[0] for msg in self.sheet_pw[channel] if msg['stt'] in range(*tick_interval)]]
-        plt.plot(pw[0], pw[1], c='#55ddee', zorder=8)
+        plt.plot(pw[0], pw[1], color='#55ddee', zorder=8)
         # save figure
         plt.savefig(r'../output/pianoroll_test.svg')
 
     def show(self):
         pass
+
+    def show_meta(self):
+        print(self.msglist_tpo, self.msglist_ts)
