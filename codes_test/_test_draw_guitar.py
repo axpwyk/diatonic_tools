@@ -1,4 +1,5 @@
 from theories import *
+from instruments import *
 from time import ctime
 from os import mkdir, path
 
@@ -25,6 +26,6 @@ for i in range(len(triples_lst)):
 # 输出
 t = ctime()
 t = t.replace(':', ' ').replace(' ', '_')
-plt.savefig(path.join('output', '{}_{}.svg'.format(t, chdlst)))
+plt.savefig(path.join('../output', '{}_{}.svg'.format(t, chdlst)))
 plt.clf()
 plt.close()
