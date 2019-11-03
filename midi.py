@@ -297,7 +297,8 @@ class Pianoroll(object):
         left = tick_interval[0] - keyboard_w
         top = nn_interval[1] + 3
         right = tick_interval[1]
-        chds0 = []
+        chds0 = [[2*1920, 'Cm'], [4*1920, 'Ab'], [5*1920-240, 'Gm'],
+                 [6*1920, 'Cm'], [8*1920, 'Ab'], [9*1920-240, 'Gm'], [10*1920, 'X']]
 
         # [02] note parsing
         ## divide notes both in nn_interval and tick_interval into 3 parts: left, full and right
@@ -455,14 +456,14 @@ class Pianoroll(object):
         pws[0].append(tick_interval[1])
         pws[1].insert(0, pws0[1][x1])
         pws[1].append(pws0[1][x2])
-        plot_type = ['piecewise', 'stair', 'none'][2]
+        plot_type = ['piecewise', 'stair', 'none'][1]
         if plot_type == 'piecewise':
             plt.plot(pws[0], pws[1], color='#1155ee', solid_capstyle='butt', solid_joinstyle='bevel', zorder=4.2, label='pitch')
         elif plot_type == 'stair':
             plt.step(pws[0], pws[1], color='#1155ee', solid_capstyle='butt', zorder=4.2, label='pitch')
         else: pass
         if plot_type in ['piecewise', 'stair']:
-            plt.legend(loc='upper right', fontsize=24)
+            plt.legend(loc='lower right', fontsize=24)
 
         # [07]save figure
         plt.savefig(r'../output/pianoroll_test.svg')
