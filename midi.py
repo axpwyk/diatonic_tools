@@ -263,9 +263,6 @@ class Pianoroll(object):
             self.pitchwheels[k].insert(0, dict(type='pitchwheel', stt=0, pit=0, ch=k))
             self.pitchwheels[k].append(dict(type='pitchwheel', stt=self.max_tick, pit=0, ch=k))
 
-    def get_max_tick(self):
-        return self.max_tick
-
     def get_tick_range(self):
         return 0, self.max_tick
 
@@ -297,6 +294,7 @@ class Pianoroll(object):
         left = tick_interval[0] - keyboard_w
         top = nn_interval[1] + 3
         right = tick_interval[1]
+        bpm_range = (140, 180)
         chds0 = [[2*1920, 'Cm'], [4*1920, 'Ab'], [5*1920-240, 'Gm'],
                  [6*1920, 'Cm'], [8*1920, 'Ab'], [9*1920-240, 'Gm'], [10*1920, 'X']]
 
@@ -318,7 +316,10 @@ class Pianoroll(object):
         notes_rects = notes_full_rects + notes_left_rects + notes_right_rects
 
         # [03] set_tempo parsing
-        # TODO: set_tempo parsing
+        sts0 = [[msg['stt'], msg['tpo']] for msg in self.set_tempos]
+        k_left = len(sts0)-1 - [pw[0]<=tick_interval[0] for pw in sts0][::-1].index(True)
+        k_right = len(sts0)-1 - [pw[0]<=tick_interval[1] for pw in sts0][::-1].index(True)
+        sts = [[tick_interval[0], sts0[k_left][1]]] + [pw for pw in sts0 if tick_interval[0]<pw[0]<tick_interval[1]] + [[tick_interval[1], sts0[k_right][1]]]
 
         # [04] time_signature parsing
         ## put all time_signatures into a list and append an end to the list
@@ -335,23 +336,27 @@ class Pianoroll(object):
         step2s = tpbs0
         step3 = self.ticks_per_beat//splits_per_beat
         ## x1s0 = [range(stt_0, stt_1, step1s[0]), range(stt_1, stt_2, step1s[1]), ..., range(stt_n, tick_interval[1], step1s[n])]
+        ## x1s0[n][k] is x of the k-th bar-line after n-th time_signature
         x1s0 = [list(range(tss0[k][0], tss0[k+1][0], step1s[k])) for k in range(len(step1s)-1)]
         x1s = [x1 for x1 in sum(x1s0, []) if inrange(x1, *tick_interval)]
         x2s0 = [list(range(tss0[k][0], tss0[k+1][0], step2s[k])) for k in range(len(step2s)-1)]
         x2s = [x2 for x2 in sum(x2s0, []) if inrange(x2, *tick_interval) and x2 not in x1s]
         x3s0 = [k*step3 for k in range(tick_interval[0]//step3, tick_interval[1]//step3+1)]
         x3s = [x3 for x3 in x3s0 if inrange(x3, *tick_interval) and x3 not in x1s+x2s]
-        ## l1s0: bar labels | l2s0: beat labels
+        ## l1s0: bar labels with x coord | l2s0: beat labels with x coord
         l1s0 = list(enumerate(sum(x1s0, [])))
-        l1s = [l[0] for l in l1s0 if inrange(l[1], *tick_interval)]
-        l2s0 = [[x2 % tss0[i][1] for x2 in range(len(x2s0_section)) if x2 % tss0[i][1] != 0] for (i, x2s0_section) in enumerate(x2s0)]
-        l2s = sum(l2s0, [])
+        l1s = [l1[0] for l1 in l1s0 if l1[1] in x1s]
+        l2s0 = sum([[[j % tss0[i][1], x2] for (j, x2) in enumerate(x2s0_section)] for (i, x2s0_section) in enumerate(x2s0)], [])
+        l2s = [l2[0] for l2 in l2s0 if l2[1] in x2s]
 
         # [05] control_change parsing
         # TODO: control_change parsing
 
         # [06] pitchwheel parsing
-        # TODO: pitchwheel parsing
+        pws0 = [[msg['stt'], msg['pit']] for msg in self.pitchwheels[channel]]
+        k_left = len(pws0)-1 - [pw[0]<=tick_interval[0] for pw in pws0][::-1].index(True)
+        k_right = len(pws0)-1 - [pw[0]<=tick_interval[1] for pw in pws0][::-1].index(True)
+        pws = [[tick_interval[0], pws0[k_left][1]]] + [pw for pw in pws0 if tick_interval[0]<pw[0]<tick_interval[1]] + [[tick_interval[1], pws0[k_right][1]]]
 
         # ---------------------------------------------------------------------------------------------------- #
 
@@ -361,12 +366,12 @@ class Pianoroll(object):
         ## the largest bounding box
         largest_rect = plt.Rectangle((left, bottom), right-left, top-bottom, facecolor='none', edgecolor='#555555', lw=0.75, joinstyle='round', zorder=7)
         ax.add_patch(largest_rect)
+        ## velocity lane facecolor
+        vel_rect = plt.Rectangle((tick_interval[0], bottom), length(*tick_interval), velocity_h, facecolor='#ddeeff', lw=0.0, zorder=0)
+        ax.add_patch(vel_rect)
         ## main area facecolor
         main_rect = plt.Rectangle((tick_interval[0], nn_interval[0]), length(*tick_interval), length(*nn_interval), facecolor='#ddeeff', lw=0.0, zorder=0)
         ax.add_patch(main_rect)
-        ## velocity lane facecolor
-        vel_rect = plt.Rectangle((tick_interval[0], bottom), length(*tick_interval), velocity_h, facecolor='#ccddee', lw=0.0, zorder=0)
-        ax.add_patch(vel_rect)
         ## ruler facecolor
         ruler_rect = plt.Rectangle((left, nn_interval[1]), right-left, 3, facecolor='#ffffff', lw=0.0, zorder=0)
         ax.add_patch(ruler_rect)
@@ -376,12 +381,15 @@ class Pianoroll(object):
         white_bg_rects = [plt.Rectangle((tick_interval[0], nn), length(*tick_interval), 1, facecolor='#ffffff', lw=0.0, zorder=1) for nn in white_nns]
         black_bg_rects = [plt.Rectangle((tick_interval[0], nn), length(*tick_interval), 1, facecolor='#ddcccc', lw=0.0, zorder=1) for nn in black_nns]
         _ = [ax.add_patch(rect) for rect in white_bg_rects+black_bg_rects]
+        ## left bottom rectangle
+        left_bottom_rect = plt.Rectangle((left, bottom), keyboard_w, velocity_h, facecolor='#ffffff', lw=0.0, zorder=4)
+        ax.add_patch(left_bottom_rect)
+        plt.annotate(f'bpm\n{bpm_range[0]}..{bpm_range[1]}\n\nvel\n0..127', (left+keyboard_w/2, bottom+velocity_h/2), color='#555555',
+                     va='center', ha='center', fontsize=fontsize, zorder=4.1, clip_box=TransformedBbox(left_bottom_rect.get_bbox(), ax.transData))
         ## keys
         white_kbd_rects = [plt.Rectangle((left, nn), keyboard_w, 1, facecolor='#ffffff', lw=0.0, zorder=4) for nn in white_nns]
         black_kbd_rects = [plt.Rectangle((left, nn), keyboard_w, 1, facecolor='#222222', lw=0.0, zorder=4) for nn in black_nns]
         _ = [ax.add_patch(rect) for rect in white_kbd_rects+black_kbd_rects]
-        left_bottom_rect = plt.Rectangle((left, bottom), keyboard_w, velocity_h, facecolor='#ffffff', lw=0.0, zorder=4)
-        ax.add_patch(left_bottom_rect)
         ### line between keys
         _ = [plt.plot([left, tick_interval[0]], [nn, nn], color='#222222', lw=0.5, solid_capstyle='butt', zorder=4.1) for nn in range(*nn_interval)]
         plt.plot([left, tick_interval[0]], [nn_interval[1], nn_interval[1]], color='#222222', lw=0.5, solid_capstyle='butt', zorder=4.1)
@@ -401,7 +409,6 @@ class Pianoroll(object):
         _ = [plt.plot([x, x], [bottom, nn_interval[1]], color='#aaaaaa', lw=0.5, solid_capstyle='butt', zorder=2.1) for x in x3s]
         _ = [plt.plot([x, x], [bottom, nn_interval[1]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=2.1) for x in x2s]
         _ = [plt.plot([x, x], [bottom, nn_interval[1]], color='#222222', lw=1.0, solid_capstyle='butt', zorder=2.1) for x in x1s]
-
         ### chords
         chds = [chd for chd in chds0 if inrange(chd[0], *tick_interval)]
         _ = [plt.annotate(chd[1], (chd[0], nn_interval[1]+0.5), color='#555555', va='center', ha='center', fontsize=fontsize) for chd in chds]
@@ -429,7 +436,15 @@ class Pianoroll(object):
         _ = [ax.add_line(vel) for vel in notes_full_vels]
 
         # [03] draw set_tempos
-        # TODO: draw set_tempos
+        def _bpm2vel(bpm):
+            bpm_lower = bpm_range[0]
+            bpm_upper = bpm_range[1]
+            lam = (bpm_upper - bpm) / (bpm_upper - bpm_lower)
+            return lam*(nn_interval[0]-velocity_h)+(1-lam)*nn_interval[0]
+        sts_stts = [st[0] for st in sts]
+        sts_tpos = [_bpm2vel(tempo2bpm(st[1])) for st in sts]
+        plt.plot(sts_stts, sts_tpos, color='#eeaa11', lw=1.0, solid_capstyle='butt', solid_joinstyle='bevel', zorder=2.9, label='tempo',
+                 clip_path=vel_rect)
 
         # [04] draw time_signatures
         ## time_signature changes
@@ -444,26 +459,16 @@ class Pianoroll(object):
         # TODO: draw control_changes
 
         # [06] draw pitchwheels
-        pws0 = [[msg['stt'] for msg in self.pitchwheels[channel]], [msg['pit']/16384*length(*nn_interval)+middle(*nn_interval) for msg in self.pitchwheels[channel]]]
-        x1 = [k for k in range(len(pws0[0])) if pws0[0][k]<=tick_interval[0]]
-        if x1 == []: x1 = 0
-        else: x1 = x1[-1]
-        x2 = [k for k in range(len(pws0[0])) if pws0[0][k]>=tick_interval[1]]
-        if x2 == []: x2 = len(pws0[0])-1
-        else: x2 = x2[0]
-        pws = [[pws0[0][k] for k in range(x1+1, x2)], [pws0[1][k] for k in range(x1+1, x2)]]
-        pws[0].insert(0, tick_interval[0])
-        pws[0].append(tick_interval[1])
-        pws[1].insert(0, pws0[1][x1])
-        pws[1].append(pws0[1][x2])
+        pws_stts = [pw[0] for pw in pws]
+        pws_pits = [pw[1]/16384*length(*nn_interval)+middle(*nn_interval) for pw in pws]
         plot_type = ['piecewise', 'stair', 'none'][1]
         if plot_type == 'piecewise':
-            plt.plot(pws[0], pws[1], color='#1155ee', solid_capstyle='butt', solid_joinstyle='bevel', zorder=4.2, label='pitch')
+            plt.plot(pws_stts, pws_pits, color='#1155ee', lw=1.0, solid_capstyle='butt', solid_joinstyle='bevel', zorder=4.2, label='pitchwheel')
         elif plot_type == 'stair':
-            plt.step(pws[0], pws[1], color='#1155ee', solid_capstyle='butt', zorder=4.2, label='pitch')
+            plt.step(pws_stts, pws_pits, color='#1155ee', lw=1.0, solid_capstyle='butt', zorder=4.2, label='pitchwheel')
         else: pass
         if plot_type in ['piecewise', 'stair']:
-            plt.legend(loc='lower right', fontsize=24)
+            plt.legend(loc='lower right', fontsize=fontsize)
 
         # [07]save figure
         plt.savefig(r'../output/pianoroll_test.svg')

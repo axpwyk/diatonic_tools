@@ -1,11 +1,5 @@
 ![test](README.assets/Am_D.svg)
 
----
-
-![pianoroll_1](README.assets/pianoroll_1.svg)
-
-![pianoroll_2](README.assets/pianoroll_2.svg)
-
 ## How to use this tool
 
 #### 设计思路
