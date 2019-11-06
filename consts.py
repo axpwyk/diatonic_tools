@@ -78,7 +78,7 @@ CHROMATIC = [[0, 0, -1],
              [11, 0, -1]]
 
 # ADD2 鼓的 MIDI 映射
-NOTE_NAMES = ['---', '---', '---', 'Ride 2 CCPos Shaft<->Tip', 'Ride 1 CCPos Shaft<->Tip', 'Snare CCPos Closed (Br)', 'Snare CCPos Op<->Sha', 'CC HiHat Shaft',
+ADD2_NOTE_NAMES = ['---', '---', '---', 'Ride 2 CCPos Shaft<->Tip', 'Ride 1 CCPos Shaft<->Tip', 'Snare CCPos Closed (Br)', 'Snare CCPos Op<->Sha', 'CC HiHat Shaft',
               'CC HiHat Tip', 'CC HiHat Bell', '---', '---', '---', '---', '---', '---',
               '---', '---', '---', '---', '---', '---', '---', '---',
               '---', '---', 'Sweep: Short 1', '---', 'Sweep: Short 2', 'Sweep: No Accent', 'Sweep: Fast Bright Acc', 'Sweep: Slow Bright Acc',
@@ -95,3 +95,6 @@ NOTE_NAMES = ['---', '---', '---', 'Ride 2 CCPos Shaft<->Tip', 'Ride 1 CCPos Sha
               '---', '---', '---', '---', '---', '---', '---', '---',
               '---', '---', '---', '---', '---', '---', '---', '---',
               '---', '---', '---', '---', '---', '---', '---', '---']
+
+# AGTC 的 MIDI 映射
+AGTC_NOTE_NAMES = [0]*128

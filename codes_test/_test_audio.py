@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 from scipy.io.wavfile import read, write
 from midi import *
 from audio import *
