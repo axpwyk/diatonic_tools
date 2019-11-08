@@ -47,13 +47,14 @@ class Guitar(object):
 
         # 判断是否存在已绘制吉他图形，存在的话则在原图的基础上添加新圆点
         if not plt.fignum_exists(1):
-            fig = plt.figure(figsize=(width, height), dpi=50, frameon=False)
+            fig = plt.figure(figsize=(width, height), dpi=36, frameon=False)
             ax = plt.gca(aspect='equal')
             ax.set_frame_on(False)
-            ax.axis('off')
-            ax.set_xlim([frets[low+1]-0.1, frets[high+1]+0.1])
-            ax.set_ylim([-0.6, h+0.6])
-            plt.subplots_adjust(right=0.97, left=0.03, bottom=0.03, top=0.97, wspace=0.1, hspace=0.1)
+            ax.set_axis_off()
+            ax.margins(x=0.0, y=0.0)
+            ax.set_xlim([frets[low+1]-1.0, frets[high+1]+1.0])
+            ax.set_ylim([0-0.5, h+0.5])
+            plt.subplots_adjust(right=1.0, left=0.0, bottom=0.0, top=1.0, wspace=0.1, hspace=0.1)
 
             # 绘制品柱
             # 头部加粗

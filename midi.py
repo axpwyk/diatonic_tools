@@ -6,6 +6,7 @@ from mido import MidiFile, MidiTrack
 from mido import Message, MetaMessage
 from mido import bpm2tempo, tempo2bpm, tick2second, second2tick
 from consts import ADD2_NOTE_NAMES, AGTC_NOTE_NAMES
+from pathlib import Path
 
 
 ''' other functions '''
@@ -168,7 +169,7 @@ def note2label(note, type='piano', show_group=True):
                  '#': ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
                  '2': ['b7', '7', '1', '#1', '2', 'b3', '3', '4', '#4', '5', '#5', '6'],
                  '7b': ['2', 'b3', '3', '4', '#4', '5', '#5', '6', 'b7', '7', '1', '#1']}
-        note_names = modes['#']
+        note_names = modes['b']
         if show_group:
             return f'[{note}]{note_names[note%12]}{note//12-2}'
         else:
@@ -197,6 +198,8 @@ class Pianoroll(object):
         self._ticks_per_beat = ticks_per_beat
         self._max_tick = max_tick(sheet)
 
+        self._pianoroll_exists = False
+
         # [02] get notes
         self._get_notes()
 
@@ -212,11 +215,11 @@ class Pianoroll(object):
         # [06] get pitchwheels
         self._get_pitchwheels()
 
-        # [07] set intervals
-        self._set_intervals((0, self._max_tick), (48, 72))
+        # [07] set default intervals
+        self._set_intervals()
 
-        # [08] set track default colors
-        self._set_track_default_colors()
+        # [08] set default track colors
+        self._set_track_colors()
 
     def _get_notes(self):
         self._notes = [[msg for msg in msglist if msg['type'] == 'note'] for msglist in self._sheet]
@@ -257,22 +260,45 @@ class Pianoroll(object):
         self._pitchwheels = [[msg for msg in msglist if msg['type'] == 'pitchwheel'] for msglist in self._sheet]
         _ = [msglist.sort(key=lambda msg: msg['time']) for msglist in self._pitchwheels]
 
-    def _set_intervals(self, tick_interval, note_interval):
-        self._tick_interval = tick_interval
-        self._note_interval = note_interval
+    def _set_intervals(self):
+        self._time_interval = None
+        self._note_interval = None
 
-    def _set_track_default_colors(self):
+    def _set_track_colors(self):
         n_track = len(self._sheet)
         self._track_colors = [hsv_shader(t, 0, n_track+1) for t in range(n_track)]
 
     # ---------------------------------------------------------------------------------------------------- #
 
-    def set_intervals(self, tick_interval, note_interval):
-        self._set_intervals(tick_interval, note_interval)
+    def use_default_intervals(self):
+        self._time_interval = (0, self._max_tick)
+        self._note_interval = (48, 72)
+        self._pianoroll_exists = False
+        plt.clf()
+
+    def set_intervals(self, time_interval=None, note_interval=None):
+        if time_interval:
+            if time_interval[0] > time_interval[1]:
+                raise ValueError('`time_interval[0]` should not larger than `time_interval[1]`!')
+            else:
+                self._time_interval = time_interval
+        if note_interval:
+            if note_interval[0] > note_interval[1]:
+                raise ValueError('`note_interval[0]` should not larger than `note_interval[1]`!')
+            else:
+                self._note_interval = note_interval
+
+        self._pianoroll_exists = False
         plt.clf()
 
     def set_track_color(self, track, color):
         self._track_colors[track] = color
+
+    def _set_whdpi(self, width, height, dpi):
+        pass
+
+    def _set_hadpi(self, height, aspect_note, dpi):
+        pass
 
     def draw_pianoroll(self, height=8, aspect_note=4, dpi=36, splits_per_beat=4, type='piano'):
         """
@@ -280,7 +306,7 @@ class Pianoroll(object):
         Draw pianoroll with meta information.
 
         * variable's name ending with 's' means it is a list (multi variables)
-        * list variable's name ending with '0' means it may contain messages whose time is out of tick_interval
+        * list variable's name ending with '0' means it may contain messages whose time is out of time_interval
 
         Some abbreviations:
 
@@ -291,6 +317,14 @@ class Pianoroll(object):
         * pitchwheel        -> pw
 
         """
+
+        ''' [00] intervals check '''
+
+        if self._time_interval == None or self._note_interval == None:
+            raise ValueError('Please set intervals at first. You can use `use_default_intervals()` or `set_intervals()` to finish this job.')
+        else:
+            self._pianoroll_exists = True
+            plt.clf()
 
         ''' [01] pianoroll meta params '''
 
@@ -304,12 +338,12 @@ class Pianoroll(object):
 
         aspect_keyboard = {'piano': 4, 'drum': 6, 'agtc': 6}[type]
 
-        width = height * (aspect_keyboard + aspect_note * length(*self._tick_interval) / self._ticks_per_beat) / (top - bottom)
-        axis_ratio = (aspect_keyboard / aspect_note * self._ticks_per_beat + length(*self._tick_interval)) / (aspect_keyboard + aspect_note * length(*self._tick_interval) / self._ticks_per_beat)
+        width = height * (aspect_keyboard + aspect_note * length(*self._time_interval) / self._ticks_per_beat) / (top - bottom)
+        axis_ratio = (aspect_keyboard / aspect_note * self._ticks_per_beat + length(*self._time_interval)) / (aspect_keyboard + aspect_note * length(*self._time_interval) / self._ticks_per_beat)
         keyboard_width = aspect_keyboard * axis_ratio
 
-        left = self._tick_interval[0] - keyboard_width
-        right = self._tick_interval[1]
+        left = self._time_interval[0] - keyboard_width
+        right = self._time_interval[1]
 
         fontsize = 49*height/(length(*self._note_interval) + bottom_lane_h + top_lane_h)
         self._fontsize = fontsize
@@ -319,16 +353,16 @@ class Pianoroll(object):
         ''' [02] set_tempos parsing '''
 
         sts0 = [[msg['time'], msg['tempo']] for msg in self._set_tempos]
-        k_left = len(sts0)-1- [pw[0] <= self._tick_interval[0] for pw in sts0][::-1].index(True)
-        k_right = len(sts0)-1- [pw[0] <= self._tick_interval[1] for pw in sts0][::-1].index(True)
-        sts = [[self._tick_interval[0], sts0[k_left][1]]] + [pw for pw in sts0 if self._tick_interval[0] < pw[0] < self._tick_interval[1]] + [[self._tick_interval[1], sts0[k_right][1]]]
+        k_left = len(sts0)-1- [pw[0] <= self._time_interval[0] for pw in sts0][::-1].index(True)
+        k_right = len(sts0)-1- [pw[0] <= self._time_interval[1] for pw in sts0][::-1].index(True)
+        sts = [[self._time_interval[0], sts0[k_left][1]]] + [pw for pw in sts0 if self._time_interval[0] < pw[0] < self._time_interval[1]] + [[self._time_interval[1], sts0[k_right][1]]]
 
         ''' [03] time_signatures parsing '''
 
         # put all time_signatures into a list and append an end to the list
         tss0 = [[msg['time'], msg['numerator'], msg['denominator']] for msg in self._time_signatures]
-        tss0.append([self._tick_interval[1], tss0[-1][1], tss0[-1][2]])
-        tss = [ts for ts in tss0 if inrange(ts[0], *self._tick_interval)]
+        tss0.append([self._time_interval[1], tss0[-1][1], tss0[-1][2]])
+        tss = [ts for ts in tss0 if inrange(ts[0], *self._time_interval)]
         # get a list of ticks_per_beat corresponding to time_signatures (because tpb changes with ts denominator)
         tpbs0 = [4 * self._ticks_per_beat // ts[2] for ts in tss0]
         # calculate delta x of three types of vertical line: bar-line, beat-line and split-line
@@ -339,14 +373,14 @@ class Pianoroll(object):
         step1s = [tpb*tss0[i][1] for (i, tpb) in enumerate(tpbs0)]
         step2s = tpbs0
         step3 = self._ticks_per_beat // splits_per_beat
-        # x1s0 = [range(stt_0, stt_1, step1s[0]), range(stt_1, stt_2, step1s[1]), ..., range(stt_n, self.tick_interval[1], step1s[n])]
+        # x1s0 = [range(stt_0, stt_1, step1s[0]), range(stt_1, stt_2, step1s[1]), ..., range(stt_n, self.time_interval[1], step1s[n])]
         # x1s0[n][k] is x of the k-th bar-line after n-th time_signature
         x1s0 = [list(range(tss0[k][0], tss0[k+1][0], step1s[k])) for k in range(len(step1s)-1)]
-        x1s = [x1 for x1 in sum(x1s0, []) if inrange(x1, *self._tick_interval)]
+        x1s = [x1 for x1 in sum(x1s0, []) if inrange(x1, *self._time_interval)]
         x2s0 = [list(range(tss0[k][0], tss0[k+1][0], step2s[k])) for k in range(len(step2s)-1)]
-        x2s = [x2 for x2 in sum(x2s0, []) if inrange(x2, *self._tick_interval) and x2 not in x1s]
-        x3s0 = [k * step3 for k in range(self._tick_interval[0] // step3, self._tick_interval[1] // step3 + 1)]
-        x3s = [x3 for x3 in x3s0 if inrange(x3, *self._tick_interval) and x3 not in x1s + x2s]
+        x2s = [x2 for x2 in sum(x2s0, []) if inrange(x2, *self._time_interval) and x2 not in x1s]
+        x3s0 = [k * step3 for k in range(self._time_interval[0] // step3, self._time_interval[1] // step3 + 1)]
+        x3s = [x3 for x3 in x3s0 if inrange(x3, *self._time_interval) and x3 not in x1s + x2s]
         # l1s0: bar labels with x coord | l2s0: beat labels with x coord
         l1s0 = list(enumerate(sum(x1s0, [])))
         l1s = [l1[0] for l1 in l1s0 if l1[1] in x1s]
@@ -363,10 +397,10 @@ class Pianoroll(object):
         largest_rect = plt.Rectangle((left, bottom), right-left, top-bottom, facecolor='none', edgecolor='#555555', lw=0.75, joinstyle='round', zorder=7)
         ax.add_patch(largest_rect)
         # bottom lane rectangle
-        bl_rect = plt.Rectangle((self._tick_interval[0], bottom), length(*self._tick_interval), bottom_lane_h, facecolor='#ddeeff', lw=0.0, zorder=0)
+        bl_rect = plt.Rectangle((self._time_interval[0], bottom), length(*self._time_interval), bottom_lane_h, facecolor='#ddeeff', lw=0.0, zorder=0)
         ax.add_patch(bl_rect)
         # main area rectangle
-        main_rect = plt.Rectangle((self._tick_interval[0], self._note_interval[0]), length(*self._tick_interval), length(*self._note_interval), facecolor='#ddeeff', lw=0.0, zorder=0)
+        main_rect = plt.Rectangle((self._time_interval[0], self._note_interval[0]), length(*self._time_interval), length(*self._note_interval), facecolor='#ddeeff', lw=0.0, zorder=0)
         ax.add_patch(main_rect)
         # top lane rectangle
         tl_rect = plt.Rectangle((left, self._note_interval[1]), right - left, 3, facecolor='#ffffff', lw=0.0, zorder=0)
@@ -374,8 +408,8 @@ class Pianoroll(object):
         # background keys
         white_notes = [note for note in range(*self._note_interval) if note % 12 in [0, 2, 4, 5, 7, 9, 11]]
         black_notes = [note for note in range(*self._note_interval) if note % 12 in [1, 3, 6, 8, 10]]
-        white_bg_rects = [plt.Rectangle((self._tick_interval[0], note), length(*self._tick_interval), 1, facecolor='#ffffff', lw=0.0, zorder=1) for note in white_notes]
-        black_bg_rects = [plt.Rectangle((self._tick_interval[0], note), length(*self._tick_interval), 1, facecolor='#ddcccc', lw=0.0, zorder=1) for note in black_notes]
+        white_bg_rects = [plt.Rectangle((self._time_interval[0], note), length(*self._time_interval), 1, facecolor='#ffffff', lw=0.0, zorder=1) for note in white_notes]
+        black_bg_rects = [plt.Rectangle((self._time_interval[0], note), length(*self._time_interval), 1, facecolor='#ddcccc', lw=0.0, zorder=1) for note in black_notes]
         _ = [ax.add_patch(rect) for rect in white_bg_rects+black_bg_rects]
         # left bottom rectangle
         lb_rect = plt.Rectangle((left, bottom), keyboard_width, bottom_lane_h, facecolor='#ffffff', lw=0.0, zorder=4)
@@ -391,25 +425,25 @@ class Pianoroll(object):
         black_kbd_rects = [plt.Rectangle((left, note), keyboard_width, 1, facecolor='#222222', lw=0.0, zorder=4) for note in black_notes]
         _ = [ax.add_patch(rect) for rect in white_kbd_rects+black_kbd_rects]
         # split lines of keys
-        _ = [plt.plot([left, self._tick_interval[0]], [note, note], color='#222222', lw=0.5, solid_capstyle='butt', zorder=4.1) for note in range(*self._note_interval)]
+        _ = [plt.plot([left, self._time_interval[0]], [note, note], color='#222222', lw=0.5, solid_capstyle='butt', zorder=4.1) for note in range(*self._note_interval)]
         # text on keys
         _ = [plt.annotate(note2label(note, type=type), (left+keyboard_width//16, note+0.5), color='#555555', va='center', fontsize=fontsize, zorder=4.1,
                           clip_box=TransformedBbox(white_kbd_rects[k].get_bbox(), ax.transData)) for (k, note) in enumerate(white_notes)]
         _ = [plt.annotate(note2label(note, type=type), (left+keyboard_width//16, note+0.5), color='#ffffff', va='center', fontsize=fontsize, zorder=4.1,
                           clip_box=TransformedBbox(black_kbd_rects[k].get_bbox(), ax.transData)) for (k, note) in enumerate(black_notes)]
         # horizontal grid lines
-        _ = [plt.plot(self._tick_interval, [note, note], color='#999999', lw=0.5, solid_capstyle='butt', zorder=2) for note in range(self._note_interval[0] + 1, self._note_interval[1])]
+        _ = [plt.plot(self._time_interval, [note, note], color='#999999', lw=0.5, solid_capstyle='butt', zorder=2) for note in range(self._note_interval[0] + 1, self._note_interval[1])]
         # vertical grid lines
         _ = [plt.plot([x, x], [bottom, self._note_interval[1]], color='#aaaaaa', lw=0.5, solid_capstyle='butt', zorder=2.1) for x in x3s]
         _ = [plt.plot([x, x], [bottom, self._note_interval[1]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=2.1) for x in x2s]
         _ = [plt.plot([x, x], [bottom, self._note_interval[1]], color='#222222', lw=1.0, solid_capstyle='butt', zorder=2.1) for x in x1s]
         # horizontal split lines
-        plt.plot(self._tick_interval, [self._note_interval[0], self._note_interval[0]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=2)
-        plt.plot([left, self._tick_interval[1]], [self._note_interval[1], self._note_interval[1]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6.1)
-        plt.plot([left, self._tick_interval[1]], [self._note_interval[1] + 1, self._note_interval[1] + 1], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6.1)
-        plt.plot([left, self._tick_interval[1]], [self._note_interval[1] + 2, self._note_interval[1] + 2], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6.1)
+        plt.plot(self._time_interval, [self._note_interval[0], self._note_interval[0]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=2)
+        plt.plot([left, self._time_interval[1]], [self._note_interval[1], self._note_interval[1]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6.1)
+        plt.plot([left, self._time_interval[1]], [self._note_interval[1] + 1, self._note_interval[1] + 1], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6.1)
+        plt.plot([left, self._time_interval[1]], [self._note_interval[1] + 2, self._note_interval[1] + 2], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6.1)
         # vertical split lines
-        plt.plot([self._tick_interval[0], self._tick_interval[0]], [bottom, self._note_interval[1]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6)
+        plt.plot([self._time_interval[0], self._time_interval[0]], [bottom, self._note_interval[1]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6)
 
         ''' [02] draw set_tempos '''
 
@@ -435,21 +469,26 @@ class Pianoroll(object):
     def _draw_notes(self, track=0, shader=rgb_shader, type='piano', alpha=1.0, lyric=None):
         """ draw notes """
 
+        ''' pianoroll checking '''
+
+        if not self._pianoroll_exists:
+            raise ValueError('You should draw a pianoroll first using `draw_pianoroll()` method!')
+
         ''' notes parsing '''
 
-        # divide notes both in note_interval and tick_interval into 3 parts: left, full and right
+        # divide notes both in note_interval and time_interval into 3 parts: left, full and right
         notes0 = [note for note in self._notes[track] if inrange(note['note'], *self._note_interval)]
-        notes = [note for note in notes0 if inrange(note['time1'], *self._tick_interval) or inrange(note['time1'] + note['time2'], *self._tick_interval)]
-        notes_full = [note for note in notes if inrange(note['time1'], *self._tick_interval) and inrange(note['time1'] + note['time2'], *self._tick_interval)]
-        notes_left = [note for note in notes if note['time1'] < self._tick_interval[0] <= note['time1'] + note['time2']]
-        notes_right = [note for note in notes if note['time1'] < self._tick_interval[1] <= note['time1'] + note['time2']]
+        notes = [note for note in notes0 if inrange(note['time1'], *self._time_interval) or inrange(note['time1'] + note['time2'], *self._time_interval)]
+        notes_full = [note for note in notes if inrange(note['time1'], *self._time_interval) and inrange(note['time1'] + note['time2'], *self._time_interval)]
+        notes_left = [note for note in notes if note['time1'] < self._time_interval[0] <= note['time1'] + note['time2']]
+        notes_right = [note for note in notes if note['time1'] < self._time_interval[1] <= note['time1'] + note['time2']]
         notes_rearranged = notes_full + notes_left + notes_right
         # getting rectangles of notes for pianoroll
         notes_full_rects = [plt.Rectangle((note['time1'], note['note']), note['time2'], 1,
                                           color=shader(note['velocity_on']), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_full]
-        notes_left_rects = [plt.Rectangle((self._tick_interval[0], note['note']), note['time2'] - self._tick_interval[0] + note['time1'], 1,
+        notes_left_rects = [plt.Rectangle((self._time_interval[0], note['note']), note['time2'] - self._time_interval[0] + note['time1'], 1,
                                           color=shader(note['velocity_on']), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_left]
-        notes_right_rects = [plt.Rectangle((note['time1'], note['note']), self._tick_interval[1] - note['time1'], 1,
+        notes_right_rects = [plt.Rectangle((note['time1'], note['note']), self._time_interval[1] - note['time1'], 1,
                                            color=shader(note['velocity_on']), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_right]
         notes_rects = notes_full_rects + notes_left_rects + notes_right_rects
 
@@ -461,10 +500,10 @@ class Pianoroll(object):
         _ = [plt.plot([note['time1'], note['time1']+note['time2'], note['time1']+note['time2'], note['time1'], note['time1']],
                       [note['note'], note['note'], note['note']+1, note['note']+1, note['note']],
                       color='#123456', lw=0.5, solid_capstyle='round', alpha=alpha, zorder=5+0.001*(track+0.2)) for note in notes_full]
-        _ = [plt.plot([self._tick_interval[0], note['time1'] + note['time2'], note['time1'] + note['time2'], self._tick_interval[0]],
+        _ = [plt.plot([self._time_interval[0], note['time1'] + note['time2'], note['time1'] + note['time2'], self._time_interval[0]],
                       [note['note'], note['note'], note['note']+1, note['note']+1],
                       color='#123456', lw=0.5, solid_capstyle='round', alpha=alpha, zorder=5+0.001*(track+0.2)) for note in notes_left]
-        _ = [plt.plot([self._tick_interval[1], note['time1'], note['time1'], self._tick_interval[1]],
+        _ = [plt.plot([self._time_interval[1], note['time1'], note['time1'], self._time_interval[1]],
                       [note['note']+1, note['note']+1, note['note'], note['note']],
                       color='#123456', lw=0.5, solid_capstyle='round', alpha=alpha, zorder=5+0.001*(track+0.2)) for note in notes_right]
         # note label
@@ -490,6 +529,11 @@ class Pianoroll(object):
     def draw_control_changes(self, track=0, controls=(1, ), shader=hsv_shader, plot_type='stair', alpha=1.0):
         """ draw control_changes """
 
+        ''' pianoroll checking '''
+
+        if not self._pianoroll_exists:
+            raise ValueError('You should draw a pianoroll first using `draw_pianoroll()` method!')
+
         ''' control_changes parsing '''
 
         ccs0 = dict.fromkeys(controls, [])
@@ -498,11 +542,11 @@ class Pianoroll(object):
             ccs0[control] = [[msg['time'], msg['value']] for msg in self._control_changes[track] if msg['control'] == control]
             # add default value
             ccs0[control].insert(0, [0, 0])
-            k_left = len(ccs0[control])-1- [cc[0] <= self._tick_interval[0] for cc in ccs0[control]][::-1].index(True)
-            k_right = len(ccs0[control])-1- [cc[0] <= self._tick_interval[1] for cc in ccs0[control]][::-1].index(True)
-            ccs[control] = [[self._tick_interval[0], ccs0[control][k_left][1]]] + \
-                           [cc for cc in ccs0[control] if self._tick_interval[0] < cc[0] < self._tick_interval[1]] + \
-                           [[self._tick_interval[1], ccs0[control][k_right][1]]]
+            k_left = len(ccs0[control])-1- [cc[0] <= self._time_interval[0] for cc in ccs0[control]][::-1].index(True)
+            k_right = len(ccs0[control])-1- [cc[0] <= self._time_interval[1] for cc in ccs0[control]][::-1].index(True)
+            ccs[control] = [[self._time_interval[0], ccs0[control][k_left][1]]] + \
+                           [cc for cc in ccs0[control] if self._time_interval[0] < cc[0] < self._time_interval[1]] + \
+                           [[self._time_interval[1], ccs0[control][k_right][1]]]
 
         ''' draw control_changes '''
 
@@ -521,16 +565,21 @@ class Pianoroll(object):
     def _draw_pitchwheels(self, track=0, shader=const_shader, plot_type='stair', alpha=1.0):
         """ draw pitchwheels """
 
-        ''' [06] pitchwheels parsing '''
+        ''' pianoroll checking '''
+
+        if not self._pianoroll_exists:
+            raise ValueError('You should draw a pianoroll first using `draw_pianoroll()` method!')
+
+        ''' pitchwheels parsing '''
 
         pws0 = [[msg['time'], msg['pitch']] for msg in self._pitchwheels[track]]
         # add default value
         pws0.insert(0, [0, 0])
-        k_left = len(pws0)-1- [pw[0] <= self._tick_interval[0] for pw in pws0][::-1].index(True)
-        k_right = len(pws0)-1- [pw[0] <= self._tick_interval[1] for pw in pws0][::-1].index(True)
-        pws = [[self._tick_interval[0], pws0[k_left][1]]] + [pw for pw in pws0 if self._tick_interval[0] < pw[0] < self._tick_interval[1]] + [[self._tick_interval[1], pws0[k_right][1]]]
+        k_left = len(pws0)-1- [pw[0] <= self._time_interval[0] for pw in pws0][::-1].index(True)
+        k_right = len(pws0)-1- [pw[0] <= self._time_interval[1] for pw in pws0][::-1].index(True)
+        pws = [[self._time_interval[0], pws0[k_left][1]]] + [pw for pw in pws0 if self._time_interval[0] < pw[0] < self._time_interval[1]] + [[self._time_interval[1], pws0[k_right][1]]]
 
-        ''' [06] draw pitchwheels '''
+        ''' draw pitchwheels '''
 
         pws_stts = [pw[0] for pw in pws]
         pws_pits = [pw[1] / 16384 * length(*self._note_interval) + middle(*self._note_interval) for pw in pws]
@@ -548,33 +597,55 @@ class Pianoroll(object):
     def show_legends(self):
         plt.legend(loc='lower right', fontsize=self._fontsize)
 
-    def show_chords(self, time_in_ticks, chords):
-        self._chords0 = list(zip(time_in_ticks, chords))
-        # chords
-        chords = [chord for chord in self._chords0 if inrange(chord[0], *self._tick_interval)]
+    def show_chords(self, times, chords):
+        """ show chords """
+
+        ''' pianoroll checking '''
+
+        if not self._pianoroll_exists:
+            raise ValueError('You should draw a pianoroll first using `draw_pianoroll()` method!')
+
+        ''' chords parsing '''
+
+        chords0 = list(zip(times, chords))
+
+        ''' show chords '''
+
+        chords = [chord for chord in chords0 if inrange(chord[0], *self._time_interval)]
         _ = [plt.annotate(chord[1], (chord[0], self._note_interval[1] + 0.5), color='#555555', va='center', ha='center', fontsize=self._fontsize) for chord in chords]
 
     # ---------------------------------------------------------------------------------------------------- #
 
-    def draw(self):
-        pass
+    def save(self, savepath):
+        plt.savefig(Path(savepath))
+        plt.close()
 
     # ---------------------------------------------------------------------------------------------------- #
 
     def get_max_tick(self):
         return self._max_tick
 
-    def get_tick_range(self):
-        return 0, self._max_tick
-
-    def get_note_range(self, track):
+    def get_global_note_range(self, track):
         notes = [note['note'] for note in self._notes[track]]
         note_min = min(notes) - 1 if notes != [] else 48
         note_max = max(notes) + 2 if notes != [] else 72
         return note_min, note_max
 
-    def get_note_ranges(self, tracks):
-        ranges = [self.get_note_range(track) for track in tracks]
+    def get_global_note_ranges(self, tracks):
+        ranges = [self.get_global_note_range(track) for track in tracks]
+        note_min = min([r[0] for r in ranges])
+        note_max = max([r[1] for r in ranges])
+        return note_min, note_max
+
+    def get_local_note_range(self, track):
+        notes0 = [note for note in self._notes[track] if inrange(note['note'], *self._note_interval)]
+        notes = [note for note in notes0 if inrange(note['time1'], *self._time_interval) or inrange(note['time1'] + note['time2'], *self._time_interval)]
+        note_min = min(notes) - 1 if notes != [] else 48
+        note_max = max(notes) + 2 if notes != [] else 72
+        return note_min, note_max
+
+    def get_local_note_ranges(self, tracks):
+        ranges = [self.get_local_note_range(track) for track in tracks]
         note_min = min([r[0] for r in ranges])
         note_max = max([r[1] for r in ranges])
         return note_min, note_max
