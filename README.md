@@ -1,4 +1,4 @@
-
+![20191109_015424_Cm7-Ab6-Gm7](README.assets/20191109_015424_Cm7-Ab6-Gm7.svg)
 
 ![nightingale_a2](README.assets/nightingale_a2.svg)
 
@@ -56,6 +56,7 @@
 |         重构 pianoroll 类，使用更加一般的方法         |  ✅   |      |
 |                       高层 API                        |      |      |
 |                      main 函数壳                      |      |      |
+|                     样式表的使用                      |      |      |
 |                 off velocity 向下显示                 |      |      |
 |                鼓谱的菱形 marker 显示                 |      |      |
 |             面向用户的 tick_interval 设置             |      |      |

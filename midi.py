@@ -524,9 +524,9 @@ class Pianoroll(object):
         if color_scheme == 'velocity':
             _ = [self._draw_notes(t, rgb_shader, type, alpha, lyric) for t in tracks]
         elif color_scheme == 'track':
-            _ = [self._draw_notes(t, lambda c: const_shader(c, 0, 1, self._track_colors[t]), type, alpha) for t in tracks]
+            _ = [self._draw_notes(t, lambda c: const_shader(c, 0, 1, self._track_colors[t]), type, alpha, lyric) for t in tracks]
 
-    def draw_control_changes(self, track=0, controls=(1, ), shader=hsv_shader, plot_type='stair', alpha=1.0):
+    def draw_control_changes(self, track=0, controls=(64, ), shader=hsv_shader, plot_type='stair', alpha=1.0):
         """ draw control_changes """
 
         ''' pianoroll checking '''
