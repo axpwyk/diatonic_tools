@@ -19,7 +19,8 @@ CHORDS = {'44': 'aug',
           '333': 'dim7',
           '25': 'sus2',
           '52': 'sus4',
-          '432': '6'
+          '432': '6',
+          '4334': '9'
           }
 
 # 用于控制台为和弦着色
@@ -45,7 +46,8 @@ CHORD_TYPE_SCALES = {'aug': 'HMinor',
                      'dim7': 'HMinor7',
                      'sus2': 'Ionian',
                      'sus4': 'Ionian',
-                     '6': 'Ionian'}
+                     '6': 'Ionian',
+                     '9': 'Mixolydian'}
 
 # 用于从音阶构造和弦
 CHORD_TYPE_CLST = {'aug': [0, 2, 4],
@@ -61,7 +63,8 @@ CHORD_TYPE_CLST = {'aug': [0, 2, 4],
                    'dim7': [0, 2, 4, 6],
                    'sus2': [0, 1, 4],
                    'sus4': [0, 3, 4],
-                   '6': [0, 2, 4, 5]}
+                   '6': [0, 2, 4, 5],
+                   '9': [0, 2, 4, 6, 1]}
 
 # 半音音阶 triples
 CHROMATIC = [[0, 0, -1],

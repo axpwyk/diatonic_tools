@@ -169,7 +169,7 @@ def note2label(note, type='piano', show_group=True):
                  '#': ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
                  '2': ['b7', '7', '1', '#1', '2', 'b3', '3', '4', '#4', '5', '#5', '6'],
                  '7b': ['2', 'b3', '3', '4', '#4', '5', '#5', '6', 'b7', '7', '1', '#1']}
-        note_names = modes['#']
+        note_names = modes['b']
         if show_group:
             return f'[{note}]{note_names[note%12]}{note//12-2}'
         else:
