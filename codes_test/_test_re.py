@@ -1,3 +1,3 @@
 from theories import *
 
-print(tonality_parser('G Ionian'))
+print(mode_name_parser('G Ionian'))

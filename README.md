@@ -1,6 +1,6 @@
-![20191109_015424_Cm7-Ab6-Gm7](README.assets/20191109_015424_Cm7-Ab6-Gm7.svg)
+![guitar_test](README.assets/guitar_test-1573333214831.svg)
 
-![nightingale_a2](README.assets/nightingale_a2.svg)
+![pianoroll_test](README.assets/pianoroll_test-1573333227128.svg)
 
 # diatonic tools: 使用 python 分析音乐
 

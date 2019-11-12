@@ -5,52 +5,51 @@ MODES = ['Lydian', 'Ionian', 'Mixolydian', 'Dorian', 'Aeolian', 'Phrygian', 'Loc
 
 T = 2**(1/12)
 
-# 用于从 triple 辨认和弦
-CHORDS = {'44': 'aug',
-          '43': '',
-          '34': 'm',
-          '33': 'dim',
-          '443': 'M7+5',
-          '434': 'M7',
-          '433': '7',
-          '344': 'mM7',
-          '343': 'm7',
-          '334': 'm7-5',
-          '333': 'dim7',
-          '25': 'sus2',
-          '52': 'sus4',
-          '432': '6',
-          '4334': '9'
-          }
-
 # 用于控制台为和弦着色
-CHORD_TYPE_COLORS = {'M7': 'red',
-                     'M7+5': 'magenta',
-                     '7': 'white',
-                     'mM7': 'cyan',
-                     'm7': 'blue',
-                     'm7-5': 'cyan',
-                     'dim7': 'green'}
+CHORD_COLORS_CONSOLE = {'M7': 'red',
+                        'M7+5': 'magenta',
+                        '7': 'white',
+                        'mM7': 'cyan',
+                        'm7': 'blue',
+                        'm7-5': 'cyan',
+                        'dim7': 'green'}
+
+# 用于从 triple 辨认和弦
+TRIPLE_TO_CHORD = {'44': 'aug',
+                   '43': '',
+                   '34': 'm',
+                   '33': 'dim',
+                   '443': 'M7+5',
+                   '434': 'M7',
+                   '433': '7',
+                   '344': 'mM7',
+                   '343': 'm7',
+                   '334': 'm7-5',
+                   '333': 'dim7',
+                   '25': 'sus2',
+                   '52': 'sus4',
+                   '432': '6',
+                   '4334': '9'}
 
 # 用于构造和弦对应的音阶
-CHORD_TYPE_SCALES = {'aug': 'HMinor',
-                     '': 'Ionian',
-                     'm': 'Aeolian',
-                     'dim': 'Locrian',
-                     'M7+5': 'HMinor3',
-                     'M7': 'Ionian',
-                     '7': 'Mixolydian',
-                     'mM7': 'HMinor',
-                     'm7': 'Aeolian',
-                     'm7-5': 'Locrian',
-                     'dim7': 'HMinor7',
-                     'sus2': 'Ionian',
-                     'sus4': 'Ionian',
-                     '6': 'Ionian',
-                     '9': 'Mixolydian'}
+CHORD_TO_SCALE = {'aug': 'HMinor',
+                  '': 'Ionian',
+                  'm': 'Aeolian',
+                  'dim': 'Locrian',
+                  'M7+5': 'HMinor3',
+                  'M7': 'Ionian',
+                  '7': 'Mixolydian',
+                  'mM7': 'HMinor',
+                  'm7': 'Aeolian',
+                  'm7-5': 'Locrian',
+                  'dim7': 'HMinor7',
+                  'sus2': 'Ionian',
+                  'sus4': 'Ionian',
+                  '6': 'Ionian',
+                  '9': 'Mixolydian'}
 
 # 用于从音阶构造和弦
-CHORD_TYPE_CLST = {'aug': [0, 2, 4],
+CHORD_TO_STEPS = {'aug': [0, 2, 4],
                    '': [0, 2, 4],
                    'm': [0, 2, 4],
                    'dim': [0, 2, 4],
@@ -66,6 +65,16 @@ CHORD_TYPE_CLST = {'aug': [0, 2, 4],
                    '6': [0, 2, 4, 5],
                    '9': [0, 2, 4, 6, 1]}
 
+# 用于查找张力音
+TENSIONS = {'': [[], None],
+            '9': [[1], 0],
+            'b9': [[1], -1],
+            '#9': [[1], 1],
+            '11': [[3], 0],
+            '#11': [[3], 1],
+            '13': [[5], 0],
+            'b13': [[5], -1]}
+
 # 半音音阶 triples
 CHROMATIC = [[0, 0, -1],
              [0, 1, -1],
@@ -79,6 +88,8 @@ CHROMATIC = [[0, 0, -1],
              [9, 0, -1],
              [11, -1, -1],
              [11, 0, -1]]
+
+''' for midi '''
 
 # ADD2 鼓的 MIDI 映射
 ADD2_NOTE_NAMES = ['---', '---', '---', 'Ride 2 CCPos Shaft<->Tip', 'Ride 1 CCPos Shaft<->Tip', 'Snare CCPos Closed (Br)', 'Snare CCPos Op<->Sha', 'CC HiHat Shaft',
@@ -101,3 +112,17 @@ ADD2_NOTE_NAMES = ['---', '---', '---', 'Ride 2 CCPos Shaft<->Tip', 'Ride 1 CCPo
 
 # AGTC 的 MIDI 映射
 AGTC_NOTE_NAMES = [0]*128
+
+# CC 名称列表
+CC_NAMES = [f'cc {cc}' for cc in range(128)]
+use_vocaloid = False
+if use_vocaloid:
+    CC_NAMES[11] = 'DYN'
+    CC_NAMES[17] = 'BRE'
+    CC_NAMES[74] = 'BRI'
+    CC_NAMES[18] = 'CLE'
+    CC_NAMES[19] = 'GEN'
+    CC_NAMES[5] = 'POR'
+    CC_NAMES[80] = 'PBS'
+    CC_NAMES[81] = 'XSY'
+    CC_NAMES[82] = 'GWL'

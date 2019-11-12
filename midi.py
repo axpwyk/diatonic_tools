@@ -5,7 +5,7 @@ import colorsys as cs
 from mido import MidiFile, MidiTrack
 from mido import Message, MetaMessage
 from mido import bpm2tempo, tempo2bpm, tick2second, second2tick
-from consts import ADD2_NOTE_NAMES, AGTC_NOTE_NAMES
+from consts import ADD2_NOTE_NAMES, AGTC_NOTE_NAMES, CC_NAMES
 from pathlib import Path
 
 
@@ -46,19 +46,19 @@ def get_figure(w, h, dpi):
     return ax
 
 
-def rgb_shader(t, t_min=0, t_max=127, color1=(0.94, 0.02, 0.55), color2=(0.11, 0.78, 0.72)):
-    t = (t_max-t)/(t_max-t_min)
+def rgb_shader(t, t_min=0, t_max=1, color1=(0.94, 0.02, 0.55), color2=(0.11, 0.78, 0.72)):
+    t = (t-t_min)/(t_max-t_min)
     color1 = cs.rgb_to_yiq(*color1)
     color2 = cs.rgb_to_yiq(*color2)
-    return cs.yiq_to_rgb(*[t * c2 + (1-t) * c1 for (c1, c2) in zip(color1, color2)])
+    return cs.yiq_to_rgb(*[t * c2 + (1.00-t) * c1 for (c1, c2) in zip(color1, color2)])
 
 
-def hsv_shader(t, t_min=0, t_max=15, color1=(0.00, 0.80, 0.75), color2=(1.00, 0.80, 0.75)):
-    t = (t_max-t)/(t_max-t_min)
-    return cs.hsv_to_rgb(*[t * c2 + (1-t) * c1 for (c1, c2) in zip(color1, color2)])
+def hsv_shader(t, t_min=0, t_max=1, color1=(0.00, 0.80, 0.75), color2=(1.00, 0.80, 0.75)):
+    t = (t-t_min)/(t_max-t_min)
+    return cs.hsv_to_rgb(*[t * c2 + (1.00-t) * c1 for (c1, c2) in zip(color1, color2)])
 
 
-def const_shader(t, t_min=0, t_max=1, color=(1.0, 0.0, 0.0)):
+def cst_shader(t, t_min=0, t_max=1, color=(1.00, 0.00, 0.00)):
     return color
 
 
@@ -103,17 +103,23 @@ def track2msglist(track):
     msglist = []
     cur_tick = 0
     cur_notes = []
+    cur_lyrics = []
     for msg in track:
         # Tick accumulation. Find the current tick and record it as time1 or edt.
         cur_tick += msg['time']
-        if msg['type'] == 'note_on':
+        if msg['type'] == 'note_on' and msg['velocity'] > 0:
             # Put a temp note into cur_notes every time meets a 'note_on' message.
-            cur_notes.append({'type': 'note', 'time1': cur_tick, 'time2': None,
-                              'note': msg['note'], 'velocity_on': msg['velocity'], 'velocity_off': None, 'channel': msg['channel']})
-        elif msg['type'] == 'note_off':
-            idx = [note['note'] for note in cur_notes].index(msg['note'])
+            cur_notes.append({'type': 'note', 'time1': cur_tick, 'time2': None, 'note': msg['note'],
+                              'velocity_on': msg['velocity'], 'velocity_off': None, 'channel': msg['channel'], 'lyric': None})
+        elif msg['type'] == 'lyrics':
+            cur_lyrics.append(msg['text'])
+        elif msg['type'] == 'note_off' or (msg['type'] == 'note_on' and msg['velocity'] < 1):
+            # idx = [note['note'] for note in cur_notes].index(msg['note'])
+            idx = 0
             cur_notes[idx]['time2'] = cur_tick - cur_notes[idx]['time1']
             cur_notes[idx]['velocity_off'] = msg['velocity']
+            if cur_lyrics != []:
+                cur_notes[idx]['lyric'] = cur_lyrics.pop(0)
             cur_note = cur_notes.pop(idx)
             msglist.append(cur_note)
         else:
@@ -123,7 +129,7 @@ def track2msglist(track):
 
 
 def midi2sheet(filename):
-    mid = MidiFile(filename)
+    mid = MidiFile(Path(filename))
     ticks_per_beat = mid.ticks_per_beat
     total_time = mid.length
 
@@ -149,8 +155,8 @@ def sheet2midi(sheet, savepath):
 ''' utilities for sheet '''
 
 
-def max_tick(sheet):
-    # return max tick of all tracks
+def max_ticks(sheet):
+    # return max ticks of all tracks
     ticks = []
     for msglist in sheet:
         ticks_ = [0]
@@ -160,16 +166,16 @@ def max_tick(sheet):
             else:
                 ticks_.append(msg['time'])
         ticks.append(max(ticks_))
-    return max(ticks)
+    return ticks
 
 
-def note2label(note, type='piano', show_group=True):
+def note2label(note, type='piano', show_group=True, mode='b'):
     if type == 'piano':
         modes = {'b': ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
                  '#': ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
                  '2': ['b7', '7', '1', '#1', '2', 'b3', '3', '4', '#4', '5', '#5', '6'],
                  '7b': ['2', 'b3', '3', '4', '#4', '5', '#5', '6', 'b7', '7', '1', '#1']}
-        note_names = modes['b']
+        note_names = modes[mode]
         if show_group:
             return f'[{note}]{note_names[note%12]}{note//12-2}'
         else:
@@ -196,7 +202,7 @@ class Pianoroll(object):
         # [01] get data
         self._sheet = sheet
         self._ticks_per_beat = ticks_per_beat
-        self._max_tick = max_tick(sheet)
+        self._max_ticks = max_ticks(sheet)
 
         self._pianoroll_exists = False
 
@@ -221,6 +227,9 @@ class Pianoroll(object):
         # [08] set default track colors
         self._set_track_colors()
 
+        # [09] get lyrics
+        self._get_lyrics()
+
     def _get_notes(self):
         self._notes = [[msg for msg in msglist if msg['type'] == 'note'] for msglist in self._sheet]
         # sort by channels, not tracks
@@ -244,7 +253,7 @@ class Pianoroll(object):
         self._time_signatures = [msg for msg in sum(self._sheet, []) if msg['type'] == 'time_signature']
         self._time_signatures.sort(key=lambda msg: msg['time'])
 
-        if self._time_signatures == []:
+        if self._time_signatures == [] or self._time_signatures[0]['time'] > 0:
             self._time_signatures.insert(0, dict(type='time_signature', numerator=4, denominator=4, clocks_per_click=24, notated_32nd_notes_per_beat=8, time=0))
 
     def _get_control_changes(self):
@@ -268,10 +277,14 @@ class Pianoroll(object):
         n_track = len(self._sheet)
         self._track_colors = [hsv_shader(t, 0, n_track+1) for t in range(n_track)]
 
+    def _get_lyrics(self):
+        self._lyrics = [[msg for msg in msglist if msg['type'] == 'lyrics'] for msglist in self._sheet]
+        _ = [msglist.sort(key=lambda msg: msg['time']) for msglist in self._lyrics]
+
     # ---------------------------------------------------------------------------------------------------- #
 
     def use_default_intervals(self):
-        self._time_interval = (0, self._max_tick)
+        self._time_interval = (0, max(self._max_ticks))
         self._note_interval = (48, 72)
         self._pianoroll_exists = False
         plt.clf()
@@ -457,7 +470,8 @@ class Pianoroll(object):
                 return lam * (self._note_interval[0] - bottom_lane_h) + (1 - lam) * self._note_interval[0]
             sts_x = [st[0] for st in sts]
             sts_y = [_bpm2vel(tempo2bpm(st[1])) for st in sts]
-            plt.plot(sts_x, sts_y, color='#ee5511', lw=1.0, solid_capstyle='butt', solid_joinstyle='bevel', zorder=2.9, label='tempo')
+            plot = plt.step(sts_x, sts_y, color='#ee5511', lw=1.0, solid_capstyle='butt', solid_joinstyle='bevel', where='post', zorder=2.9, label='tempo')
+            _ = [p.set_clip_path(bl_rect) for p in plot]
 
         ''' [03] draw time_signatures '''
 
@@ -487,11 +501,11 @@ class Pianoroll(object):
         notes_rearranged = notes_full + notes_left + notes_right
         # getting rectangles of notes for pianoroll
         notes_full_rects = [plt.Rectangle((note['time1'], note['note']), note['time2'], 1,
-                                          color=shader(note['velocity_on']), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_full]
+                                          color=shader(note['velocity_on'], 0, 127), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_full]
         notes_left_rects = [plt.Rectangle((self._time_interval[0], note['note']), note['time2'] - self._time_interval[0] + note['time1'], 1,
-                                          color=shader(note['velocity_on']), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_left]
+                                          color=shader(note['velocity_on'], 0, 127), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_left]
         notes_right_rects = [plt.Rectangle((note['time1'], note['note']), self._time_interval[1] - note['time1'], 1,
-                                           color=shader(note['velocity_on']), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_right]
+                                           color=shader(note['velocity_on'], 0, 127), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_right]
         notes_rects = notes_full_rects + notes_left_rects + notes_right_rects
 
         ''' draw notes '''
@@ -509,12 +523,17 @@ class Pianoroll(object):
                       [note['note']+1, note['note']+1, note['note'], note['note']],
                       color='#123456', lw=0.5, solid_capstyle='round', alpha=alpha, zorder=5+0.001*(track+0.2)) for note in notes_right]
         # note label
-        _ = [plt.annotate(note2label(note['note'], type=type, show_group=False), (note['time1'] + self._ticks_per_beat // 16, note['note'] + 0.5),
-                          color='#ffffff', va='center', fontsize=self._fontsize, alpha=alpha, zorder=5 + 0.001 * (track + 0.1),
-                          clip_path=notes_rects[k]) for (k, note) in enumerate(notes_rearranged)]
+        if type == 'lyric':
+            _ = [plt.annotate(note['lyric'], (note['time1'] + self._ticks_per_beat // 16, note['note'] + 0.5),
+                              color='#ffffff', va='center', fontsize=self._fontsize, alpha=alpha, zorder=5 + 0.001 * (track + 0.1),
+                              clip_path=notes_rects[k]) for (k, note) in enumerate(notes_rearranged)]
+        else:
+            _ = [plt.annotate(note2label(note['note'], type=type, show_group=False), (note['time1'] + self._ticks_per_beat // 16, note['note'] + 0.5),
+                              color='#ffffff', va='center', fontsize=self._fontsize, alpha=alpha, zorder=5 + 0.001 * (track + 0.1),
+                              clip_path=notes_rects[k]) for (k, note) in enumerate(notes_rearranged)]
         # on-velocity
         notes_full_vels = [plt.Line2D([note['time1'], note['time1']], [self._bottom, self._bottom + note['velocity_on'] / 127 * self._bottom_lane_h],
-                                      color=shader(note['velocity_on']), lw=1.0, solid_capstyle='butt', alpha=alpha, zorder=3+0.001*track,
+                                      color=shader(note['velocity_on'], 0, 127), lw=1.0, solid_capstyle='butt', alpha=alpha, zorder=3+0.001*track,
                                       marker='x', markevery=[1], markersize=self._markersize, mew=1) for note in notes_full + notes_right]
         _ = [ax.add_line(vel) for vel in notes_full_vels]
         _ = [vel.set_clip_path(self._bl_rect) for vel in notes_full_vels]
@@ -527,9 +546,9 @@ class Pianoroll(object):
         if color_scheme == 'velocity':
             _ = [self._draw_notes(t, rgb_shader, type, alpha, lyric) for t in tracks]
         elif color_scheme == 'track':
-            _ = [self._draw_notes(t, lambda c: const_shader(c, 0, 1, self._track_colors[t]), type, alpha, lyric) for t in tracks]
+            _ = [self._draw_notes(t, lambda x, x_min, x_max: cst_shader(x, x_min, x_max, self._track_colors[t]), type, alpha, lyric) for t in tracks]
 
-    def draw_control_changes(self, track=0, controls=(64, ), shader=hsv_shader, plot_type='piecewise', alpha=1.0):
+    def draw_control_changes(self, track=0, controls=(64, ), plot_type='stair', alpha=1.0):
         """ draw control_changes """
 
         ''' pianoroll checking '''
@@ -558,19 +577,22 @@ class Pianoroll(object):
         for i, control in enumerate(controls):
             ccs_stts[control] = [cc[0] for cc in ccs[control]]
             ccs_values[control] = [cc[1] / 127 * length(*self._note_interval) + self._note_interval[0] for cc in ccs[control]]
-            print(ccs[control])
+
+            color1 = cs.rgb_to_hsv(*self._track_colors[track])
+            color2 = [color1[0], color1[1]/10, color1[2]/10]
+            color = hsv_shader(i, 0, len(controls), color1, color2)
             if plot_type == 'piecewise':
-                plot = plt.plot(ccs_stts[control], ccs_values[control], color=shader(i, 1, len(controls) + 1), alpha=alpha,
+                plot = plt.plot(ccs_stts[control], ccs_values[control], color=color, alpha=alpha,
                                 lw=0.75, ls='--', dash_capstyle='butt', dash_joinstyle='bevel', zorder=2.9+0.001*(track+0.1*control),
-                                clip_path=self._main_rect, label=f'[track {track}] cc{control}')
+                                clip_path=self._main_rect, label=f'[track {track}] {CC_NAMES[control]}')
                 _ = [p.set_clip_path(self._main_rect) for p in plot]
             elif plot_type == 'stair':
-                plot = plt.step(ccs_stts[control], ccs_values[control], color=shader(i, 1, len(controls) + 1), alpha=alpha,
+                plot = plt.step(ccs_stts[control], ccs_values[control], color=color, alpha=alpha,
                                 lw=0.75, ls='--', dash_capstyle='butt', dash_joinstyle='bevel', zorder=2.9+0.001*(track+0.1*control),
-                                clip_path=self._main_rect, label=f'[track {track}] cc{control}')
+                                where='post', clip_path=self._main_rect, label=f'[track {track}] {CC_NAMES[control]}')
                 _ = [p.set_clip_path(self._main_rect) for p in plot]
 
-    def _draw_pitchwheels(self, track=0, shader=const_shader, plot_type='piecewise', alpha=1.0):
+    def _draw_pitchwheels(self, track=0, shader=cst_shader, plot_type='stair', alpha=1.0):
         """ draw pitchwheels """
 
         ''' pianoroll checking '''
@@ -597,12 +619,12 @@ class Pianoroll(object):
             _ = [p.set_clip_path(self._main_rect) for p in plot]
         elif plot_type == 'stair':
             plot = plt.step(pws_stts, pws_pits, color=shader(0), lw=1.0, solid_capstyle='butt', solid_joinstyle='bevel', alpha=alpha,
-                            zorder=2.9+0.001*track, label=f'[track {track}] pitchwheel')
+                            where='post', zorder=2.9+0.001*track, label=f'[track {track}] pitchwheel')
             _ = [p.set_clip_path(self._main_rect) for p in plot]
         else: pass
 
-    def draw_pitchwheels(self, tracks=(0,), plot_type='piecewise', alpha=1.0):
-        _ = [self._draw_pitchwheels(t, lambda c: const_shader(c, 0, 1, self._track_colors[t]), plot_type, alpha) for t in tracks]
+    def draw_pitchwheels(self, tracks=(0,), plot_type='stair', alpha=1.0):
+        _ = [self._draw_pitchwheels(t, lambda x: cst_shader(x, 0, 1, self._track_colors[t]), plot_type, alpha) for t in tracks]
 
     def show_legends(self):
         l = plt.legend(loc='lower right', fontsize=self._fontsize)
@@ -633,29 +655,42 @@ class Pianoroll(object):
 
     # ---------------------------------------------------------------------------------------------------- #
 
-    def get_max_tick(self):
-        return self._max_tick
+    def get_tick_range_s(self, track):
+        # get tick range (single track)
+        return 0, self._max_ticks[track]
 
-    def get_global_note_range(self, track):
+    def get_tick_range_m(self, tracks):
+        # get tick range (multiple track)
+        return 0, max([self._max_ticks[track] for track in tracks])
+
+    def get_tick_range_a(self):
+        # get tick range (all tracks)
+        return 0, max(self._max_ticks)
+
+    def get_note_range_sg(self, track):
+        # get note range (single track, global)
         notes = [note['note'] for note in self._notes[track]]
         note_min = min(notes) - 1 if notes != [] else 48
         note_max = max(notes) + 2 if notes != [] else 72
         return note_min, note_max
 
-    def get_global_note_ranges(self, tracks):
-        ranges = [self.get_global_note_range(track) for track in tracks]
+    def get_note_range_mg(self, tracks):
+        # get note range (multiple track, global)
+        ranges = [self.get_note_range_sg(track) for track in tracks]
         note_min = min([r[0] for r in ranges])
         note_max = max([r[1] for r in ranges])
         return note_min, note_max
 
-    def get_local_note_range(self, track):
+    def get_note_range_sl(self, track):
+        # get note range (single track, local)
         notes = [note['note'] for note in self._notes[track] if inrange(note['time1'], *self._time_interval) or inrange(note['time1'] + note['time2'], *self._time_interval)]
         note_min = min(notes) - 1 if notes != [] else 48
         note_max = max(notes) + 2 if notes != [] else 72
         return note_min, note_max
 
-    def get_local_note_ranges(self, tracks):
-        ranges = [self.get_local_note_range(track) for track in tracks]
+    def get_note_range_ml(self, tracks):
+        # get note range (multiple track, local)
+        ranges = [self.get_note_range_sl(track) for track in tracks]
         note_min = min([r[0] for r in ranges])
         note_max = max([r[1] for r in ranges])
         return note_min, note_max
