@@ -13,7 +13,7 @@ for i in range(21):
         chord, chord_type = s.get_chord_from_steps([k % 7 for k in [0 + t, 2 + t, 4 + t, 6 + t, 8 + t]])
         chord_name = triple_to_note_name(chord[0])
 
-        cprint('{:8s}'.format(chord_name+chord_type), CHORD_COLORS_CONSOLE[chord_type], end='')
+        cprint('{:8s}'.format(chord_name+chord_type), CHORD_COLOR_CONSOLE[chord_type], end='')
     print(']', end='')
     print()
 

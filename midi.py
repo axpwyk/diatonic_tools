@@ -418,7 +418,7 @@ class Pianoroll(object):
         self._main_rect = main_rect
         ax.add_patch(main_rect)
         # top lane rectangle
-        tl_rect = plt.Rectangle((left, self._note_interval[1]), right - left, 3, facecolor='#ffffff', lw=0.0, zorder=0)
+        tl_rect = plt.Rectangle((left, self._note_interval[1]), right - left, top_lane_h, facecolor='#ffffff', lw=0.0, zorder=0)
         ax.add_patch(tl_rect)
         # background keys
         white_notes = [note for note in range(*self._note_interval) if note % 12 in [0, 2, 4, 5, 7, 9, 11]]
@@ -697,3 +697,6 @@ class Pianoroll(object):
 
     def get_used_controls(self, track):
         return self._used_controls[track]
+
+    def get_set_tempos(self):
+        return [[msg['time'], msg['tempo']] for msg in self._set_tempos]

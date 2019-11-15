@@ -2,205 +2,186 @@ import re
 from consts import *
 
 
-''' 用于解析音名、和弦名和调性名称的正则表达式 '''
+''' note name, interval_name, mode name, chord name, tension name parsers '''
 
 
 def note_name_parser(note_name):
-    search_obj = re.search(
-        r'(?P<name>[ABCDEFG])(?P<acci>[b#]*)(?P<group>-?\d*)', note_name)
+    # examples: 'C#3', 'Bb1', 'Fbb3', etc.
+    search_obj = re.search(r'(?P<note_name>[ABCDEFG])(?P<accidental_str>[b#]*)(?P<group_str>-?\d*)', note_name)
+    return search_obj.groupdict()
+
+
+def interval_name_parser(interval_name):
+    # examples: 'm2', 'M3', 'P4', etc.
+    search_obj = re.search(r'(?P<neg_str>-?)(?P<type>[dmPMA])(?P<degree_str>[\d]*)', interval_name)
+    return search_obj.groupdict()
+
+
+def mode_name_parser(mode_name):
+    # examples: 'C Ionian', 'Bb Dorian', etc.
+    search_obj = re.search(r'(?P<key_name>[ABCDEFG][b#]*-?\d*) ?(?P<mode_type>\w+)', mode_name)
     return search_obj.groupdict()
 
 
 def chord_name_parser(chord_name):
-    search_obj = re.search(
-        r'(?P<root_name>[ABCDEFG][b#]*)*(?P<chord_type>\w*-?\d?)(?P<tension_names>\([^ac-z]*\))*/?(?P<bass_name>[ABCDEFG][b#]*)*', chord_name)
+    # examples: 'CM7', 'Dm7(9, 11, 13)', 'Bm7-5/F', etc.
+    search_obj = re.search(r'(?P<root_name>[ABCDEFG][b#]*)*(?P<chord_type>\w*-?\d?)(?P<tension_name>\([^ac-z]*\))*/?(?P<bass_name>[ABCDEFG][b#]*)*', chord_name)
     return search_obj.groupdict()
 
 
-def tension_names_parser(tension_names):
-    return re.findall(r'[#b]*\d{1,2}', tension_names)
+def tension_name_parser(tension_name):
+    # examples: '(9)', '(b9, #11)', '(9, 11, 13)', '(9, 13)', etc.
+    return re.findall(r'[#b]*\d{1,2}', tension_name)
 
 
-def mode_name_parser(mode_name):
-    search_obj = re.search(r'(?P<key_name>[ABCDEFG][b#]*) ?(?P<mode_name>\w+)', mode_name)
-    return search_obj.groupdict()
+''' fancy music theory classes '''
 
 
-''' 常用转换函数 '''
+class Note(object):
+    def __init__(self, note=0, accidental=0, group=0):
+        # default: 'C0'
+        self._note = note
+        self._accidental = accidental
+        self._group = group
+
+    def __repr__(self):
+        return self.to_name()
+
+    def __str__(self):
+        return self.to_name()
+
+    def __sub__(self, other):
+        if isinstance(other, Note):
+            step1 = NATURAL_NOTES.index(self._note) + self._group * len(NATURAL_NOTES)
+            step2 = NATURAL_NOTES.index(other.get_note()) + other.get_group() * len(NATURAL_NOTES)
+            return Interval(abs(self) - abs(other), step1 - step2)
+        if isinstance(other, Interval):
+            return self + (-other)
+        else:
+            raise TypeError('ClassError: `Note` could only subtract a `Note` or an `Interval`!')
+
+    def __add__(self, other):
+        if isinstance(other, Interval):
+            delta_note = other.get_delta_note()
+            delta_step = other.get_delta_step()
+            step = NATURAL_NOTES.index(self._note) + delta_step
+            note = NATURAL_NOTES[step % len(NATURAL_NOTES)]
+            group = self._group + step // len(NATURAL_NOTES)
+            accidental = abs(self) + delta_note - note - len(NOTE_NAMES) * group
+            return Note(note, accidental, group)
+        else:
+            raise TypeError('ClassError: `Note` could only add an `Interval`!')
+
+    def __abs__(self):
+        return self._note + self._accidental + self._group * len(NOTE_NAMES)
+
+    def get_note(self):
+        return self._note
+
+    def get_accidental(self):
+        return self._accidental
+
+    def get_group(self):
+        return self._group
+
+    def from_name(self, note_name):
+        par = note_name_parser(note_name)
+
+        self._note = NOTE_NAMES.index(par['note_name'])
+
+        accidental = 0
+        accidental += par['accidental_str'].count('#')
+        accidental -= par['accidental_str'].count('b')
+        self._accidental = accidental
+
+        if par['group_str']:
+            self._group = eval(par['group_str'])
+        else:
+            self._group = 0
+
+        return self
+
+    def to_name(self):
+        return NOTE_NAMES[self._note] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b') + f'{self._group}'
+
+    def add_sharp(self):
+        self._accidental += 1
+        return self
+
+    def add_flat(self):
+        self._accidental -= 1
+        return self
 
 
-def note_name_to_triple(note_name):
-    """ 把音符名称（note_name）转换为三元组（triple）
+class Interval(object):
+    def __init__(self, delta_note=0, delta_step=0):
+        # default: 'P1'
+        self._delta_note = delta_note
+        self._delta_step = delta_step
 
-    输入：
-        note_name   音符名称 | python strings | 'Eb3', 'F#', 'G4', etc.
+    def __repr__(self):
+        return self.to_name()
 
-    输出：
-        triple      三元组 | python list | [name, acci, group]
+    def __str__(self):
+        return self.to_name()
 
-    备注：
-        name        音名 | integer | range {0, 1, 2, 3, ..., 11}
-        acci        变化 | integer | range {-1, 0, 1}
-        group       音组 | integer | range {..., -1, 0, 1, 2, ...}
-    """
-    par = note_name_parser(note_name)
-    name = NOTES.index(par['name'])
+    def __add__(self, other):
+        if isinstance(other, Note):
+            return other + self
+        elif isinstance(other, Interval):
+            return Interval(self._delta_note + other.get_delta_note(), self._delta_step + other.get_delta_step())
+        else:
+            raise TypeError('ClassError: `Interval` could only add a `Note` or an `Interval`!')
 
-    acci = 0
-    acci += par['acci'].count('#')
-    acci -= par['acci'].count('b')
+    def __sub__(self, other):
+        if isinstance(other, Interval):
+            return Interval(self._delta_note - other.get_delta_note(), self._delta_step - other.get_delta_step())
+        else:
+            raise TypeError('ClassError: `Interval` could only subtract an `Interval`!')
 
-    if par['group']:
-        group = eval(par['group'])
-    else:
-        group = -1
-    return [name, acci, group]
+    def __neg__(self):
+        return Interval(-self._delta_note, -self._delta_step)
 
+    def get_delta_note(self):
+        return self._delta_note
 
-def triple_to_note_name(triple):
-    note_name = ''
-    note_name += NOTES[triple[0] % 12]
+    def get_delta_step(self):
+        return self._delta_step
 
-    if triple[1] > 0:
-        note_name += '#' * triple[1]
-    elif triple[1] < 0:
-        note_name += 'b' * (-triple[1])
-    else:
-        pass
+    def from_name(self, interval_name):
+        par = interval_name_parser(interval_name)
+        np = -1 if par['neg_str'] else 1
+        type = par['type']
+        degree = eval(par['degree_str'])
+        delta_step = degree - 1
+        delta_note = [INTERVAL_TYPES_k[delta_step % len(NATURAL_NOTES)] for INTERVAL_TYPES_k in INTERVAL_TYPES].index(type)
+        delta_note = delta_note + delta_step // len(NATURAL_NOTES) * len(NOTE_NAMES)
+        self._delta_note, self._delta_step = np * delta_note, np * delta_step
+        return self
 
-    if triple[2] >= 0:
-        note_name += '{}'.format(triple[2])
-    return note_name
-
-
-def triples_to_note_names(triples):
-    return [triple_to_note_name(t) for t in triples]
-
-
-def triple_to_note_number(triple):
-    # note_number represents for midi note number
-    return triple[0] + triple[1] + triple[2] * 12
-
-
-def triples_to_note_numbers(triples):
-    return [triple_to_note_number(t) for t in triples]
-
-
-def chord_name_to_triples(chord_name='CM7'):
-    par = chord_name_parser(chord_name)
-    root_name = par['root_name']
-    chord_type = par['chord_type']
-    tension_names = par['tension_names']
-    bass_name = par['bass_name']
-
-    scale_type = CHORD_TO_SCALE[chord_type]
-    scale_steps = CHORD_TO_STEPS[chord_type]
-    s1 = Mode(root_name + ' ' + scale_type)
-    chord_triples = s1.get_chord_from_steps(scale_steps)[0]
-
-    s2 = Mode(root_name + ' ' + 'Mixolydian')
-    tension_triples = []
-    if tension_names:
-        for t in tension_names_parser(tension_names):
-            tmp_triple = s2.get_triples_from_steps(TENSIONS[t][0])[0]
-            tmp_triple[1] = tmp_triple[1] + TENSIONS[t][1]
-            tension_triples.append(tmp_triple)
-
-    return chord_triples + tension_triples
-
-
-''' 音乐理论函数 '''
-
-
-def triple_add5(triple):
-    # natural_attractor = [0, 2, 4, 5, 7, 9, 11]
-    # diatonic 的特性是升号只在 7 加五度时出现在 4 上成为 #4
-    target = triple[0] + 7
-    if triple[0] == 11:
-        return [target % 12 - 1, triple[1] + 1, triple[2] + target // 12]
-    else:
-        return [target % 12, triple[1], triple[2] + target // 12]
-
-
-def triple_sub5(triple):
-    # natural_attractor = [0, 2, 4, 5, 7, 9, 11]
-    # diatonic 的特性是降号只在 4 减五度时出现在 7 上成为 b7
-    target = triple[0] - 7
-    if triple[0] == 5:
-        return [target % 12 + 1, triple[1] - 1, triple[2] - target // 12]
-    else:
-        return [target % 12, triple[1], triple[2] - target // 12]
+    def to_name(self):
+        type = INTERVAL_TYPES[abs(self._delta_note) % len(NOTE_NAMES)][abs(self._delta_step) % len(NATURAL_NOTES)]
+        degree = f'{abs(self._delta_step)+1}'
+        return type + degree if self._delta_step >= 0 else '-' + type + degree
 
 
 class Mode(object):
-    def __init__(self, mode='C Ionian'):
-        par = mode_name_parser(mode)
-        self.key = note_name_to_triple(par['key_name'])
-        self.mode = MODES.index(par['mode_name'])
-        self._build_scale()
+    """ Mode is a list of Notes """
+    def __init__(self, mode_name='C Ionian'):
+        par = mode_name_parser(mode_name)
+        key = Note().from_name(par['key_name'])
+        intervals = MODE_INTERVALS[par['mode_type']]
+        self._notes = [key]
+        for interval in intervals:
+            self._notes.append(self._notes[-1] + Interval().from_name(interval))
 
-    def _build_scale(self):
-        if self.mode < 7:
-            # 生成中心音，并按照 self.mode 进行向下和向上的五度相生
-            self.scale = [self.key]
-            for _ in range(self.mode):
-                self.scale.insert(0, triple_sub5(self.scale[0]))
-            for _ in range(6 - self.mode):
-                self.scale.append(triple_add5(self.scale[-1]))
-            # 音组归为 -1，排序使得主音在列表首位
-            self.scale = [[s[0], s[1], -1] for s in self.scale]
-            self.scale.sort()
-            key7 = [0, 2, 4, 5, 7, 9, 11].index(self.key[0])
-            self.scale = self.scale[key7:] + self.scale[:key7]
+    def __repr__(self):
+        return f'{self._notes}'
 
-        else:
-            # 以 Aeolian 为基础调式，后面添加临时升降号变为和声/旋律小调
-            base_mode = 4
-            self.scale = [self.key]
-            for _ in range(base_mode):
-                self.scale.insert(0, triple_sub5(self.scale[0]))
-            for _ in range(6 - base_mode):
-                self.scale.append(triple_add5(self.scale[-1]))
-            # 音组归为 -1，排序使得主音在列表首位
-            self.scale = [[s[0], s[1], -1] for s in self.scale]
-            self.scale.sort()
-            key7 = [0, 2, 4, 5, 7, 9, 11].index(self.key[0])
-            self.scale = self.scale[key7:] + self.scale[:key7]
-            # 添加临时升降号
-            if self.mode == 7:
-                self.scale[-1][1] += 1
-            elif self.mode == 8:
-                self.scale[-1][1] += 1
-                self.scale[-2][1] += 1
+    def __str__(self):
+        return f'{self._notes}'
 
-    def add_sharp(self):
-        pos = (self.mode * 3) % 7
-        self.scale[pos][1] += 1
-        self.key = self.scale[0]
-        self.mode = (self.mode - 1) % 7
 
-    def add_flat(self):
-        pos = (3 + self.mode * 3) % 7
-        self.scale[pos][1] -= 1
-        self.key = self.scale[0]
-        self.mode = (self.mode + 1) % 7
-
-    def get_mode_name(self):
-        return triple_to_note_name(self.key) + ' ' + MODES[self.mode]
-
-    def get_triples_from_steps(self, scale_steps):
-        triples = [self.scale[i] for i in scale_steps]
-        return triples
-
-    def get_chord_from_steps(self, scale_steps, group=-1):
-        # root 取值为 {0, 1, 2, 3, 4, 5, 6}，表示第几个音级作为根音
-        chord = [self.scale[i] for i in scale_steps]
-        # 把 note number 找到（消去升降号）
-        chord_nn = [t[0] + t[1] for t in chord]
-        # 求差，推断和弦结构
-        diff = [(chord_nn[i + 1] - chord_nn[i]) % 12 for i in range(len(chord_nn) - 1)]
-        diff_s = ''
-        for d in diff:
-            diff_s += str(d)
-        # 返回和弦 triples 和从 CHORDS 中得到的和弦结构名
-        return chord, TRIPLE_TO_CHORD[diff_s]
+class Chord(object):
+    def __init__(self, chord_name):
+        pass
