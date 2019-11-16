@@ -20,7 +20,7 @@ N = len(triples)
 step = 0.4
 offsets = np.arange(-(N/2-1/2)*step, (N/2-1/2)*step+step, step)
 for i in range(N):
-    g.set_pressed_from_triples(triples[i])
+    g.set_notes(triples[i])
     g.draw_guitar_v2(height=6, hue=0.05+0.10*i, low=-1, high=12, finger_offset=offsets[i], radius_offset=-6)
 
 # 输出

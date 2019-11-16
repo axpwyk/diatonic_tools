@@ -2,7 +2,7 @@ import re
 from consts import *
 
 
-''' note name, interval_name, mode name, chord name, tension name parsers '''
+''' note_name, interval_name, mode_name, chord_name, tension_type parsers '''
 
 
 def note_name_parser(note_name):
@@ -179,7 +179,7 @@ class Interval(object):
 
 
 class Notes(object):
-    """ Notes is a list of Note """
+    """ Notes is a list of Note, also the base of Mode and Chord """
     def __init__(self, notes=None):
         self._notes = notes
 
@@ -201,8 +201,10 @@ class Mode(Notes):
         key = Note(par['key_name'])
         intervals = MODE_INTERVALS[par['mode_type']]
         self._notes = [key]
-        for interval in intervals:
+        self._steps = [0]
+        for step, interval in enumerate(intervals):
             self._notes.append(self._notes[-1] + Interval(interval))
+            self._steps.append(step + 1)
 
 
 class Chord(Notes):
@@ -211,18 +213,26 @@ class Chord(Notes):
         super().__init__()
         par = chord_name_parser(chord_name)
         print(par)
-        root = Note(par['root_name'])
+        # bass
         if par['bass_name']:
             bass = Note(par['bass_name'])
             self._notes = [bass - Interval('P8')]
+            self._br357t = ['B']
         else:
             self._notes = []
+            self._br357t = []
+        # r357
+        root = Note(par['root_name'])
         mode = Mode(par['root_name'] + ' ' + CHORD_TYPE_TO_MODE_TYPE[par['chord_type']])
         mode_notes = mode.get_notes()
         mode_steps = CHORD_TYPE_TO_STEPS[par['chord_type']]
-        self._notes = self._notes + [mode_notes[step] for step in mode_steps]
+        self._notes.extend([mode_notes[step] for step in mode_steps])
+        self._br357t.extend('R')
+        self._br357t.extend([f'{step + 1}' for step in mode_steps[1:]])
+        # tensions
         if par['tension_type']:
             tension_names = tension_type_parser(par['tension_type'])
             tension_intervals = [TENSION_NAME_TO_INTERVAL[tension_name] for tension_name in tension_names]
             tensions = [root + Interval(interval) for interval in tension_intervals]
-            self._notes = self._notes + tensions
+            self._notes.extend(tensions)
+            self._br357t.extend(tension_names)
