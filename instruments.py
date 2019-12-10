@@ -113,6 +113,8 @@ class Guitar(object):
                     current_triple = [current_note, current_accidental, current_group]
                     _plot_note(i, j, Note().set(*current_triple).__str__() +f'({self.br357t[i, j]})', cs.hsv_to_rgb(hue, 0.65, 0.85))
 
+        return width, height
+
     def add_notes(self, notes):
         for i, note in enumerate(notes.get_notes()):
             indices = self._fretboard[:, :, 0] == (note.get_note() + note.get_accidental()) % 12

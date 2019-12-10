@@ -700,3 +700,19 @@ class Pianoroll(object):
 
     def get_set_tempos(self):
         return [[msg['time'], msg['tempo']] for msg in self._set_tempos]
+
+    def get_key_frames(self, track, note=36, bpm=164, fps=60):
+        time1s = [tick2second(msg['time1'], self._ticks_per_beat, bpm2tempo(bpm)) for msg in self._notes[track] if msg['note']==note]
+        time2s = [tick2second(2*msg['time2'], self._ticks_per_beat, bpm2tempo(bpm)) for msg in self._notes[track] if msg['note']==note]
+        time3s = [time1+time2 for time1, time2 in zip(time1s, time2s)]
+        vels = [msg['velocity_on'] for msg in self._notes[track] if msg['note']==note]
+
+        ons = [int(time1//(1/fps)) for time1 in time1s]
+        ons.append(-1)
+        offs = [int(time3//(1/fps)) for time3 in time3s]
+        offs.append(-1)
+        print(f'length: {len(ons)} | {ons}')
+        print(f'length: {len(offs)} | {offs}')
+        print(f'length: {len(vels)} | {vels}')
+
+        return ons, offs, vels
