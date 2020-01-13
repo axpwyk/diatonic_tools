@@ -34,13 +34,31 @@ def scatter(*args, **kwargs):
 #     plt.plot(b[:, 0], b[:, 1], color=[i/42, 1-i/42, 1-i/42])
 # plt.savefig('my_mind.svg')
 
-lambdas = np.linspace(0, 1, 100)
-control_points = np.random.rand(4, 2)
-bezier = Bezier(lambdas, control_points)
+# lambdas = np.linspace(0, 1, 100)
+# control_points = np.random.rand(4, 2)
+# bz = Bezier(lambdas, control_points)
+# plot(*bz.get_control_points(0, 50), zorder=0)
+# plot(*bz.get_control_points(1, 50), zorder=1)
+# plot(*bz.get_control_points(2, 50), zorder=2)
+# plot(*bz.get_data(), color='red', zorder=3)
+# scatter(*bz.get_control_points(3, 50), zorder=4)
+# plt.show()
 
-plot(*bezier.get_control_points(0, 50), zorder=0)
-plot(*bezier.get_control_points(1, 50), zorder=1)
-plot(*bezier.get_control_points(2, 50), zorder=2)
-plot(*bezier.get_data(), color='red', zorder=3)
-scatter(*bezier.get_control_points(3, 50), zorder=4)
+lambdas = np.linspace(0, 1, 12000)
+grids = 7
+control_points = np.reshape(np.stack(np.meshgrid(np.linspace(-2, 2, grids, endpoint=True), np.linspace(-2, 2, grids, endpoint=True)), axis=-1), (-1, 2))
+np.random.shuffle(control_points)
+degree = 5
+rotate = np.array([[np.cos(np.deg2rad(degree)), np.sin(np.deg2rad(degree))], [-np.sin(np.deg2rad(degree)), np.cos(np.deg2rad(degree))]])
+control_points_rotated = np.dot(control_points, rotate)
+
+bz = Bezier(lambdas, control_points[:, :2])
+_ = [scatter(*bz.get_control_points(k, 50), color='black', zorder=0) for k in range(1)]
+_ = [scatter(*control_points_rotated.T, color='red', zorder=0) for k in range(1)]
+plot(*bz.get_data(), color='red', zorder=3)
+_ = [plt.text(cp[0]+0.02, cp[1]+0.02, f'{k}', fontdict={'fontsize': 16}) for k, cp in enumerate(control_points)]
+# scatter(*bz.get_control_points(99, 50), zorder=4)
+plt.gca().set_xlim([-2.2, 2.2])
+plt.gca().set_ylim([-2.2, 2.2])
+plt.savefig('../../output/matplotlib/grid_bezier.svg')
 plt.show()

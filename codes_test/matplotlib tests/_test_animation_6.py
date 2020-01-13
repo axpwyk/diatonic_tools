@@ -13,7 +13,7 @@ from movie import *
 fps = 60
 n_frames = 300
 dpi = 300
-resolution = (512, 512)
+resolution = (256, 128)
 
 
 plt.style.use('seaborn-pastel')
@@ -24,16 +24,20 @@ ax = plt.gca(aspect='equal')
 ax.set_xticks([])
 ax.set_yticks([])
 
-n = 512
-t = np.linspace(-2*np.pi, 2*np.pi, n)
-x = 10*np.cos(3*t)
-y = 10*np.sin(4*t)
+n = 9
+# t = np.linspace(-1.5*np.pi, 2.5*np.pi, n)
+# x = 2*np.cos(t)
+# y = 2*np.sin(t)
+x = [0, 1, 1, 0, 0, 0, -1, -1, 0]
+y = [0, 0, 1, 1, 0, -1, -1, 0, 0]
+R = np.array([[np.cos(np.deg2rad(30)), -np.sin(np.deg2rad(30))], [np.sin(np.deg2rad(30)), np.cos(np.deg2rad(30))]])
 xy = np.stack([x, y], axis=-1)
-bc = Bezier(np.linspace(0, 1, 10000), xy)
+xy = np.dot(xy, R)
+bc = Bezier(np.linspace(0, 1, 12000), xy)
 
 lines = [plt.plot(*bc.get_control_points(k, 0), solid_capstyle='round', zorder=0, lw=0.5)[0] for k in range(n)]
-# plt.plot(*bc.get_data(), color='red', solid_capstyle='round', zorder=1, lw=0.5)
-circ = plt.Circle(bc.get_control_points(n-1, 0), 0.01, facecolor='red', zorder=2)
+curve = plt.plot(*bc.get_data(), color='red', solid_capstyle='round', zorder=1, lw=0.5)
+circ = plt.Circle(bc.get_control_points(n-1, 0), 0.02, facecolor='red', zorder=2)
 ax.add_patch(circ)
 
 
@@ -42,12 +46,13 @@ def init():
 
 
 def frame(i):
-    lbd = fancy_motion(i, 0, n_frames, 0, 10000, 'slow-in-out', 0.0)
+    lbd = fancy_motion(i, 0, n_frames, 0, 12000, 'slow-in-out', 3.0)
     _ = [line.set_data(*bc.get_control_points(k, int(lbd))) for k, line in enumerate(lines)]
+    curve[0].set_data(*bc.get_data()[:, :int(lbd)])
     circ.set_center(bc.get_control_points(n-1, int(lbd)))
     return lines + [circ]
 
 
 anim = FuncAnimation(fig, frame, init_func=init, frames=n_frames, blit=True)
-# anim.save('bezier_test_7.gif', writer='imagemagick', codec='png', savefig_kwargs={'transparent': True, 'facecolor': None}, fps=fps)
-anim.save('bezier_test_3.mov', codec='png', savefig_kwargs={'transparent': True, 'facecolor': None}, fps=fps)
+anim.save('../../output/matplotlib/export.gif', writer='imagemagick', codec='png', savefig_kwargs={'transparent': True, 'facecolor': None}, fps=fps)
+# anim.save('../../output/matplotlib/export.mov', codec='png', savefig_kwargs={'transparent': True, 'facecolor': None}, fps=fps)
