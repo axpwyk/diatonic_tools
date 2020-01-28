@@ -84,7 +84,7 @@
 |          可自由添加/删去的 top/bottom lanes           |      |      |
 |                       高层 API                        |      |      |
 |                      main 函数壳                      |      |      |
-|                     样式表的使用                      |      |      |
+|          样式表的使用（可尝试用 json 配置）           |      |      |
 |                 off velocity 向下显示                 |      |      |
 |                鼓谱的菱形 marker 显示                 |      |      |
 |             面向用户的 tick_interval 设置             |      |      |
