@@ -119,6 +119,12 @@ class Note(object):
         self._accidental -= 1
         return self
 
+    def add_oct(self):
+        self._group += 1
+
+    def sub_oct(self):
+        self._group -= 1
+
 
 class Interval(object):
     def __init__(self, interval_name='P1'):

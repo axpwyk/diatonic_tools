@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+# from matplotlib.transforms import TransformedBbox
 import colorsys as cs
-import copy
 from mido import MidiFile, MidiTrack
 from mido import Message, MetaMessage
 from mido import bpm2tempo, tempo2bpm, tick2second, second2tick
@@ -31,6 +32,9 @@ def inrange(x, a, b):
 
 # assigning a chinese font
 plt.rc({'font.sans-serif': 'Consolas-with-Yahei', 'axes.unicode_minus': False, 'font.size': 12.0})
+# mpl.rcParams['font.sans-serif'] = ['Consolas-with-Yahei']
+# mpl.rcParams['axes.unicode_minus'] = False
+# mpl.rcParams['font.size'] = 12.0
 
 
 def get_figure(w, h, dpi):
@@ -59,12 +63,7 @@ def cst_shader(t, t_min=0, t_max=1, color=(1.00, 0.00, 0.00)):
     return color
 
 
-''' midi/sheet converters
-
-midi:  using delta time, based on 'note_on' and 'note_off' events
-sheet: using absolute time, based on 'note' event
-
-'''
+''' midi/sheet converters (midi: using delta time | sheet: using absolute time) '''
 
 
 def track2msglist(track):
@@ -77,33 +76,22 @@ def track2msglist(track):
 
         track : list of midi message dicts using delta time.
 
-        there are several kinds of midi message dict, and their keys are:
+        there are several kinds of structure of a midi message dict, and their keys are:
 
-        <meta message>
-        ['type(=track_name)', 'name', 'time']
-        ['type(=set_tempo)', 'tempo', 'time']
-        ['type(=time_signature)', 'numerator', 'denominator', 'clocks_per_click', 'notated_32nd_notes_per_beat', 'time']
-        ['type(=marker)', 'text', 'time']
-        ['type(=end_of_track)', 'time']
+        ['type(=note_on/note_off)', 'time', 'note', 'velocity', 'channel']
+        ['type(=set_tempo)', 'time', 'tempo']
+        ['type(=time_signature)', 'time', 'numerator', 'denominator']
+        ['type(=control_change)', 'time', 'control', 'value', 'channel']
+        ['type(=pitchwheel)', 'time', 'pitch', 'channel']
         etc...
-
-        <message>
-        ['type(=note_on/note_off)', 'channel', 'note', 'velocity', 'time']
-        ['type(=control_change)', 'channel', 'control', 'value', 'time']
-        ['type(=pitchwheel)', 'channel', 'pitch', 'time']
-        etc...
-
-        their values are:
 
         'type' : 'note_on', 'note_off', 'set_tempo', etc...
-        'name' : text
-        'tempo': milliseconds per beat
-        'numerator', 'denominator': integer
         'time' : delta time in ticks
-        'channel' : channel number
         'note' : note number
         'velocity' : velocity
-        'control': control change number
+        'channel' : channel
+        'tempo': ms per beat
+        'control': number of midi cc
         'value': 0..127
         'pitch': -8192..8191
 
@@ -111,113 +99,58 @@ def track2msglist(track):
 
         msglist : list of midi message dicts using absolute time.
         it means 'note_on' and 'note_off' messages are combined, while time changes to cumtime.
-        'velocity' breaks into 'velocity_on' and 'velocity_off'.
 
     """
     msglist = []
     cur_tick = 0
-    tmp_notes = []
-    tmp_lyrics = []
+    cur_notes = []
+    cur_lyrics = []
     for msg in track:
-        # tick accumulation, find the current tick and record it as time1 or edt
+        # Tick accumulation. Find the current tick and record it as time1 or edt.
         cur_tick += msg['time']
-        # note message detection
         if msg['type'] == 'note_on' and msg['velocity'] > 0:
-            # put a temp note into tmp_notes every time meets a 'note_on' message
-            tmp_notes.append({'type': 'note',
-                              'channel': msg['channel'],
-                              'note': msg['note'],
-                              'velocity_on': msg['velocity'],
-                              'velocity_off': None,
-                              'lyric': None,
-                              'time1': cur_tick,
-                              'time2': None})
-        # lyrics message detection
+            # Put a temp note into cur_notes every time meets a 'note_on' message.
+            cur_notes.append({'type': 'note', 'time1': cur_tick, 'time2': None, 'note': msg['note'],
+                              'velocity_on': msg['velocity'], 'velocity_off': None, 'channel': msg['channel'], 'lyric': None})
         elif msg['type'] == 'lyrics':
-            tmp_lyrics.append(msg['text'])
-        # sometime in real applications velocity 0 note_on is an alternative of note_off
+            cur_lyrics.append(msg['text'])
         elif msg['type'] == 'note_off' or (msg['type'] == 'note_on' and msg['velocity'] < 1):
-            idx = [note['note'] for note in tmp_notes].index(msg['note'])
-            # idx = 0
-            tmp_notes[idx]['time2'] = cur_tick - tmp_notes[idx]['time1']
-            tmp_notes[idx]['velocity_off'] = msg['velocity']
-            if tmp_lyrics != []:
-                tmp_notes[idx]['lyric'] = tmp_lyrics.pop(0)
-            cur_note = tmp_notes.pop(idx)
+            # idx = [note['note'] for note in cur_notes].index(msg['note'])
+            idx = 0
+            cur_notes[idx]['time2'] = cur_tick - cur_notes[idx]['time1']
+            cur_notes[idx]['velocity_off'] = msg['velocity']
+            if cur_lyrics != []:
+                cur_notes[idx]['lyric'] = cur_lyrics.pop(0)
+            cur_note = cur_notes.pop(idx)
             msglist.append(cur_note)
-        # other message and meta messages detection
         else:
-            msg = copy.copy(msg)
             msg['time'] = cur_tick
             msglist.append(msg)
-
     return msglist
 
 
 def midi2sheet(filename):
-    # `ticks_per_beat` is `resolution` in cubase
     mid = MidiFile(Path(filename))
     ticks_per_beat = mid.ticks_per_beat
     total_time = mid.length
 
     sheet = []
-    print('used tracks:')
-    for i, track in enumerate(mid.tracks):
+    for (i, track) in enumerate(mid.tracks):
         print(f'track {i}: {track.name}')
         track_ = []
         for msg in track:
             track_.append(msg.dict())
         sheet.append(track2msglist(track_))
-    print('')
 
     return sheet, ticks_per_beat, total_time
 
 
 def msglist2track(msglist):
-    msglist = copy.deepcopy(msglist)
-    track = []
-    # 'note' message splitting
-    while len(msglist) > 0:
-        msg = msglist.pop(0)
-        if msg['type'] == 'note':
-            msg1 = dict(type='note_on', channel=msg['channel'], note=msg['note'], velocity=msg['velocity_on'], time=msg['time1'])
-            msg2 = dict(type='note_off', channel=msg['channel'], note=msg['note'], velocity=msg['velocity_off'], time=msg['time1']+msg['time2'])
-            track.append(msg1)
-            track.append(msg2)
-        else:
-            track.append(msg)
-    # sort `track` with respect to 'time'
-    track = sorted(track, key=lambda x: x['time'])
-    # convert cumtime to delta time
-    for i in reversed(range(len(track)-1)):
-        track[i+1]['time'] = track[i+1]['time'] - track[i]['time']
-    # convert `track` to `mido.MidiTrack` object
-    msg_obj_list = []
-    for msg in track:
-        # meta messages
-        if msg['type'] in ['track_name', 'set_tempo', 'time_signature', 'marker', 'end_of_track']:
-            msg_obj_list.append(MetaMessage(**msg))
-        else:
-            msg_obj_list.append(Message(**msg))
-
-    return MidiTrack(msg_obj_list)
+    pass
 
 
-def sheet2midi(sheet, ticks_per_beat, filename='untitled.mid'):
-    mid = MidiFile(type=1, ticks_per_beat=ticks_per_beat)
-    for i, msglist in enumerate(sheet):
-        # if not contains 'track_name' message, add default 'track_name' message
-        track_name = f'Track {i}'
-        if_track_name_contains = False
-        for msg in msglist:
-            if msg['type'] == 'track_name':
-                track_name = msg['name']
-                if_track_name_contains = True
-        if not if_track_name_contains:
-            msglist.insert(0, dict(type='track_name', name=track_name, time=0))
-        # add tracks to `mido.MidiFile`
-        mid.tracks.append(msglist2track(msglist))
-    mid.save(filename)
+def sheet2midi(sheet, savepath):
+    pass
 
 
 ''' utilities for sheet '''
@@ -238,12 +171,11 @@ def max_ticks(sheet):
 
 
 def note2label(note, type='piano', show_group=True, mode='b'):
-    # note: midi note number
     if type == 'piano':
-        modes = {'b': ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'],
+        modes = {'b': ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
                  '#': ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
-                 '2': ['♭7', '7', '1', '#1', '2', '♭3', '3', '4', '#4', '5', '#5', '6'],
-                 '7b': ['2', '♭3', '3', '4', '#4', '5', '#5', '6', '♭7', '7', '1', '#1']}
+                 '2': ['b7', '7', '1', '#1', '2', 'b3', '3', '4', '#4', '5', '#5', '6'],
+                 '7b': ['2', 'b3', '3', '4', '#4', '5', '#5', '6', 'b7', '7', '1', '#1']}
         note_names = modes[mode]
         if show_group:
             return f'[{note}]{note_names[note%12]}{note//12-2}'
@@ -253,8 +185,6 @@ def note2label(note, type='piano', show_group=True, mode='b'):
         return ADD2_NOTE_NAMES[note]
     elif type == 'agtc':
         return AGTC_NOTE_NAMES[note]
-    elif type == 'null':
-        return ''
     else:
         return None
 
@@ -335,7 +265,6 @@ class Pianoroll(object):
         print('used controls:')
         for k, msglist in enumerate(self._used_controls):
             print(f'msglist {k}: {msglist}')
-        print('')
 
     def _get_pitchwheels(self):
         self._pitchwheels = [[msg for msg in msglist if msg['type'] == 'pitchwheel'] for msglist in self._sheet]
@@ -663,14 +592,6 @@ class Pianoroll(object):
                                 lw=0.75, ls='--', dash_capstyle='butt', dash_joinstyle='bevel', zorder=2.9+0.001*(track+0.1*control),
                                 where='post', clip_path=self._main_rect, label=f'[track {track}] {CC_NAMES[control]}')
                 _ = [p.set_clip_path(self._main_rect) for p in plot]
-            elif plot_type == 'stair_fill':
-                plot = plt.fill_between(ccs_stts[control], ccs_values[control], self._note_interval[0],
-                                        color=color, alpha=alpha, step='post', lw=0.75, linestyle='--',
-                                        capstyle='butt', joinstyle='bevel', zorder=2.9+0.001*(track+0.1*control),
-                                        clip_path=self._main_rect, label=f'[track {track}] {CC_NAMES[control]}')
-                plot.set_clip_path(self._main_rect)
-            else:
-                pass
 
     def _draw_pitchwheels(self, track=0, shader=cst_shader, plot_type='stair', alpha=1.0):
         """ draw pitchwheels """
@@ -701,11 +622,6 @@ class Pianoroll(object):
             plot = plt.step(pws_stts, pws_pits, color=shader(0), lw=1.0, solid_capstyle='butt', solid_joinstyle='bevel', alpha=alpha,
                             where='post', zorder=2.9+0.001*track, label=f'[track {track}] pitchwheel')
             _ = [p.set_clip_path(self._main_rect) for p in plot]
-        elif plot_type == 'stair_fill':
-            plot = plt.fill_between(pws_stts, pws_pits, middle(*self._note_interval),
-                                    color=shader(0), lw=1.0, capstyle='butt', joinstyle='bevel', alpha=alpha, step='post',
-                                    zorder=2.9+0.001*track, label=f'[track {track}] pitchwheel')
-            plot.set_clip_path(self._main_rect)
         else: pass
 
     def draw_pitchwheels(self, tracks=(0,), plot_type='stair', alpha=1.0):
