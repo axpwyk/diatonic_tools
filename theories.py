@@ -73,6 +73,15 @@ class Note(object):
     def __abs__(self):
         return self._note + self._accidental + self._group * len(NOTE_NAMES)
 
+    @classmethod
+    def from_triple(self, note=0, accidental=0, group=1):
+        self._note = note
+        self._accidental = accidental
+        self._group = group
+
+    def to_name_no_group(self):
+        return NOTE_NAMES[self._note] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b')
+
     def _from_name(self, note_name):
         par = note_name_parser(note_name)
 
@@ -129,13 +138,20 @@ class Note(object):
 class Interval(object):
     def __init__(self, interval_name='P1'):
         # default: 'P1'
-        self._from_name(interval_name)
+        par = interval_name_parser(interval_name)
+        np = -1 if par['neg_str'] else 1
+        type = par['interval_type']
+        degree = eval(par['degree_str'])
+        delta_step = degree - 1
+        delta_note = [INTERVAL_TYPES_k[delta_step % len(NATURAL_NOTES)] for INTERVAL_TYPES_k in INTERVAL_TYPES].index(type)
+        delta_note = delta_note + delta_step // len(NATURAL_NOTES) * len(NOTE_NAMES)
+        self._delta_note, self._delta_step = np * delta_note, np * delta_step
 
     def __repr__(self):
-        return self._to_name()
+        return self._get_name()
 
     def __str__(self):
-        return self._to_name()
+        return self._get_name()
 
     def __add__(self, other):
         if isinstance(other, Note):
@@ -154,18 +170,7 @@ class Interval(object):
     def __neg__(self):
         return Interval().set(-self._delta_note, -self._delta_step)
 
-    def _from_name(self, interval_name):
-        par = interval_name_parser(interval_name)
-        np = -1 if par['neg_str'] else 1
-        type = par['interval_type']
-        degree = eval(par['degree_str'])
-        delta_step = degree - 1
-        delta_note = [INTERVAL_TYPES_k[delta_step % len(NATURAL_NOTES)] for INTERVAL_TYPES_k in INTERVAL_TYPES].index(type)
-        delta_note = delta_note + delta_step // len(NATURAL_NOTES) * len(NOTE_NAMES)
-        self._delta_note, self._delta_step = np * delta_note, np * delta_step
-        return self
-
-    def _to_name(self):
+    def _get_name(self):
         type = INTERVAL_TYPES[abs(self._delta_note) % len(NOTE_NAMES)][abs(self._delta_step) % len(NATURAL_NOTES)]
         degree = f'{abs(self._delta_step)+1}'
         return type + degree if self._delta_step >= 0 else '-' + type + degree
@@ -212,13 +217,29 @@ class Mode(Notes):
             self._notes.append(self._notes[-1] + Interval(interval))
             self._steps.append(step + 1)
 
+    def get_type(self):
+        notes = [abs(note) for note in self._notes]
+        deltas_str = [str(note2-note1) for note1, note2 in zip(notes[:-1], notes[1:])]
+        deltas_str = ''.join(deltas_str)
+        mode_type = INTERVALS_TO_MODE_TYPE[deltas_str]
+        return mode_type
+
+    def add_sharp(self):
+        major_tonic_position = MAJOR_POSITION[self.get_type()]
+        sharp_position = (major_tonic_position + 3) % 7
+        self._notes[sharp_position].add_sharp()
+
+    def add_flat(self):
+        major_tonic_position = MAJOR_POSITION[self.get_type()]
+        flat_position = (major_tonic_position - 1) % 7
+        self._notes[flat_position].add_flat()
+
 
 class Chord(Notes):
     """ Chord is also a subclass of Notes """
     def __init__(self, chord_name='C'):
         super().__init__()
         par = chord_name_parser(chord_name)
-        print(par)
         # bass
         if par['bass_name']:
             bass = Note(par['bass_name'])
@@ -242,3 +263,27 @@ class Chord(Notes):
             tensions = [root + Interval(interval) for interval in tension_intervals]
             self._notes.extend(tensions)
             self._br357t.extend(tension_names)
+
+    def to_name(self):
+        # note finished
+        delta = [note2-note1 for note1, note2 in zip(self._notes[:-1], self._notes[1:])]
+        delta_str = [str(interval.get_delta_note()) for interval in delta]
+        delta_str = ''.join(delta_str)
+        chord_type = INTERVAL_NAME_TO_CHORD_TYPE[delta_str]
+        return f'{self._notes[0].to_name_no_group()}{chord_type}'
+
+    def get_type(self):
+        # note finished
+        delta = [note2-note1 for note1, note2 in zip(self._notes[:-1], self._notes[1:])]
+        delta_str = [str(interval.get_delta_note()) for interval in delta]
+        delta_str = ''.join(delta_str)
+        chord_type = INTERVAL_NAME_TO_CHORD_TYPE[delta_str]
+        return chord_type
+
+    def ascend(self, base_mode='C Ionian'):
+        base_mode = Mode(base_mode)
+        base_mode_notes = base_mode.get_notes()
+        base_mode_names = [base_mode_note.to_name_no_group() for base_mode_note in base_mode_notes]
+        root_name = self._notes[0].to_name_no_group()
+        root_in_base_step = base_mode_names.index(root_name)
+        base_mode.add_sharp()

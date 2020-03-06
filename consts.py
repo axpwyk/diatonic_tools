@@ -31,6 +31,8 @@ HMINOR_INTERVALS = ['M2', 'm2', 'M2', 'M2', 'm2', 'A2', 'm2']
 
 MMINOR_INTERVALS = ['M2', 'm2', 'M2', 'M2', 'M2', 'M2', 'm2']
 
+LYDIAN_INTERVALS = '2221221'
+
 def list_shift(lst, t):
     return lst[t:] + lst[:t]
 
@@ -45,6 +47,22 @@ MODE_INTERVALS = {'Lydian': list_shift(IONIAN_INTERVALS, 4-1),
                   'MMinor': MMINOR_INTERVALS,
                   'HMinor3': list_shift(HMINOR_INTERVALS, 3-1),
                   'HMinor7': list_shift(HMINOR_INTERVALS, 7-1)}
+
+INTERVALS_TO_MODE_TYPE = {list_shift(LYDIAN_INTERVALS, 0): 'Lydian',
+                          list_shift(LYDIAN_INTERVALS, 4): 'Ionian',
+                          list_shift(LYDIAN_INTERVALS, 1): 'Mixolydian',
+                          list_shift(LYDIAN_INTERVALS, 5): 'Dorian',
+                          list_shift(LYDIAN_INTERVALS, 2): 'Aeolian',
+                          list_shift(LYDIAN_INTERVALS, 6): 'Phrygian',
+                          list_shift(LYDIAN_INTERVALS, 3): 'Locrian'}
+
+MAJOR_POSITION = {'Lydian': 4,
+                  'Ionian': 0,
+                  'Mixolydian': 3,
+                  'Dorian': 6,
+                  'Aeolian': 2,
+                  'Phrygian': 5,
+                  'Locrian': 1}
 
 ''' for Chord '''
 
@@ -103,6 +121,7 @@ INTERVAL_NAME_TO_CHORD_TYPE = {'44': 'aug',
                                '25': 'sus2',
                                '52': 'sus4',
                                '432': '6',
+                               '342': 'm6',
                                '4334': '9'}
 
 CHORD_TYPE_TO_COLOR = {'M7': 'red',
