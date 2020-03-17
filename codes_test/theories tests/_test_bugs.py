@@ -1,9 +1,9 @@
 from theories import *
 
-print(Interval(-1, 0)._get_name())
-print(Interval(12, 6)._get_name())
-print(Interval(-7, -13)._get_name())
-print(Interval(12, -1)._get_name())
+print(Interval(-1, 0).get_name())
+print(Interval(12, 6).get_name())
+print(Interval(-7, -13).get_name())
+print(Interval(12, -1).get_name())
 print()
 
 itv1 = Interval()._from_name('d1')

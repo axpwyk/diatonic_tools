@@ -113,6 +113,8 @@ class Guitar(object):
                     current_triple = [current_note, current_accidental, current_group]
                     _plot_note(i, j, Note().set_vector(*current_triple).__str__() + f'({self.br357t[i, j]})', cs.hsv_to_rgb(hue, 0.65, 0.85))
 
+        return width, height
+
     def add_notes(self, notes):
         for i, note in enumerate(notes.get_notes()):
             indices = self._fretboard[:, :, 0] == (note.get_note() + note.get_accidental()) % 12
@@ -135,3 +137,37 @@ class Guitar(object):
                     current_triple = [current_note, current_accidental, current_group]
                     notes.append(Note().set_vector(*current_triple))
         return notes
+
+
+class GuitarV2(object):
+    def __init__(self, notes=None):
+        # maximum fret
+        self._fret_max = 25
+        # multiple notes on single string
+        self._poly = True
+        # default notes
+        if notes:
+            self._notes = notes
+        else:
+            self._notes = [Note('C1'), Note('E1'), Note('G1')]
+        # open string notes
+        self._open_string_notes = np.array([16, 21, 26, 31, 35, 40])
+        # fret notes
+        self._fret_notes = np.array([self._open_string_notes + i for i in range(0, self._fret_max)])
+        self._press()
+
+    def _press(self):
+        # pressed strings
+        self.pressed = np.zeros((self._fret_max, 6), np.bool)
+        for note in self._notes:
+            self.pressed[self._fret_notes==abs(note)] = True
+        print(self.pressed)
+
+    def set_notes(self, notes):
+        pass
+
+    def set_poly_on(self, bool):
+        self._poly = bool
+
+    def plot(self):
+        pass

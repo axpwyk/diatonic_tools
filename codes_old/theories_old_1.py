@@ -93,8 +93,8 @@ def chord_name_to_triples(chord_name='CM7'):
     tension_names = par['tension_names']
     bass_name = par['bass_name']
 
-    scale_type = CHORD_TYPE_TO_MODE_TYPE[chord_type]
-    scale_steps = CHORD_TYPE_TO_STEPS[chord_type]
+    scale_type = CHORD_TYPE_TO_SCALE_TYPE[chord_type]
+    scale_steps = CHORD_TYPE_TO_DEGREES[chord_type]
     s1 = Mode(root_name + ' ' + scale_type)
     chord_triples = s1.get_chord_from_steps(scale_steps)[0]
 

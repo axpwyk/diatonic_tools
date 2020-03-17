@@ -221,16 +221,16 @@ class Chord(Notes):
             self._r357 = []
         # r357
         root = Note(par['root_name'])
-        mode = Mode(par['root_name'] + ' ' + CHORD_TYPE_TO_MODE_TYPE[par['chord_type']])
+        mode = Mode(par['root_name'] + ' ' + CHORD_TYPE_TO_SCALE_TYPE[par['chord_type']])
         mode_notes = mode.get_notes()
-        mode_steps = CHORD_TYPE_TO_STEPS[par['chord_type']]
+        mode_steps = CHORD_TYPE_TO_DEGREES[par['chord_type']]
         self._notes.extend([mode_notes[step] for step in mode_steps])
         self._r357.extend('R')
         self._r357.extend([f'{step + 1}' for step in mode_steps[1:]])
         # tensions
         if par['tension_type']:
             tension_names = tension_type_parser(par['tension_type'])
-            tension_intervals = [TENSION_NAME_TO_INTERVAL[tension_name] for tension_name in tension_names]
+            tension_intervals = [TENSION_NAME_TO_INTERVAL_NAME[tension_name] for tension_name in tension_names]
             tensions = [root + Interval(interval) for interval in tension_intervals]
             self._notes.extend(tensions)
             self._r357.extend(tension_names)

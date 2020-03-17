@@ -1,19 +1,14 @@
 T = 2**(1/12)
 
-
-def sign(x): return 1 if x > 0 else 0 if x == 0 else -1
-
+sign = lambda x: 1 if x > 0 else 0 if x == 0 else -1
 
 ''' for Note '''
 
-
-NATURAL_NOTES = [0, 2, 4, 5, 7, 9, 11]
+NATURAL_NOTE_NUMBERS = [0, 2, 4, 5, 7, 9, 11]
 
 NOTE_NAMES = ['C', '', 'D', '', 'E', 'F', '', 'G', '', 'A', '', 'B']
 
-
 ''' for Interval '''
-
 
 INTERVAL_TYPES = [['P', 'd', '', '', '', '', ''],
                   ['A', 'm', '', '', '', '', ''],
@@ -28,64 +23,88 @@ INTERVAL_TYPES = [['P', 'd', '', '', '', '', ''],
                   ['', '', '' ,'' ,'' ,'A' ,'m'],
                   ['', '', '' ,'' ,'' ,'' ,'M']]
 
-
 ''' for DiatonicScale '''
 
-
-# these two encoders are used to calculate number of accidentals
 SCALE_TYPE_ENCODER = {'Locrian': -3, 'Phrygian': -2, 'Aeolian': -1, 'Dorian': 0, 'Mixolydian': 1, 'Ionian': 2, 'Lydian':3}
 
 TONIC_NOTE_ENCODER = {'F': -3, 'C': -2, 'G': -1, 'D': 0, 'A': 1, 'E': 2, 'B': 3}
 
-SCALE_TYPE_DECODER = ['Locrian', 'Phrygian', 'Aeolian', 'Dorian', 'Mixolydian', 'Ionian', 'Lydian']
+''' for Mode '''
 
+IONIAN_INTERVALS = ['M2', 'M2', 'm2', 'M2', 'M2', 'M2', 'm2']
+
+HMINOR_INTERVALS = ['M2', 'm2', 'M2', 'M2', 'm2', 'A2', 'm2']
+
+MMINOR_INTERVALS = ['M2', 'm2', 'M2', 'M2', 'M2', 'M2', 'm2']
+
+LYDIAN_INTERVALS = '2221221'
+
+def list_shift(lst, t):
+    return lst[t:] + lst[:t]
+
+MODE_INTERVALS = {'Lydian': list_shift(IONIAN_INTERVALS, 4-1),
+                  'Ionian': list_shift(IONIAN_INTERVALS, 1-1),
+                  'Mixolydian': list_shift(IONIAN_INTERVALS, 5-1),
+                  'Dorian': list_shift(IONIAN_INTERVALS, 2-1),
+                  'Aeolian': list_shift(IONIAN_INTERVALS, 6-1),
+                  'Phrygian': list_shift(IONIAN_INTERVALS, 3-1),
+                  'Locrian': list_shift(IONIAN_INTERVALS, 7-1),
+                  'HMinor': HMINOR_INTERVALS,
+                  'MMinor': MMINOR_INTERVALS,
+                  'HMinor3': list_shift(HMINOR_INTERVALS, 3-1),
+                  'HMinor7': list_shift(HMINOR_INTERVALS, 7-1)}
+
+INTERVALS_TO_MODE_TYPE = {list_shift(LYDIAN_INTERVALS, 0): 'Lydian',
+                          list_shift(LYDIAN_INTERVALS, 4): 'Ionian',
+                          list_shift(LYDIAN_INTERVALS, 1): 'Mixolydian',
+                          list_shift(LYDIAN_INTERVALS, 5): 'Dorian',
+                          list_shift(LYDIAN_INTERVALS, 2): 'Aeolian',
+                          list_shift(LYDIAN_INTERVALS, 6): 'Phrygian',
+                          list_shift(LYDIAN_INTERVALS, 3): 'Locrian'}
+
+MAJOR_POSITION = {'Lydian': 4,
+                  'Ionian': 0,
+                  'Mixolydian': 3,
+                  'Dorian': 6,
+                  'Aeolian': 2,
+                  'Phrygian': 5,
+                  'Locrian': 1}
 
 ''' for Chord '''
 
+CHORD_TYPE_TO_MODE_TYPE = {'aug': 'HMinor',
+                           '': 'Ionian',
+                           'm': 'Aeolian',
+                           'dim': 'Locrian',
+                           'M7': 'Ionian',
+                           'M7+5': 'HMinor3',
+                           '7': 'Mixolydian',
+                           'mM7': 'HMinor',
+                           'm7': 'Aeolian',
+                           'm7-5': 'Locrian',
+                           'dim7': 'HMinor7',
+                           'sus2': 'Ionian',
+                           'sus4': 'Ionian',
+                           '6': 'Ionian',
+                           '9': 'Mixolydian'}
 
-CHORD_TYPE_TO_SCALE_TYPE = {'aug': 'Ionian(#5)',
-                            '': 'Ionian',
-                            '-5': 'Ionian(b5)',
-                            'm': 'Aeolian',
-                            'dim': 'Locrian',
-                            'dim-3': 'Locrian(b3)',
-                            'M7+5': 'Ionian(#5)',
-                            'M7': 'Ionian',
-                            '7': 'Mixolydian',
-                            '7-5': 'Ionian(b5)',
-                            'mM7': 'Aeolian(#7)',
-                            'm7': 'Aeolian',
-                            'm7-5': 'Locrian',
-                            'dim7': 'Locrian(b7)',
-                            'm7-5-3': 'Locrian(b3)',
-                            'sus2': 'Ionian',
-                            'sus4': 'Ionian',
-                            '6': 'Ionian',
-                            'm6': 'Dorian',
-                            '9': 'Mixolydian'}
+CHORD_TYPE_TO_STEPS = {'aug': [0, 2, 4],
+                       '': [0, 2, 4],
+                       'm': [0, 2, 4],
+                       'dim': [0, 2, 4],
+                       'M7': [0, 2, 4, 6],
+                       'M7+5': [0, 2, 4, 6],
+                       '7': [0, 2, 4, 6],
+                       'mM7': [0, 2, 4, 6],
+                       'm7': [0, 2, 4, 6],
+                       'm7-5': [0, 2, 4, 6],
+                       'dim7': [0, 2, 4, 6],
+                       'sus2': [0, 1, 4],
+                       'sus4': [0, 3, 4],
+                       '6': [0, 2, 4, 5],
+                       '9': [0, 2, 4, 6, 1]}
 
-CHORD_TYPE_TO_DEGREES = {'aug': [0, 2, 4],
-                         '': [0, 2, 4],
-                         '-5': [0, 2, 4],
-                         'm': [0, 2, 4],
-                         'dim': [0, 2, 4],
-                         'dim-3': [0, 2, 4],
-                         'M7+5': [0, 2, 4, 6],
-                         'M7': [0, 2, 4, 6],
-                         '7': [0, 2, 4, 6],
-                         '7-5': [0, 2, 4, 6],
-                         'mM7': [0, 2, 4, 6],
-                         'm7': [0, 2, 4, 6],
-                         'm7-5': [0, 2, 4, 6],
-                         'dim7': [0, 2, 4, 6],
-                         'm7-5-3': [0, 2, 4, 6],
-                         'sus2': [0, 1, 4],
-                         'sus4': [0, 3, 4],
-                         '6': [0, 2, 4, 5],
-                         'm6': [0, 2, 4, 5],
-                         '9': [0, 2, 4, 6, 1]}
-
-TENSION_NAME_TO_INTERVAL_NAME = {'b9': 'm9',
+TENSION_NAME_TO_INTERVAL = {'b9': 'm9',
                             '9': 'M9',
                             '#9': 'A9',
                             '11': 'P11',
@@ -93,7 +112,7 @@ TENSION_NAME_TO_INTERVAL_NAME = {'b9': 'm9',
                             'b13': 'm13',
                             '13': 'M13'}
 
-INTERVAL_NAME_TO_TENSION_NAME = {'m9': 'b9',
+INTERVAL_TO_TENSION_NAME = {'m9': 'b9',
                             'M9': '9',
                             'A9': '#9',
                             'P11': '11',
@@ -104,19 +123,15 @@ INTERVAL_NAME_TO_TENSION_NAME = {'m9': 'b9',
 # recognize chord type from intervals
 INTERVAL_NAME_TO_CHORD_TYPE = {'44': 'aug',
                                '43': '',
-                               '42': '-5',
                                '34': 'm',
                                '33': 'dim',
-                               '24': 'dim-3',
-                               '443': 'M7+5',
                                '434': 'M7',
+                               '443': 'M7+5',
                                '433': '7',
-                               '424': '7-5',
                                '344': 'mM7',
                                '343': 'm7',
                                '334': 'm7-5',
                                '333': 'dim7',
-                               '244': 'm7-5-3',
                                '25': 'sus2',
                                '52': 'sus4',
                                '432': '6',
@@ -131,9 +146,7 @@ CHORD_TYPE_TO_COLOR = {'M7': 'red',
                        'm7-5': 'cyan',
                        'dim7': 'green'}
 
-
 ''' for midi.py '''
-
 
 # ADD2 MIDI mapping
 ADD2_NOTE_NAMES = ['---', '---', '---', 'Ride 2 CCPos Shaft<->Tip', 'Ride 1 CCPos Shaft<->Tip', 'Snare CCPos Closed (Br)', 'Snare CCPos Op<->Sha', 'CC HiHat Shaft',

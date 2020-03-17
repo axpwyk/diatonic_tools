@@ -292,10 +292,10 @@ class Pianoroll(object):
         # [06] get pitchwheels
         self._get_pitchwheels()
 
-        # [07] set default intervals
+        # [07] set_vector default intervals
         self._set_intervals()
 
-        # [08] set default track colors
+        # [08] set_vector default track colors
         self._set_track_colors()
 
         # [09] get lyrics
@@ -406,7 +406,7 @@ class Pianoroll(object):
         ''' [00] intervals check '''
 
         if self._time_interval == None or self._note_interval == None:
-            raise ValueError('Please set intervals at first. You can use `use_default_intervals()` or `set_intervals()` to finish this job.')
+            raise ValueError('Please set_vector intervals at first. You can use `use_default_intervals()` or `set_intervals()` to finish this job.')
         else:
             self._pianoroll_exists = True
             plt.clf()

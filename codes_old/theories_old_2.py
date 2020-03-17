@@ -40,40 +40,6 @@ def tension_type_parser(tension_name):
 class Note(object):
     def __init__(self, note_name='C0'):
         # default: 'C0'
-        self._from_name(note_name)
-
-    def __repr__(self):
-        return self._to_name()
-
-    def __str__(self):
-        return self._to_name()
-
-    def __sub__(self, other):
-        if isinstance(other, Note):
-            step1 = NATURAL_NOTES.index(self._note) + self._group * len(NATURAL_NOTES)
-            step2 = NATURAL_NOTES.index(other.get_note()) + other.get_group() * len(NATURAL_NOTES)
-            return Interval().set(abs(self) - abs(other), step1 - step2)
-        if isinstance(other, Interval):
-            return self + (-other)
-        else:
-            raise TypeError('ClassError: `Note` could only subtract a `Note` or an `Interval`!')
-
-    def __add__(self, other):
-        if isinstance(other, Interval):
-            delta_note = other.get_delta_note()
-            delta_step = other.get_delta_step()
-            step = NATURAL_NOTES.index(self._note) + delta_step
-            note = NATURAL_NOTES[step % len(NATURAL_NOTES)]
-            group = self._group + step // len(NATURAL_NOTES)
-            accidental = abs(self) + delta_note - note - len(NOTE_NAMES) * group
-            return Note().set(note, accidental, group)
-        else:
-            raise TypeError('ClassError: `Note` could only add an `Interval`!')
-
-    def __abs__(self):
-        return self._note + self._accidental + self._group * len(NOTE_NAMES)
-
-    def _from_name(self, note_name):
         par = note_name_parser(note_name)
 
         self._note = NOTE_NAMES.index(par['note_name'])
@@ -88,12 +54,56 @@ class Note(object):
         else:
             self._group = 0
 
+    def __repr__(self):
+        return self._get_name()
+
+    def __str__(self):
+        return self._get_name()
+
+    def __sub__(self, other):
+        if isinstance(other, Note):
+            step1 = NATURAL_NOTES.index(self._note) + self._group * len(NATURAL_NOTES)
+            step2 = NATURAL_NOTES.index(other.get_note()) + other.get_group() * len(NATURAL_NOTES)
+            return Interval().set_vector(abs(self) - abs(other), step1 - step2)
+        if isinstance(other, Interval):
+            return self + (-other)
+        else:
+            raise TypeError('ClassError: `Note` could only subtract a `Note` or an `Interval`!')
+
+    def __add__(self, other):
+        if isinstance(other, Interval):
+            delta_note = other.get_delta_note()
+            delta_step = other.get_delta_step()
+            step = NATURAL_NOTES.index(self._note) + delta_step
+            note = NATURAL_NOTES[step % len(NATURAL_NOTES)]
+            group = self._group + step // len(NATURAL_NOTES)
+            accidental = abs(self) + delta_note - note - len(NOTE_NAMES) * group
+            return Note().set_vector(note, accidental, group)
+        else:
+            raise TypeError('ClassError: `Note` could only add an `Interval`!')
+
+    def __abs__(self):
+        return self._note + self._accidental + self._group * len(NOTE_NAMES)
+
+    def from_vector(self, note=0, accidental=0, group=1):
+        self._note = note
+        self._accidental = accidental
+        self._group = group
         return self
 
-    def _to_name(self):
+    def _get_name_without_group(self):
+        return NOTE_NAMES[self._note] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b')
+
+    def _get_name(self):
         return NOTE_NAMES[self._note] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b') + f'{self._group}'
 
-    def set(self, note=None, accidental=None, group=None):
+    def get_name_without_group(self):
+        return self._get_name_without_group()
+
+    def get_name(self):
+        return self._get_name()
+
+    def set_vector(self, note=None, accidental=None, group=None):
         if note:
             self._note = note
         if accidental:
@@ -119,36 +129,18 @@ class Note(object):
         self._accidental -= 1
         return self
 
+    def add_oct(self):
+        self._group += 1
+        return self
+
+    def sub_oct(self):
+        self._group -= 1
+        return self
+
 
 class Interval(object):
     def __init__(self, interval_name='P1'):
         # default: 'P1'
-        self._from_name(interval_name)
-
-    def __repr__(self):
-        return self._to_name()
-
-    def __str__(self):
-        return self._to_name()
-
-    def __add__(self, other):
-        if isinstance(other, Note):
-            return other + self
-        elif isinstance(other, Interval):
-            return Interval().set(self._delta_note + other.get_delta_note(), self._delta_step + other.get_delta_step())
-        else:
-            raise TypeError('ClassError: `Interval` could only add a `Note` or an `Interval`!')
-
-    def __sub__(self, other):
-        if isinstance(other, Interval):
-            return Interval().set(self._delta_note - other.get_delta_note(), self._delta_step - other.get_delta_step())
-        else:
-            raise TypeError('ClassError: `Interval` could only subtract an `Interval`!')
-
-    def __neg__(self):
-        return Interval().set(-self._delta_note, -self._delta_step)
-
-    def _from_name(self, interval_name):
         par = interval_name_parser(interval_name)
         np = -1 if par['neg_str'] else 1
         type = par['interval_type']
@@ -157,14 +149,44 @@ class Interval(object):
         delta_note = [INTERVAL_TYPES_k[delta_step % len(NATURAL_NOTES)] for INTERVAL_TYPES_k in INTERVAL_TYPES].index(type)
         delta_note = delta_note + delta_step // len(NATURAL_NOTES) * len(NOTE_NAMES)
         self._delta_note, self._delta_step = np * delta_note, np * delta_step
+
+    def __repr__(self):
+        return self._get_name()
+
+    def __str__(self):
+        return self._get_name()
+
+    def __add__(self, other):
+        if isinstance(other, Note):
+            return other + self
+        elif isinstance(other, Interval):
+            return Interval().set_vector(self._delta_note + other.get_delta_note(), self._delta_step + other.get_delta_step())
+        else:
+            raise TypeError('ClassError: `Interval` could only add a `Note` or an `Interval`!')
+
+    def __sub__(self, other):
+        if isinstance(other, Interval):
+            return Interval().set_vector(self._delta_note - other.get_delta_note(), self._delta_step - other.get_delta_step())
+        else:
+            raise TypeError('ClassError: `Interval` could only subtract an `Interval`!')
+
+    def __neg__(self):
+        return Interval().set_vector(-self._delta_note, -self._delta_step)
+
+    def from_vector(self, delta_note=0, delta_step=0):
+        self._delta_note = delta_note
+        self._delta_step = delta_step
         return self
 
-    def _to_name(self):
+    def _get_name(self):
         type = INTERVAL_TYPES[abs(self._delta_note) % len(NOTE_NAMES)][abs(self._delta_step) % len(NATURAL_NOTES)]
         degree = f'{abs(self._delta_step)+1}'
         return type + degree if self._delta_step >= 0 else '-' + type + degree
 
-    def set(self, delta_note=None, delta_step=None):
+    def get_name(self):
+        return self._get_name()
+
+    def set_vector(self, delta_note=None, delta_step=None):
         if delta_note:
             self._delta_note = delta_note
         if delta_step:
@@ -176,6 +198,19 @@ class Interval(object):
 
     def get_delta_step(self):
         return self._delta_step
+
+
+class DiatonicMode(object):
+    def __init__(self, scale_name='C Ionian'):
+        par = mode_name_parser(scale_name)
+        key_name = par['key_name']
+        mode_type = par['mode_type']
+        tonic = TONIC_NOTE_ENCODER[key_name]
+        mode = SCALE_TYPE_ENCODER[mode_type]
+
+
+
+''' old music theory classes '''
 
 
 class Notes(object):
@@ -194,7 +229,7 @@ class Notes(object):
 
 
 class Mode(Notes):
-    """ Mode is a subclass of Notes """
+    """ Mode is a subclass of Notes. """
     def __init__(self, mode_name='C Ionian'):
         super().__init__()
         par = mode_name_parser(mode_name)
@@ -206,13 +241,40 @@ class Mode(Notes):
             self._notes.append(self._notes[-1] + Interval(interval))
             self._steps.append(step + 1)
 
+    def get_type(self):
+        notes = [abs(note) for note in self._notes]
+        deltas = [str(note2-note1) for note1, note2 in zip(notes[:-1], notes[1:])]
+        deltas = ''.join(deltas)
+        mode_type = INTERVALS_TO_MODE_TYPE[deltas]
+        return mode_type
+
+    def get_name(self):
+        mode_type = self.get_type()
+        return f'{self._notes[0]._get_name_without_group()} {mode_type}'
+
+    def add_sharp(self):
+        major_tonic_position = MAJOR_POSITION[self.get_type()]
+        sharp_position = (major_tonic_position + 3) % 7
+        self._notes[sharp_position].add_sharp()
+        return self
+
+    def add_flat(self):
+        major_tonic_position = MAJOR_POSITION[self.get_type()]
+        flat_position = (major_tonic_position - 1) % 7
+        self._notes[flat_position].add_flat()
+        return self
+
+    def get_full_chord(self, step):
+        steps = [((step+2*k)%7, (step+2*k)//7) for k in range(7)]
+        notes = [self._notes[step[0]] + sum(step[1]*[Interval('P8')], Interval('P1')) for step in steps]
+        return Chord().set_notes(notes)
+
 
 class Chord(Notes):
     """ Chord is also a subclass of Notes """
     def __init__(self, chord_name='C'):
         super().__init__()
         par = chord_name_parser(chord_name)
-        print(par)
         # bass
         if par['bass_name']:
             bass = Note(par['bass_name'])
@@ -236,3 +298,27 @@ class Chord(Notes):
             tensions = [root + Interval(interval) for interval in tension_intervals]
             self._notes.extend(tensions)
             self._br357t.extend(tension_names)
+
+    def set_notes(self, notes):
+        self._notes = notes
+        # and `self._br357t` to be finished
+        return self
+
+    def get_type(self):
+        intervals = [note2-note1 for note1, note2 in zip(self._notes[:-1], self._notes[1:])]
+        deltas = [str(interval.get_delta_note()) for interval in intervals]
+        deltas = ''.join(deltas)
+        seventh_chord_type = INTERVAL_NAME_TO_CHORD_TYPE[deltas[:3]]
+
+        ninth = sum(intervals[:4], Interval('P1'))
+        ninth = INTERVAL_NAME_TO_TENSION_NAME[str(ninth)]
+        eleventh = sum(intervals[:5], Interval('P1'))
+        eleventh = INTERVAL_NAME_TO_TENSION_NAME[str(eleventh)]
+        thirteenth = sum(intervals[:6], Interval('P1'))
+        thirteenth = INTERVAL_NAME_TO_TENSION_NAME[str(thirteenth)]
+
+        return seventh_chord_type + f'({ninth}, {eleventh}, {thirteenth})'
+
+    def get_name(self):
+        chord_type = self.get_type()
+        return f'{self._notes[0]._get_name_without_group()}{chord_type}'

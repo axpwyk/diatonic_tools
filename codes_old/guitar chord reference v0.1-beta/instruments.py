@@ -106,7 +106,7 @@ class Guitar(object):
                     current_accidental = self.accidentals[i, j]
                     current_group = self._fretboard[i, j, 1]
                     current_triple = [current_note, current_accidental, current_group]
-                    _plot_note(i, j, Note().set(*current_triple).__str__()+f'({self.r357[i, j]})', cs.hsv_to_rgb(hue, 0.65, 0.85))
+                    _plot_note(i, j, Note().set_vector(*current_triple).__str__() + f'({self.r357[i, j]})', cs.hsv_to_rgb(hue, 0.65, 0.85))
 
     def add_notes(self, notes):
         for i, note in enumerate(notes.get_notes()):
@@ -134,5 +134,5 @@ class Guitar(object):
                     current_accidental = self.accidentals[i, j]
                     current_group = self._fretboard[i, j, 1]
                     current_triple = [current_note, current_accidental, current_group]
-                    notes.append(Note().set(*current_triple))
+                    notes.append(Note().set_vector(*current_triple))
         return notes
