@@ -2,11 +2,7 @@ from instruments import *
 
 
 def get_chord(chord_name='Caug/F#', selection='x9a99x', fret_interval=(7, 11), save_name=''):
-    par = chord_name_parser(chord_name)
-    if par['bass_name']:
-        g = Guitar(Chord(chord_name)[0:])
-    else:
-        g = Guitar(Chord(chord_name)[1:])
+    g = Guitar(Chord(chord_name).get_notes())
     g.select(selection)
     g.plot2(*fret_interval, title=chord_name.replace('#', r'$\sharp$').replace('b', r'$\flat$'))
     if not save_name:
@@ -28,8 +24,10 @@ def get_scale(scale_name='C Dorian', fret_interval=(0, 12), save_name=''):
 # get_chord('Caug/F#', 'x9a99x', (7, 11), 'Caug-on-F#.svg')
 # get_chord('GM7', '', (0, 12), 'GM7.svg')
 # get_chord('GM7', 'xx5777', (2, 6), 'GM7.svg')
-get_chord('Dm7(9, 11, 13)', '', (0, 12), 'Dm7(9, 11, 13).svg')
-get_chord('Dm7', 'x57700', (4, 8), 'Dm7.svg')
+# get_chord('Dm7(9, 11, 13)', '', (0, 12), 'Dm7(9, 11, 13).svg')
+# get_chord('Dm7', 'x57700', (4, 8), 'Dm7.svg')
+# get_chord('AM7(9)/B', '', (0, 12))
+get_chord('Caug/F#', '', (0, 12))
 
 # get_chord('C', 'x32010', (0, 4), 'C0.svg')
 # get_chord('C', 'x35553', (2, 6), 'C2.svg')

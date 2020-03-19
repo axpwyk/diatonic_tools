@@ -305,7 +305,7 @@ class AlteredDiatonicScale(DiatonicScale):
 class Chord(object):
     def __init__(self, chord_name='C'):
 
-        self._bass = [None]
+        self._bass = []
         self._body = []
         self._tensions = []
 
@@ -322,6 +322,7 @@ class Chord(object):
         scale_notes = scale.get_notes()
         degrees = CHORD_TYPE_TO_DEGREES[par['chord_type']]
         self._body.extend([scale_notes[deg].set_message(f'{deg+1}') for deg in degrees])
+        self._body[0].set_message('R')
 
         # tension notes
         if par['tension_type']:
@@ -337,6 +338,12 @@ class Chord(object):
 
     def __getitem__(self, item):
         return self.get_notes()[item]
+
+    def __abs__(self):
+        if self._bass:
+            return [abs(note) for note in self.get_notes()]
+        else:
+            return [abs(note) for note in self.get_notes()[1:]]
 
     def set_notes(self, bass=None, body=None, tensions=None):
         if bass:

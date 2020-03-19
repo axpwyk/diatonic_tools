@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import colorsys as cs
+from theories import Chord
 import re
 
 plt.style.use('seaborn-pastel')
@@ -39,7 +40,8 @@ def gradient2(t, color1, color2):
 
 
 h = np.linspace(0, 1, 12, endpoint=False)
-hs = [2, 6, 9, 0]
+chord_name = 'Ddim7'
+hs = [abs(t)%12 for t in Chord(chord_name)[1:]]
 save_name = ''
 l1 = 0.5; l2 = 0.25
 s1 = 0.95; s2 = 0.5
@@ -61,13 +63,14 @@ x_margins = 0.5; w = 3
 y_margins = 1.5; h = 1
 h_text = 1
 ax.set_xlim(0, (x_margins+w)*n_gradients-x_margins)
-ax.set_ylim(0-h_text, (y_margins+h)*n_colors-y_margins)
+ax.set_ylim(0-h_text, (y_margins+h)*n_colors-y_margins+h_text)
 for i in range(n_colors):
     for j in range(n_gradients):
         rect = plt.Rectangle(((w+x_margins)*j, (h+y_margins)*i), w, h, color=colors[n_colors-i-1, j])
         ax.add_patch(rect)
         ax.annotate(oct2hex(colors[n_colors-i-1, j]), ((x_margins+w)*j+w/2, (y_margins+h)*i-h_text/2), va='center', ha='center')
-
+ax.annotate(f'{chord_name} {[k*360//12 for k in hs]}',
+            (((x_margins+w)*n_gradients-x_margins)/2, (y_margins+h)*n_colors-y_margins+h_text/2), ha='center', va='center')
 if not save_name:
     plt.savefig('debug.svg', bbox_inches='tight', pad_inches=0.0)
 else:

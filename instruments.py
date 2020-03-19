@@ -13,7 +13,7 @@ plt.style.use('seaborn-pastel')
 plt.rc('mathtext', **{'fontset': 'cm'})
 plt.rc('text', **{'usetex': False})
 # assign a chinese font
-plt.rc('font', **{'sans-serif': 'Calibri'})
+plt.rc('font', **{'sans-serif': 'Consolas-with-Yahei'})
 plt.rc('axes', **{'unicode_minus': False})
 
 
@@ -26,6 +26,17 @@ def hex2oct(hex_string):
     green = eval('0x'+search_obj['green'])
     blue = eval('0x'+search_obj['blue'])
     return red/255, green/255, blue/255
+
+
+def oct2hex(oct_list):
+    red = oct_list[0] * 255
+    green = oct_list[1] * 255
+    blue = oct_list[2] * 255
+    print(red, green, blue)
+    digits = [str(k) for k in range(10)] + ['a', 'b', 'c', 'd', 'e', 'f']
+    return '#'+f'{digits[int((red-red%16)//16)]}{digits[int(red%16)]}'+\
+               f'{digits[int((green-green%16)//16)]}{digits[int(green%16)]}'+\
+               f'{digits[int((blue-blue%16)//16)]}{digits[int(blue%16)]}'
 
 
 def gradient1(t, color1, color2):
@@ -305,3 +316,84 @@ class Guitar(object):
 
         # fig.savefig('debug.svg', bbox_inches='tight', pad_inches=0.0)
         # plt.close()
+
+
+class Piano(object):
+    pass
+
+
+class Clock(object):
+    def __init__(self, notes):
+        self._notes = notes
+
+    def plot(self, title, tonic=None, margin_anno_type=None, colorize=None):
+        import colorsys as cs
+
+        radius = 5
+        omega = np.cos(np.pi/6) - 1j*np.sin(np.pi/6)
+        offset = (-omega)**3
+
+        texts = ['C', r'C$\sharp$/D$\flat$', 'D', r'D$\sharp$/E$\flat$',
+                 'E', 'F', r'F$\sharp$/G$\flat$', 'G',
+                 r'G$\sharp$/A$\flat$', 'A', r'A$\sharp$/B$\flat$', 'B']
+        for note in self._notes:
+            texts[abs(note)%12] = note.get_name(show_group=False).replace('#', r'$\sharp$').replace('b', r'$\flat$') + f'({note.get_message()})'
+        text_colors = [cs.hls_to_rgb(h, 0.5, 0.75) for h in np.linspace(0, 1.0, 12, endpoint=False)]
+        text_colors = [text_color if k in [abs(x)%12 for x in self._notes] else 'gray' for k, text_color in enumerate(text_colors)]
+        text_positions = [(1.4*radius*np.real(omega**k*offset), 1.4*radius*np.imag(omega**k*offset)) for k in range(12)]
+
+        hand_colors = [[0.5, 0.5, 0.5]] * 12
+        msgs = [note.get_message() for note in self._notes]
+        if 'R' in msgs: root_pos = abs(self._notes[msgs.index('R')]) % 12
+        else: root_pos = -1
+        if 'B' in msgs: bass_pos = abs(self._notes[msgs.index('B')]) % 12
+        else: bass_pos = -1
+        if tonic is not None: tonic_pos = tonic % 12
+        else: tonic_pos = -1
+        for i in range(12):
+            if i in [root_pos, bass_pos, tonic_pos]:
+                hand_colors[i] = [0.75*(i==root_pos), 0.75*(i==bass_pos), 0.75*(i==tonic_pos)]
+        if colorize:
+            for i in colorize:
+                hand_colors[i] = 'red'
+
+
+        ''' new figure '''
+
+
+        fig, ax = plt.subplots(1, 1)
+        fig.set_figwidth(4); fig.set_figheight(4)
+        fig.subplots_adjust(left=0.05, bottom=0.05, right=0.95, top=0.95, wspace=0.0, hspace=0.0)
+        ax.margins(0.0)
+        ax.set_aspect('equal')
+        ax.set_xticks([]); ax.set_yticks([])
+        ax.set_xlim(-1.8*radius, 1.8*radius)
+        ax.set_ylim(-1.8*radius, 1.8*radius)
+
+
+        ''' plotting '''
+
+
+        ks1 = [abs(x) for x in self._notes]
+
+        circ = plt.Circle((0, 0), radius, fc='none', ec='black', lw=2.0)
+        hands = [plt.Line2D((0, 0.8*radius*np.real(omega**k*offset)), (0, 0.8*radius*np.imag(omega**k*offset)),
+                        lw=1.5, c=hand_colors[k]) for k in range(12)]
+        ticks = [plt.Line2D((0.95*radius*np.real(omega**k*offset), radius*np.real(omega**k*offset)), (0.95*radius*np.imag(omega**k*offset), radius*np.imag(omega**k*offset)),
+                        lw=1, c='black') for k in range(12)]
+
+        ax.add_patch(circ)
+        _ = [ax.add_line(hand) for hand in [hands[k%12] for k in ks1]]
+        _ = [ax.add_line(tick) for tick in [ticks[k] for k in range(12)]]
+        _ = [ax.annotate(k, (1.1*radius*np.real(omega**k*offset), 1.1*radius*np.imag(omega**k*offset)), ha='center', va='center') for k in range(12)]
+        _ = [ax.annotate(texts[k], text_positions[k], va='center', ha='center', bbox=dict(facecolor=text_colors[k], alpha=0.2, edgecolor=text_colors[k])) for k in range(12)]
+        ks2 = ks1 + [12+ks1[0]]
+        if margin_anno_type == 'degree':
+            _ = [ax.annotate(f'{(k2-k1)*30}°', (np.real(0.65*radius*omega**(k1+(k2-k1)/2)*offset), np.imag(0.65*radius*omega**(k1+(k2-k1)/2)*offset)),
+                             ha='center', va='center') for k1, k2 in zip(ks2[:-1], ks2[1:])]
+        elif margin_anno_type == 'interval':
+            notes_appended = self._notes + [self._notes[0]+Interval('P8')]
+            _ = [ax.annotate(notes_appended[i+1]-notes_appended[i], (np.real(0.65*radius*omega**(k1+(k2-k1)/2)*offset), np.imag(0.65*radius*omega**(k1+(k2-k1)/2)*offset)),
+                             ha='center', va='center') for i, (k1, k2) in enumerate(zip(ks2[:-1], ks2[1:]))]
+        else: pass
+        ax.text(0.05, 0.95, title, transform=ax.transAxes, ha='left', va='top', bbox=dict(facecolor='none', edgecolor='black'))
