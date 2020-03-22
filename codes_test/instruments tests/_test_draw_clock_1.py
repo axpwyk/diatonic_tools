@@ -42,7 +42,10 @@ def get_scale(scale_name, tonic=None, margin_anno_type='', colorize=None, save_n
 # get_chord('Eaug/Bb')
 
 
-get_scale('C Ionian', 0, 'degree', None, 'C Ionian')
-get_scale('Eb Ionian', 3, 'degree', None, 'Eb Ionian')
-get_scale('C Lydian', 0, 'degree', None, 'C Lydian')
-get_scale('C Aeolian(#7)', 0, 'degree', None, 'C Aeolian(#7)')
+# get_scale('C Ionian', 0, 'degree', None, 'C Ionian')
+# get_scale('Eb Ionian', 3, 'degree', None, 'Eb Ionian')
+# get_scale('C Lydian', 0, 'degree', None, 'C Lydian')
+# get_scale('C Aeolian(#7)', 0, 'degree', None, 'C Aeolian(#7)')
+
+get_scale('C Ionian(b3,#4,b6)')
+get_scale('C Phrygian(#3,#7)')

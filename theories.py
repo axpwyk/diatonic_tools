@@ -299,6 +299,7 @@ class AlteredDiatonicScale(DiatonicScale):
         print('Warning! Accidentals lost. `AlternatedDiatonicScale` -> `DiatonicScale`.')
 
     def get_name(self, type_only=False):
+        # TODO: return a simplified name, e.g. C Ionian(#4) -> C Lydian; C Ionian(b6, b7) -> C Aeolian(#3), etc.
         pass
 
 
