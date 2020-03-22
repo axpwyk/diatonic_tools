@@ -256,6 +256,11 @@ class DiatonicScale(object):
         else:
             return tonic_name_ + ' ' + scale_type
 
+    def get_interval_vector(self):
+        notes = abs(self)
+        notes = notes + [notes[0]+12]
+        return [n2-n1 for n1, n2 in zip(notes[:-1], notes[1:])]
+
     def add_sharp(self, n=1):
         self._accidentals += n
         self._get_meta_notes()

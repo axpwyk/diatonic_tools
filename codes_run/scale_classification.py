@@ -90,42 +90,30 @@ def scale_classes(n_accidentals=2):
     return results
 
 
-results = scale_classes(2)
-lengths = [len(class_k) for class_k in results]
-steps = [length//7 for length in lengths]
-for i, r in enumerate(results):
-    print(f'----- CLASS {i} -----')
-    step = steps[i]
-    for times in range(step):
-        print([r[times+step*k] for k in range(7)])
-print(lengths)
+# results = scale_classes(8)
+# with open('all_heptatonic_scale_classes.txt', 'w') as filehandle:
+#     for listitem in results:
+#         filehandle.write('%s\n' % listitem)
 
-# timer = Timer().start()
-# all_scales = []
-# for i in range(7):
-#     results = scale_classes(i)
-#     print(timer.record().get()[-1])
-#     for result in results:
-#         print(result[2:], end='\t')
-#     print()
-#     all_scales.append(results)
-#
-#
-# isos = [deepcopy([]) for _ in range(len(all_scales[0]))]
-# for t in range(len(all_scales[0])-1):
-#     cur_scale = all_scales[0].pop(0)
-#     print(cur_scale)
-#     isos[t].append(cur_scale)
-#     cur_scale_notes = AlteredDiatonicScale(cur_scale).get_notes()
-#     for base in all_scales[1:]:
-#         for i, cmp_scale in enumerate(base):
-#             cmp_scale_notes = AlteredDiatonicScale(cmp_scale).get_notes()
-#             if is_isomorphic(cur_scale_notes, cmp_scale_notes):
-#                 isos[t].append(base.pop(i))
-#                 continue
-#             else: continue
-# isos[-1].extend([s[0] for s in all_scales])
-#
-# for r in isos:
-#     print(r)
-#
+
+# classes =[]
+# with open('all_heptatonic_scale_classes.txt', 'r') as f:
+#     for line in f:
+#         classes.append(eval(line))
+# representative_scales = [c[0] for c in classes]
+# representative_scales = [abs(AlteredDiatonicScale(scale)) for scale in representative_scales]
+# representative_scales = [scale+[scale[0]+12] for scale in representative_scales]
+# all_heptatonic_scale_intervals = [[n2-n1 for n1, n2 in zip(scale[:-1], scale[1:])] for scale in representative_scales]
+# with open('all_heptatonic_scale_intervals.txt', 'w') as f:
+#     for listitem in all_heptatonic_scale_intervals:
+#         f.write(f'{listitem}\n')
+
+
+# lengths = [len(class_k) for class_k in results]
+# steps = [length//7 for length in lengths]
+# for i, r in enumerate(results):
+#     print(f'----- CLASS {i} -----')
+#     step = steps[i]
+#     for times in range(step):
+#         print([r[times+step*k] for k in range(7)])
+# print(lengths)

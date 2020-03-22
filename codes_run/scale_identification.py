@@ -1,43 +1,72 @@
 from theories import *
 
 
-def is_isomorphic(notes_1, notes_2):
+def is_isomorphic(list_1, list_2):
     # first we compare the length of two sequences
-    if len(notes_1) != len(notes_2):
-        return False
+    if len(list_1) != len(list_2): return False
 
-    # calculate interval sequences
-    notes_1_ = notes_1 + [notes_1[0]+Interval('P8')]
-    interval_seq_1 = [n2-n1 for n1, n2 in zip(notes_1_[:-1], notes_1_[1:])]
-    notes_2_ = notes_2 + [notes_2[0]+Interval('P8')]
-    interval_seq_2 = [n2-n1 for n1, n2 in zip(notes_2_[:-1], notes_2_[1:])]
+    # calculate circular
+    # list_1_fft = np.fft.fft(np.diff(list_1, append=list_1[0]))
+    # list_2_fft = np.fft.fft(np.diff(list_2, append=list_2[0]))
+    # d = np.linalg.norm(abs(list_1_fft)-abs(list_2_fft))
+    # if d > 1e-5: return False
 
     # compare interval sequences
-    def _r_shift(l, k):
-        return l[-k:] + l[:-k]
+    def _l_shift(li, k):
+        return li[k:] + li[:k]
 
     def _dist(l1, l2):
-        return sum([abs(abs(l1_i) - abs(l2_i)) for l1_i, l2_i in zip(l1, l2)])
+        return sum([abs(i-j) for i, j in zip(l1, l2)])
 
-    for i in range(len(interval_seq_1)):
-        if _dist(_r_shift(interval_seq_1, i), interval_seq_2) <= 0:
+    for i in range(len(list_1)):
+        if _dist(_l_shift(list_1, i), list_2) < 1e-5:
             return True
         else: pass
 
     return False
 
 
-def in_scale_list(scale, scale_list):
-    scale_notes = AlteredDiatonicScale(scale).get_notes()
-    scale_list_notes = [AlteredDiatonicScale(s).get_notes() for s in scale_list]
-    bools = [is_isomorphic(scale_notes, notes) for notes in scale_list_notes]
-    return bools
+def is_equal(list_1, list_2):
+    if len(list_1) != len(list_2): return False
+    def _dist(l1, l2):
+        return sum([abs(i-j) for i, j in zip(l1, l2)])
+
+    if _dist(list_1, list_2) < 1e-5: return True
+    else: return False
 
 
-scale = 'B Locrian(b4, b7)'
-scale_list = ['Lydian', 'Lydian(#2)', 'Lydian(#3)', 'Lydian(#5)', 'Lydian(b7)', 'Lydian(#6)', 'Lydian(b2)', 'Lydian(b3)', 'Lydian(b6)', 'Lydian(#2,#3)', 'Lydian(#2,#6)', 'Lydian(#2,b6)', 'Lydian(#2,b7)', 'Lydian(#3,#6)', 'Lydian(#3,b2)', 'Lydian(#3,b6)', 'Lydian(#3,b7)', 'Lydian(#5,#6)', 'Lydian(#5,b2)', 'Lydian(#5,b3)', 'Lydian(#6,b2)', 'Lydian(#6,b3)', 'Lydian(b2,b3)', 'Lydian(b2,b6)']
-scale_list = ['C '+s for s in scale_list]
+intervals_list = []
+with open('all_heptatonic_scale_intervals.txt', 'r') as f:
+    for line in f:
+        intervals_list.append(eval(line))
 
-print(in_scale_list(scale, scale_list))
-idx = in_scale_list(scale, scale_list).index(True)
-print(scale_list[idx])
+
+# scale = [Note('C0'), Note('Db0'), Note('Ebb0'), Note('F###0'), Note('G##0'), Note('A#0'), Note('B0')]
+scale = [Note('A0'), Note('B0'), Note('C1'), Note('D1'), Note('E1'), Note('F#1'), Note('G#1')]
+scale.append(scale[0]+Interval('P8'))
+intervals = [n2-n1 for n1, n2 in zip(scale[:-1], scale[1:])]
+print(intervals)
+intervals = [abs(interval) for interval in intervals]
+root = scale[0].get_name()
+# scale = AlteredDiatonicScale('C Ionian(#1,b7)')
+# intervals = scale.get_interval_vector()
+bools = [is_isomorphic(intervals, intervals_list[k]) for k in range(66)]
+idx = bools.index(True)
+
+
+class_idx = []
+with open('all_heptatonic_scale_classes.txt', 'r') as f:
+    for i, line in enumerate(f):
+        if i == idx: class_idx.extend(eval(line))
+step = len(class_idx)//7
+# from the least accidentals to the most accidentals, return at most 5 nearest scales
+class_idx_reshuffle = [[class_idx[s+step*k] for k in range(7)] for s in range(step)]
+class_idx_reshuffle = class_idx_reshuffle[:5]
+class_idx_reshuffle_intervals = [[AlteredDiatonicScale('C '+scale).get_interval_vector() for scale in r] for r in class_idx_reshuffle]
+indices = []
+for r in class_idx_reshuffle_intervals:
+    bools = [is_equal(intervals, c) for c in r]
+    if any(bools):
+        indices.append(bools.index(True))
+top_5_scales = [class_idx_reshuffle[j][i] for j, i in enumerate(indices)]
+print(f'Class={idx}, root={root}, type={top_5_scales}')
