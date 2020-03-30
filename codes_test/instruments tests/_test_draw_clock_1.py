@@ -47,5 +47,4 @@ def get_scale(scale_name, tonic=None, margin_anno_type='', colorize=None, save_n
 # get_scale('C Lydian', 0, 'degree', None, 'C Lydian')
 # get_scale('C Aeolian(#7)', 0, 'degree', None, 'C Aeolian(#7)')
 
-get_scale('C Ionian(b3,#4,b6)')
-get_scale('C Phrygian(#3,#7)')
+get_scale('C Ionian(b2, #4, #5, #6)')

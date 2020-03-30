@@ -90,6 +90,12 @@ def scale_classes(n_accidentals=2):
     return results
 
 
+timer = Timer().start()
+sc = scale_classes(2)
+t = timer.record().get()
+print(t); print(len(sc))
+
+
 # results = scale_classes(8)
 # with open('all_heptatonic_scale_classes.txt', 'w') as filehandle:
 #     for listitem in results:

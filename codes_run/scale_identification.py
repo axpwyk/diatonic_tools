@@ -41,15 +41,14 @@ with open('all_heptatonic_scale_intervals.txt', 'r') as f:
         intervals_list.append(eval(line))
 
 
-# scale = [Note('C0'), Note('Db0'), Note('Ebb0'), Note('F###0'), Note('G##0'), Note('A#0'), Note('B0')]
-scale = [Note('A0'), Note('B0'), Note('C1'), Note('D1'), Note('E1'), Note('F#1'), Note('G#1')]
-scale.append(scale[0]+Interval('P8'))
-intervals = [n2-n1 for n1, n2 in zip(scale[:-1], scale[1:])]
-print(intervals)
-intervals = [abs(interval) for interval in intervals]
+# scale = [Note('Cb0'), Note('Db0'), Note('Eb0'), Note('Fb0'), Note('Gb0'), Note('Ab0'), Note('Bbb0')]
+# scale.append(scale[0]+Interval('P8'))
+# intervals = [n2-n1 for n1, n2 in zip(scale[:-1], scale[1:])]
+# print(intervals)
+# intervals = [abs(interval) for interval in intervals]
+scale = AlteredDiatonicScale('C Lydian(#5,#6)')
+intervals = scale.get_interval_vector()
 root = scale[0].get_name()
-# scale = AlteredDiatonicScale('C Ionian(#1,b7)')
-# intervals = scale.get_interval_vector()
 bools = [is_isomorphic(intervals, intervals_list[k]) for k in range(66)]
 idx = bools.index(True)
 

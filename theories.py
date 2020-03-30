@@ -372,7 +372,7 @@ class Chord(object):
         tension_to_root_intervals = [t-self._body[0] for t in self._tensions]
         tension_names = [INTERVAL_NAME_TO_TENSION_NAME[str(i)] for i in tension_to_root_intervals]
 
-        if self._bass[0]:
+        if self._bass:
             if self._tensions == []:
                 return body_type + '/' + self._bass[0].get_name(show_group=False)
             else:
