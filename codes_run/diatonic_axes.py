@@ -1,7 +1,19 @@
-from utils_im import *
+import matplotlib.pyplot as plt
+import numpy as np
 
-fig, ax = add_figure_2d(5, 4, 'figure')
-ax.set_aspect('equal')
+
+# assign a style
+plt.style.use('seaborn-pastel')
+# assign a math font
+plt.rc('mathtext', **{'fontset': 'cm'})
+plt.rc('text', **{'usetex': False})
+# assign a chinese font
+plt.rc('font', **{'sans-serif': 'Consolas-with-Yahei'})
+plt.rc('axes', **{'unicode_minus': False})
+
+
+fig = plt.figure(figsize=(5, 4), dpi=144)
+ax = plt.gca(aspect='equal')
 t = np.arange(0, 13, dtype='int')
 tonics = [r'A$\flat$', r'E$\flat$', r'B$\flat$', 'F', 'C', 'G',
           'D',
@@ -44,7 +56,7 @@ for k in range(right+1):
     ax.annotate(chord_types[k], (right+0.5, k), ha='left', va='center', annotation_clip=False)
 
 # 标题
-#ax.set_title('Diatonic Modes & Chords Cheat Sheet by ykykyukai\n', ha='center')
+# ax.set_title('Diatonic Modes & Chords Cheat Sheet by ykykyukai\n', ha='center')
 
-savefig('diatonic_cheat_sheet_v2.svg')
+# savefig('diatonic_cheat_sheet_v2.svg')
 fig.show()

@@ -44,7 +44,7 @@ def d(notes_1, notes_2):
     return min(ds)
 
 
-with open('all_heptatonic_scale_classes.txt', 'r') as f:
+with open('../all_heptatonic_scale_classes.txt', 'r') as f:
     classes = []
     for line in f:
         classes.append(eval(line)[0])

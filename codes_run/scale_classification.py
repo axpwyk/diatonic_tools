@@ -61,6 +61,7 @@ def scale_classes(n_accidentals=2):
     base_diatonic_modes = ['Lydian', 'Ionian', 'Mixolydian', 'Dorian', 'Aeolian', 'Phrygian', 'Locrian']
     base_diatonic_modes = _l_shift(base_diatonic_modes, offset)
     accidentals = [''] + [f'#{k}' for k in range(1, 8)] + [f'b{k}' for k in range(1, 8)]
+    # accidentals = [''] + [f'#{k}' for k in [4,3,2,1,7,6,5]] + [f'b{k}' for k in [7,6,5,4,3,2,1]]  # new
 
     results = []
     for mode in base_diatonic_modes:
@@ -94,7 +95,8 @@ timer = Timer().start()
 sc = scale_classes(2)
 t = timer.record().get()
 print(t); print(len(sc))
-
+for r in sc:
+    print(r)
 
 # results = scale_classes(8)
 # with open('all_heptatonic_scale_classes.txt', 'w') as filehandle:
