@@ -41,7 +41,6 @@ INTERVAL_TYPES = [
 # these two encoders are used to calculate number of accidentals
 SCALE_TYPE_ENCODER = {'Locrian': -3, 'Phrygian': -2, 'Aeolian': -1, 'Dorian': 0, 'Mixolydian': 1, 'Ionian': 2, 'Lydian':3}
 
-# for calculating of number of accidentals
 TONIC_NAME_ENCODER = {'F': -3, 'C': -2, 'G': -1, 'D': 0, 'A': 1, 'E': 2, 'B': 3}
 
 # for `get_name` method
@@ -57,7 +56,7 @@ with open('all_heptatonic_scale_intervals.txt', 'r') as f:
     for line in f:
         INTERVAL_VECTOR_LIST.append(eval(line))
 
-# get all 66 classes
+# get all names of 66 classes
 CLASS_LIST = []
 with open('all_heptatonic_scale_classes.txt', 'r') as f:
     for line in f:

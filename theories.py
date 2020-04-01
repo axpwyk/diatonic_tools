@@ -323,6 +323,7 @@ class DiatonicScale(object):
         for i in range(4):
             idx = (step+2*i)
             body.append(self[idx%l] if idx<l else self[idx%l]+Interval('P8'))
+
         return Chord().set_notes(body=body)
 
     def get_full_chord(self, step=0):
@@ -333,6 +334,7 @@ class DiatonicScale(object):
             idx = (step+2*i)
             add_interval = sum([Interval('P8') for _ in range(idx//l)], Interval('P1'))
             notes.append(self[idx%l]+add_interval)
+
         return Chord().set_notes(body=notes[:4], tensions=notes[4:])
 
 
@@ -466,11 +468,17 @@ class Chord(object):
 
     def set_notes(self, bass=None, body=None, tensions=None):
         if bass:
-            self._bass = [bass]
+            self._bass = [bass.set_message('B')]
         if body:
             self._body = body
+            messages = ['R', '3', '5', '7']
+            for i, note in enumerate(self._body):
+                note.set_message(messages[i])
         if tensions:
             self._tensions = tensions
+            for note in self._tensions:
+                note.set_message(INTERVAL_NAME_TO_TENSION_NAME[str(note-self._body[0])])
+
         return self
 
     def get_notes(self):
