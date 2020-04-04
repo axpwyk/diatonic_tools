@@ -111,8 +111,11 @@ class Note(object):
             self._group = group
         return self
 
-    def get_vector(self):
-        return self._nn, self._accidental, self._group
+    def get_vector(self, return_group=True):
+        if return_group:
+            return self._nn, self._accidental, self._group
+        else:
+            return self._nn, self._accidental
 
     def get_name(self, show_group=True):
         # get name of `Note`, e.g. Note('C0').get_name() = 'C0', Note('C0').get_name(show_group=False) = 'C', etc.
@@ -361,7 +364,7 @@ class AlteredDiatonicScale(DiatonicScale):
         else:
             super().__init__(scale_name)
 
-    def get_name(self, top_k=1, return_class=False):
+    def get_name(self, top_k=1, return_class_idx=False):
         def _dist(l1, l2):
                 return sum([abs(i-j) for i, j in zip(l1, l2)])
 
@@ -392,7 +395,7 @@ class AlteredDiatonicScale(DiatonicScale):
 
         # compare interval vector with saved files, find class number `idx`
         interval_vector = self.get_interval_vector()
-        bools = [_is_isomorphic(interval_vector, iv) for iv in INTERVAL_VECTOR_LIST]
+        bools = [_is_isomorphic(interval_vector, iv) for iv in SCALE_INTERVAL_VECTOR_LIST]
         idx = bools.index(True)
 
         class_idx = CLASS_LIST[idx]
@@ -420,7 +423,7 @@ class AlteredDiatonicScale(DiatonicScale):
 
         # print(f'Class={idx}, Root={tonic_name}, Type={top_k_scales}')
 
-        if return_class:
+        if return_class_idx:
             return names, idx
         else:
             return names
@@ -481,8 +484,11 @@ class Chord(object):
 
         return self
 
-    def get_notes(self):
-        return self._bass + self._body + self._tensions
+    def get_notes(self, bass_on=True):
+        if bass_on:
+            return self._bass + self._body + self._tensions
+        else:
+            return self._body + self._tensions
 
     def get_name(self, type_only=False):
         # get bass type
@@ -509,6 +515,67 @@ class Chord(object):
             return chord_type
         else:
             return f'{self._body[0].get_name(show_group=False)}{chord_type}'
+
+    def get_scale(self, top_k=1, return_class_idx=False):
+        ''' get least-order scale of current chord '''
+        def _dist(l1, l2):
+                return sum([abs(i-j) for i, j in zip(l1, l2)])
+
+        def _lshift(l, k):
+            return l[k:] + l[:k]
+
+        def _is_equal(list_1, list_2):
+            if len(list_1) != len(list_2): return False
+            if _dist(list_1, list_2) < 1e-5: return True
+            else: return False
+
+        chord_notes = self.get_notes(bass_on=False)
+        root_name = chord_notes[0].get_name(show_group=False)
+        iv = [abs(n2-n1) for n1, n2 in zip(chord_notes[:-1], chord_notes[1:])]
+
+        # find all root positions in 66 classes of current chord
+        all_steps = [[(k*2)%7 for k in range(7) if _is_equal(_lshift(interval_vector, k)[:len(iv)], iv)] for interval_vector in CHORD_INTERVAL_VECTOR_LIST]
+
+        all_scales = []
+        all_indices = []
+        for k, indices in enumerate(all_steps):
+            if indices:
+                class_k = CLASS_LIST[k]
+                step = len(class_k) // 7
+                # from the least accidentals to the most accidentals, return top k nearest scales
+                class_k_reshuffle = sum([[class_k[s+step*j] for j in range(7)] for s in range(step)], [])
+                for idx in indices:
+                    cur_scale_type = class_k_reshuffle[(idx*2)%7]
+                    sharps_on_tonics = cur_scale_type.count('#1')
+                    flats_on_tonics = cur_scale_type.count('b1')
+                    new_root_name = root_name + '#'*flats_on_tonics + 'b'*sharps_on_tonics
+                    cur_scale = AlteredDiatonicScale(new_root_name + ' ' + cur_scale_type)
+                    all_scales.append(cur_scale)
+                    all_indices.append(k)
+
+        if return_class_idx:
+            return all_scales[:top_k], all_indices[:top_k]
+        else:
+            return all_scales[:top_k]
+
+    def get_icd(self, note_name):
+        ''' get in-chord degree of a note '''
+        scales = self.get_scale(66)
+        icds = []
+        for scale in scales:
+            scale_nvs = [note.get_vector(return_group=False) for note in scale]  # nvs = note vectors
+            note = Note(note_name)
+            note_nv = note.get_vector(return_group=False)
+            if note_nv not in scale_nvs:
+                icds.append((scale.get_name()[0], -1))
+            else:
+                icds.append((scale.get_name()[0], scale_nvs.index(note_nv) + 1))
+        return icds[[x[1]!=-1 for x in icds].index(True)]
+
+
+class ChordScale(object):
+    #TODO: finish class `ChordScale`, example: Gm(C Aeolian), Gm(C Dorian), etc.
+    pass
 
 
 ''' other exciting functions '''

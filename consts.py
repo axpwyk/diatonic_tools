@@ -51,10 +51,15 @@ SCALE_TYPE_DECODER = ['Locrian', 'Phrygian', 'Aeolian', 'Dorian', 'Mixolydian', 
 
 
 # get interval vectors of all 66 classes
-INTERVAL_VECTOR_LIST = []
+SCALE_INTERVAL_VECTOR_LIST = []
 with open('all_heptatonic_scale_intervals.txt', 'r') as f:
     for line in f:
-        INTERVAL_VECTOR_LIST.append(eval(line))
+        SCALE_INTERVAL_VECTOR_LIST.append(eval(line))
+
+CHORD_INTERVAL_VECTOR_LIST = []
+with open('all_heptatonic_chord_intervals.txt', 'r') as f:
+    for line in f:
+        CHORD_INTERVAL_VECTOR_LIST.append(eval(line))
 
 # get all names of 66 classes
 CLASS_LIST = []
