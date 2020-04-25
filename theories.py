@@ -538,7 +538,9 @@ class Chord(object):
 
         all_scales = []
         all_indices = []
+        num_class = 0
         for k, indices in enumerate(all_steps):
+            if num_class >= top_k: break
             if indices:
                 class_k = CLASS_LIST[k]
                 step = len(class_k) // 7
@@ -552,11 +554,12 @@ class Chord(object):
                     cur_scale = AlteredDiatonicScale(new_root_name + ' ' + cur_scale_type)
                     all_scales.append(cur_scale)
                     all_indices.append(k)
+                num_class += 1
 
         if return_class_idx:
-            return all_scales[:top_k], all_indices[:top_k]
+            return all_scales, all_indices
         else:
-            return all_scales[:top_k]
+            return all_scales
 
     def get_icd(self, note_name):
         ''' get in-chord degree of a note '''

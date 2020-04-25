@@ -332,7 +332,7 @@ class Clock(object):
     def __init__(self, notes):
         self._notes = notes
 
-    def plot(self, title, tonic=None, margin_anno_type=None, colorize=None):
+    def plot(self, title, tonic=None, margin_anno_type=None, colorize=None, subtitle=None, ax=None):
         import colorsys as cs
 
         radius = 5
@@ -367,9 +367,10 @@ class Clock(object):
         ''' new figure '''
 
 
-        fig, ax = plt.subplots(1, 1)
-        fig.set_figwidth(4); fig.set_figheight(4)
-        fig.subplots_adjust(left=0.05, bottom=0.05, right=0.95, top=0.95, wspace=0.0, hspace=0.0)
+        if not ax:
+            fig, ax = plt.subplots(1, 1)
+            fig.set_figwidth(4); fig.set_figheight(4)
+            fig.subplots_adjust(left=0.05, bottom=0.05, right=0.95, top=0.95, wspace=0.0, hspace=0.0)
         ax.margins(0.0)
         ax.set_aspect('equal')
         ax.set_xticks([]); ax.set_yticks([])
@@ -403,6 +404,8 @@ class Clock(object):
                              ha='center', va='center') for i, (k1, k2) in enumerate(zip(ks2[:-1], ks2[1:]))]
         else: pass
         ax.text(0.05, 0.95, title, transform=ax.transAxes, ha='left', va='top', bbox=dict(facecolor='none', edgecolor='black'))
+        if subtitle:
+            ax.text(0.95, 0.05, subtitle, transform=ax.transAxes, ha='right', va='bottom', bbox=dict(facecolor='none', edgecolor='black'))
 
 
 class ColorScheme(object):
