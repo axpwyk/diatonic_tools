@@ -23,7 +23,7 @@ def nl3(x, a, delta_a):
 
 
 '''读取数据'''
-path = pathlib.Path(r'../wavs/shutter_doll.wav')
+path = pathlib.Path(r'../../audio/korekuraide.mp3')
 sampling_frequency, wav = read(path)
 wav = wav / 32768
 wav = wav[:, 0]

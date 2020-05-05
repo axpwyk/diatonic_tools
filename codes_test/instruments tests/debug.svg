@@ -27,7 +27,7 @@ z
 " style="fill:#ffffff;"/>
    </g>
    <g id="patch_3">
-    <path clip-path="url(#p65a31ef669)" d="M 133.1 205.1 
+    <path clip-path="url(#p16f1593c3f)" d="M 133.1 205.1 
 C 152.194623 205.1 170.509751 197.513626 184.011688 184.011688 
 C 197.513626 170.509751 205.1 152.194623 205.1 133.1 
 C 205.1 114.005377 197.513626 95.690249 184.011688 82.188312 
@@ -42,97 +42,82 @@ z
    <g id="matplotlib.axis_1"/>
    <g id="matplotlib.axis_2"/>
    <g id="line2d_1">
-    <path clip-path="url(#p65a31ef669)" d="M 133.1 133.1 
-L 133.1 75.5 
-" style="fill:none;stroke:#808080;stroke-linecap:square;stroke-width:1.5;"/>
+    <path clip-path="url(#p16f1593c3f)" d="M 133.1 133.1 
+L 104.3 182.983063 
+" style="fill:none;stroke:#bf0000;stroke-linecap:square;stroke-width:1.5;"/>
    </g>
    <g id="line2d_2">
-    <path clip-path="url(#p65a31ef669)" d="M 133.1 133.1 
-L 161.9 83.216937 
-" style="fill:none;stroke:#808080;stroke-linecap:square;stroke-width:1.5;"/>
-   </g>
-   <g id="line2d_3">
-    <path clip-path="url(#p65a31ef669)" d="M 133.1 133.1 
-L 182.983063 161.9 
-" style="fill:none;stroke:#808080;stroke-linecap:square;stroke-width:1.5;"/>
-   </g>
-   <g id="line2d_4">
-    <path clip-path="url(#p65a31ef669)" d="M 133.1 133.1 
-L 133.1 190.7 
-" style="fill:none;stroke:#808080;stroke-linecap:square;stroke-width:1.5;"/>
-   </g>
-   <g id="line2d_5">
-    <path clip-path="url(#p65a31ef669)" d="M 133.1 133.1 
-L 83.216937 161.9 
-" style="fill:none;stroke:#808080;stroke-linecap:square;stroke-width:1.5;"/>
-   </g>
-   <g id="line2d_6">
-    <path clip-path="url(#p65a31ef669)" d="M 133.1 133.1 
-L 83.216937 104.3 
-" style="fill:none;stroke:#808080;stroke-linecap:square;stroke-width:1.5;"/>
-   </g>
-   <g id="line2d_7">
-    <path clip-path="url(#p65a31ef669)" d="M 133.1 133.1 
+    <path clip-path="url(#p16f1593c3f)" d="M 133.1 133.1 
 L 104.3 83.216937 
 " style="fill:none;stroke:#808080;stroke-linecap:square;stroke-width:1.5;"/>
    </g>
-   <g id="line2d_8">
-    <path clip-path="url(#p65a31ef669)" d="M 133.1 64.7 
+   <g id="line2d_3">
+    <path clip-path="url(#p16f1593c3f)" d="M 133.1 133.1 
+L 190.7 133.1 
+" style="fill:none;stroke:#808080;stroke-linecap:square;stroke-width:1.5;"/>
+   </g>
+   <g id="line2d_4">
+    <path clip-path="url(#p16f1593c3f)" d="M 133.1 133.1 
+L 161.9 182.983063 
+" style="fill:none;stroke:#808080;stroke-linecap:square;stroke-width:1.5;"/>
+   </g>
+   <g id="line2d_5">
+    <path clip-path="url(#p16f1593c3f)" d="M 133.1 64.7 
 L 133.1 61.1 
 " style="fill:none;stroke:#000000;stroke-linecap:square;"/>
    </g>
-   <g id="line2d_9">
-    <path clip-path="url(#p65a31ef669)" d="M 167.3 73.863862 
+   <g id="line2d_6">
+    <path clip-path="url(#p16f1593c3f)" d="M 167.3 73.863862 
 L 169.1 70.746171 
 " style="fill:none;stroke:#000000;stroke-linecap:square;"/>
    </g>
-   <g id="line2d_10">
-    <path clip-path="url(#p65a31ef669)" d="M 192.336138 98.9 
+   <g id="line2d_7">
+    <path clip-path="url(#p16f1593c3f)" d="M 192.336138 98.9 
 L 195.453829 97.1 
 " style="fill:none;stroke:#000000;stroke-linecap:square;"/>
    </g>
-   <g id="line2d_11">
-    <path clip-path="url(#p65a31ef669)" d="M 201.5 133.1 
+   <g id="line2d_8">
+    <path clip-path="url(#p16f1593c3f)" d="M 201.5 133.1 
 L 205.1 133.1 
 " style="fill:none;stroke:#000000;stroke-linecap:square;"/>
    </g>
-   <g id="line2d_12">
-    <path clip-path="url(#p65a31ef669)" d="M 192.336138 167.3 
+   <g id="line2d_9">
+    <path clip-path="url(#p16f1593c3f)" d="M 192.336138 167.3 
 L 195.453829 169.1 
 " style="fill:none;stroke:#000000;stroke-linecap:square;"/>
    </g>
-   <g id="line2d_13">
-    <path clip-path="url(#p65a31ef669)" d="M 167.3 192.336138 
+   <g id="line2d_10">
+    <path clip-path="url(#p16f1593c3f)" d="M 167.3 192.336138 
 L 169.1 195.453829 
 " style="fill:none;stroke:#000000;stroke-linecap:square;"/>
    </g>
-   <g id="line2d_14">
-    <path clip-path="url(#p65a31ef669)" d="M 133.1 201.5 
+   <g id="line2d_11">
+    <path clip-path="url(#p16f1593c3f)" d="M 133.1 201.5 
 L 133.1 205.1 
 " style="fill:none;stroke:#000000;stroke-linecap:square;"/>
    </g>
-   <g id="line2d_15">
-    <path clip-path="url(#p65a31ef669)" d="M 98.9 192.336138 
+   <g id="line2d_12">
+    <path clip-path="url(#p16f1593c3f)" d="M 98.9 192.336138 
 L 97.1 195.453829 
 " style="fill:none;stroke:#000000;stroke-linecap:square;"/>
    </g>
-   <g id="line2d_16">
-    <path clip-path="url(#p65a31ef669)" d="M 73.863862 167.3 
+   <g id="line2d_13">
+    <path clip-path="url(#p16f1593c3f)" d="M 73.863862 167.3 
 L 70.746171 169.1 
 " style="fill:none;stroke:#000000;stroke-linecap:square;"/>
    </g>
-   <g id="line2d_17">
-    <path clip-path="url(#p65a31ef669)" d="M 64.7 133.1 
+   <g id="line2d_14">
+    <path clip-path="url(#p16f1593c3f)" d="M 64.7 133.1 
 L 61.1 133.1 
 " style="fill:none;stroke:#000000;stroke-linecap:square;"/>
    </g>
-   <g id="line2d_18">
-    <path clip-path="url(#p65a31ef669)" d="M 73.863862 98.9 
+   <g id="line2d_15">
+    <path clip-path="url(#p16f1593c3f)" d="M 73.863862 98.9 
 L 70.746171 97.1 
 " style="fill:none;stroke:#000000;stroke-linecap:square;"/>
    </g>
-   <g id="line2d_19">
-    <path clip-path="url(#p65a31ef669)" d="M 98.9 73.863862 
+   <g id="line2d_16">
+    <path clip-path="url(#p16f1593c3f)" d="M 98.9 73.863862 
 L 97.1 70.746171 
 " style="fill:none;stroke:#000000;stroke-linecap:square;"/>
    </g>
@@ -597,14 +582,14 @@ z
    </g>
    <g id="text_13">
     <g id="patch_8">
-     <path d="M 118.103125 40.960938 
-L 148.096875 40.960938 
-L 148.096875 23.639063 
-L 118.103125 23.639063 
+     <path d="M 126.350781 40.750781 
+L 139.849219 40.750781 
+L 139.849219 23.849219 
+L 126.350781 23.849219 
 z
-" style="fill:#df2020;opacity:0.2;stroke:#df2020;stroke-linejoin:miter;"/>
+" style="fill:#808080;opacity:0.2;stroke:#808080;stroke-linejoin:miter;"/>
     </g>
-    <!-- C(I) -->
+    <!-- C -->
     <defs>
      <path d="M 48.578125 2.390625 
 Q 40.921875 -0.78125 32.515625 -0.78125 
@@ -629,153 +614,21 @@ Q 37.59375 6.984375 41.359375 7.9375
 Q 45.125 8.890625 48.578125 10.59375 
 z
 " id="Consolas-with-Yahei-67"/>
-     <path d="M 37.15625 -20.515625 
-Q 14.65625 0.34375 14.65625 25.59375 
-Q 14.65625 31.5 15.84375 37.375 
-Q 17.046875 43.265625 19.703125 49.171875 
-Q 22.359375 55.078125 26.734375 60.984375 
-Q 31.109375 66.890625 37.359375 72.703125 
-L 42.28125 67.671875 
-Q 23.34375 48.96875 23.34375 26.21875 
-Q 23.34375 14.890625 28.125 4.4375 
-Q 32.90625 -6 42.28125 -15.28125 
-z
-" id="Consolas-with-Yahei-40"/>
-     <path d="M 23.09375 56.5 
-L 8.40625 56.5 
-L 8.40625 63.8125 
-L 46.578125 63.8125 
-L 46.578125 56.5 
-L 31.890625 56.5 
-L 31.890625 7.421875 
-L 46.578125 7.421875 
-L 46.578125 0 
-L 8.40625 0 
-L 8.40625 7.421875 
-L 23.09375 7.421875 
-z
-" id="Consolas-with-Yahei-73"/>
-     <path d="M 17.828125 72.703125 
-Q 40.328125 51.859375 40.328125 26.3125 
-Q 40.328125 21.046875 39.25 15.375 
-Q 38.1875 9.71875 35.59375 3.78125 
-Q 33.015625 -2.15625 28.640625 -8.25 
-Q 24.265625 -14.359375 17.625 -20.515625 
-L 12.703125 -15.484375 
-Q 22.21875 -6.0625 26.90625 4.1875 
-Q 31.59375 14.453125 31.59375 25.6875 
-Q 31.59375 48.921875 12.703125 67.484375 
-z
-" id="Consolas-with-Yahei-41"/>
     </defs>
-    <g transform="translate(122.103125 34.909375)scale(0.1 -0.1)">
+    <g transform="translate(130.350781 34.749219)scale(0.1 -0.1)">
      <use xlink:href="#Consolas-with-Yahei-67"/>
-     <use x="54.980469" xlink:href="#Consolas-with-Yahei-40"/>
-     <use x="109.960938" xlink:href="#Consolas-with-Yahei-73"/>
-     <use x="164.941406" xlink:href="#Consolas-with-Yahei-41"/>
     </g>
    </g>
    <g id="text_14">
     <g id="patch_9">
-     <path d="M 163.8 54.604639 
-L 203.2 54.604639 
-L 203.2 37.004639 
-L 163.8 37.004639 
-z
-" style="fill:#df8020;opacity:0.2;stroke:#df8020;stroke-linejoin:miter;"/>
-    </g>
-    <!-- D$\flat$(II) -->
-    <defs>
-     <path d="M 51.421875 32.625 
-Q 51.421875 28.03125 50.703125 23.828125 
-Q 50 19.625 48.4375 16.015625 
-Q 46.875 12.40625 44.375 9.453125 
-Q 41.890625 6.5 38.28125 4.390625 
-Q 34.671875 2.296875 29.875 1.140625 
-Q 25.09375 0 19 0 
-L 5.328125 0 
-L 5.328125 63.8125 
-L 21.78125 63.8125 
-Q 36.71875 63.8125 44.0625 56.125 
-Q 51.421875 48.4375 51.421875 32.625 
-z
-M 42.28125 31.984375 
-Q 42.28125 38.765625 41.015625 43.453125 
-Q 39.75 48.140625 37.15625 51.015625 
-Q 34.578125 53.90625 30.671875 55.203125 
-Q 26.765625 56.5 21.484375 56.5 
-L 14.015625 56.5 
-L 14.015625 7.515625 
-L 20.515625 7.515625 
-Q 42.28125 7.515625 42.28125 31.984375 
-z
-" id="Consolas-with-Yahei-68"/>
-     <path d="M 5.609375 -1.3125 
-L 5.609375 74.125 
-Q 5.609375 74.46875 5.921875 74.734375 
-Q 6.25 75 6.59375 75 
-L 7.515625 75 
-Q 7.859375 75 8.171875 74.734375 
-Q 8.5 74.46875 8.5 74.125 
-L 8.5 42.1875 
-Q 10.6875 44.28125 13.609375 45.234375 
-Q 16.546875 46.1875 19.921875 46.1875 
-Q 23.53125 46.1875 26.578125 44.25 
-Q 29.640625 42.328125 31.421875 39.109375 
-Q 33.203125 35.890625 33.203125 32.328125 
-Q 33.203125 25.09375 29.640625 18.8125 
-Q 26.078125 12.546875 20.75 7.734375 
-Q 15.4375 2.9375 8.109375 -2 
-Q 7.71875 -2.203125 7.515625 -2.203125 
-L 6.59375 -2.203125 
-Q 6.34375 -2.203125 5.96875 -1.875 
-Q 5.609375 -1.5625 5.609375 -1.3125 
-z
-M 8.5 2 
-Q 13.09375 6.34375 16.671875 11.03125 
-Q 20.265625 15.71875 22.484375 21.1875 
-Q 24.703125 26.65625 24.703125 32.328125 
-Q 24.703125 34.421875 24.171875 36.6875 
-Q 23.640625 38.96875 22.3125 40.578125 
-Q 21 42.1875 18.796875 42.1875 
-Q 14.890625 42.1875 11.6875 40.546875 
-Q 8.5 38.921875 8.5 35.40625 
-z
-" id="Cmmi10-91"/>
-    </defs>
-    <g transform="translate(167.8 48.504639)scale(0.1 -0.1)">
-     <use xlink:href="#Consolas-with-Yahei-68"/>
-     <use transform="translate(54.980469 0)" xlink:href="#Cmmi10-91"/>
-     <use transform="translate(93.798828 0)" xlink:href="#Consolas-with-Yahei-40"/>
-     <use transform="translate(148.779297 0)" xlink:href="#Consolas-with-Yahei-73"/>
-     <use transform="translate(203.759766 0)" xlink:href="#Consolas-with-Yahei-73"/>
-     <use transform="translate(258.740234 0)" xlink:href="#Consolas-with-Yahei-41"/>
-    </g>
-   </g>
-   <g id="text_15">
-    <g id="patch_10">
-     <path d="M 213.646142 91.150781 
-L 227.144579 91.150781 
-L 227.144579 74.249219 
-L 213.646142 74.249219 
+     <path d="M 167.35 54.654639 
+L 199.65 54.654639 
+L 199.65 36.954639 
+L 167.35 36.954639 
 z
 " style="fill:#808080;opacity:0.2;stroke:#808080;stroke-linejoin:miter;"/>
     </g>
-    <!-- D -->
-    <g transform="translate(217.646142 85.149219)scale(0.1 -0.1)">
-     <use xlink:href="#Consolas-with-Yahei-68"/>
-    </g>
-   </g>
-   <g id="text_16">
-    <g id="patch_11">
-     <path d="M 217.75 141.95 
-L 250.05 141.95 
-L 250.05 124.25 
-L 217.75 124.25 
-z
-" style="fill:#808080;opacity:0.2;stroke:#808080;stroke-linejoin:miter;"/>
-    </g>
-    <!-- D$\sharp$/E$\flat$ -->
+    <!-- C$\sharp$/D$\flat$ -->
     <defs>
      <path d="M 9.71875 -20.90625 
 L 9.71875 -7.625 
@@ -847,6 +700,140 @@ L 5.609375 -10.5
 L 39.109375 69 
 z
 " id="Consolas-with-Yahei-47"/>
+     <path d="M 51.421875 32.625 
+Q 51.421875 28.03125 50.703125 23.828125 
+Q 50 19.625 48.4375 16.015625 
+Q 46.875 12.40625 44.375 9.453125 
+Q 41.890625 6.5 38.28125 4.390625 
+Q 34.671875 2.296875 29.875 1.140625 
+Q 25.09375 0 19 0 
+L 5.328125 0 
+L 5.328125 63.8125 
+L 21.78125 63.8125 
+Q 36.71875 63.8125 44.0625 56.125 
+Q 51.421875 48.4375 51.421875 32.625 
+z
+M 42.28125 31.984375 
+Q 42.28125 38.765625 41.015625 43.453125 
+Q 39.75 48.140625 37.15625 51.015625 
+Q 34.578125 53.90625 30.671875 55.203125 
+Q 26.765625 56.5 21.484375 56.5 
+L 14.015625 56.5 
+L 14.015625 7.515625 
+L 20.515625 7.515625 
+Q 42.28125 7.515625 42.28125 31.984375 
+z
+" id="Consolas-with-Yahei-68"/>
+     <path d="M 5.609375 -1.3125 
+L 5.609375 74.125 
+Q 5.609375 74.46875 5.921875 74.734375 
+Q 6.25 75 6.59375 75 
+L 7.515625 75 
+Q 7.859375 75 8.171875 74.734375 
+Q 8.5 74.46875 8.5 74.125 
+L 8.5 42.1875 
+Q 10.6875 44.28125 13.609375 45.234375 
+Q 16.546875 46.1875 19.921875 46.1875 
+Q 23.53125 46.1875 26.578125 44.25 
+Q 29.640625 42.328125 31.421875 39.109375 
+Q 33.203125 35.890625 33.203125 32.328125 
+Q 33.203125 25.09375 29.640625 18.8125 
+Q 26.078125 12.546875 20.75 7.734375 
+Q 15.4375 2.9375 8.109375 -2 
+Q 7.71875 -2.203125 7.515625 -2.203125 
+L 6.59375 -2.203125 
+Q 6.34375 -2.203125 5.96875 -1.875 
+Q 5.609375 -1.5625 5.609375 -1.3125 
+z
+M 8.5 2 
+Q 13.09375 6.34375 16.671875 11.03125 
+Q 20.265625 15.71875 22.484375 21.1875 
+Q 24.703125 26.65625 24.703125 32.328125 
+Q 24.703125 34.421875 24.171875 36.6875 
+Q 23.640625 38.96875 22.3125 40.578125 
+Q 21 42.1875 18.796875 42.1875 
+Q 14.890625 42.1875 11.6875 40.546875 
+Q 8.5 38.921875 8.5 35.40625 
+z
+" id="Cmmi10-91"/>
+    </defs>
+    <g transform="translate(171.35 48.454639)scale(0.1 -0.1)">
+     <use xlink:href="#Consolas-with-Yahei-67"/>
+     <use transform="translate(54.980469 0)" xlink:href="#Cmmi10-93"/>
+     <use transform="translate(93.798828 0)" xlink:href="#Consolas-with-Yahei-47"/>
+     <use transform="translate(148.779297 0)" xlink:href="#Consolas-with-Yahei-68"/>
+     <use transform="translate(203.759766 0)" xlink:href="#Cmmi10-91"/>
+    </g>
+   </g>
+   <g id="text_15">
+    <g id="patch_10">
+     <path d="M 213.646142 91.150781 
+L 227.144579 91.150781 
+L 227.144579 74.249219 
+L 213.646142 74.249219 
+z
+" style="fill:#808080;opacity:0.2;stroke:#808080;stroke-linejoin:miter;"/>
+    </g>
+    <!-- D -->
+    <g transform="translate(217.646142 85.149219)scale(0.1 -0.1)">
+     <use xlink:href="#Consolas-with-Yahei-68"/>
+    </g>
+   </g>
+   <g id="text_16">
+    <g id="patch_11">
+     <path d="M 216.95 141.85 
+L 250.85 141.85 
+L 250.85 124.35 
+L 216.95 124.35 
+z
+" style="fill:#80df20;opacity:0.2;stroke:#80df20;stroke-linejoin:miter;"/>
+    </g>
+    <!-- D$\sharp$(5) -->
+    <defs>
+     <path d="M 37.15625 -20.515625 
+Q 14.65625 0.34375 14.65625 25.59375 
+Q 14.65625 31.5 15.84375 37.375 
+Q 17.046875 43.265625 19.703125 49.171875 
+Q 22.359375 55.078125 26.734375 60.984375 
+Q 31.109375 66.890625 37.359375 72.703125 
+L 42.28125 67.671875 
+Q 23.34375 48.96875 23.34375 26.21875 
+Q 23.34375 14.890625 28.125 4.4375 
+Q 32.90625 -6 42.28125 -15.28125 
+z
+" id="Consolas-with-Yahei-40"/>
+     <path d="M 17.828125 72.703125 
+Q 40.328125 51.859375 40.328125 26.3125 
+Q 40.328125 21.046875 39.25 15.375 
+Q 38.1875 9.71875 35.59375 3.78125 
+Q 33.015625 -2.15625 28.640625 -8.25 
+Q 24.265625 -14.359375 17.625 -20.515625 
+L 12.703125 -15.484375 
+Q 22.21875 -6.0625 26.90625 4.1875 
+Q 31.59375 14.453125 31.59375 25.6875 
+Q 31.59375 48.921875 12.703125 67.484375 
+z
+" id="Consolas-with-Yahei-41"/>
+    </defs>
+    <g transform="translate(220.95 135.65)scale(0.1 -0.1)">
+     <use transform="translate(0 0.296875)" xlink:href="#Consolas-with-Yahei-68"/>
+     <use transform="translate(54.980469 0.296875)" xlink:href="#Cmmi10-93"/>
+     <use transform="translate(93.798828 0.296875)" xlink:href="#Consolas-with-Yahei-40"/>
+     <use transform="translate(148.779297 0.296875)" xlink:href="#Consolas-with-Yahei-53"/>
+     <use transform="translate(203.759766 0.296875)" xlink:href="#Consolas-with-Yahei-41"/>
+    </g>
+   </g>
+   <g id="text_17">
+    <g id="patch_12">
+     <path d="M 213.646142 191.950781 
+L 227.144579 191.950781 
+L 227.144579 175.049219 
+L 213.646142 175.049219 
+z
+" style="fill:#808080;opacity:0.2;stroke:#808080;stroke-linejoin:miter;"/>
+    </g>
+    <!-- E -->
+    <defs>
      <path d="M 46.09375 0 
 L 9.8125 0 
 L 9.8125 63.8125 
@@ -862,43 +849,20 @@ L 46.09375 7.421875
 z
 " id="Consolas-with-Yahei-69"/>
     </defs>
-    <g transform="translate(221.75 135.75)scale(0.1 -0.1)">
-     <use xlink:href="#Consolas-with-Yahei-68"/>
-     <use transform="translate(54.980469 0)" xlink:href="#Cmmi10-93"/>
-     <use transform="translate(93.798828 0)" xlink:href="#Consolas-with-Yahei-47"/>
-     <use transform="translate(148.779297 0)" xlink:href="#Consolas-with-Yahei-69"/>
-     <use transform="translate(203.759766 0)" xlink:href="#Cmmi10-91"/>
-    </g>
-   </g>
-   <g id="text_17">
-    <g id="patch_12">
-     <path d="M 199.900048 192.160937 
-L 240.890673 192.160937 
-L 240.890673 174.839062 
-L 199.900048 174.839062 
-z
-" style="fill:#20df20;opacity:0.2;stroke:#20df20;stroke-linejoin:miter;"/>
-    </g>
-    <!-- E(III) -->
-    <g transform="translate(203.900048 186.109375)scale(0.1 -0.1)">
+    <g transform="translate(217.646142 185.949219)scale(0.1 -0.1)">
      <use xlink:href="#Consolas-with-Yahei-69"/>
-     <use x="54.980469" xlink:href="#Consolas-with-Yahei-40"/>
-     <use x="109.960938" xlink:href="#Consolas-with-Yahei-73"/>
-     <use x="164.941406" xlink:href="#Consolas-with-Yahei-73"/>
-     <use x="219.921875" xlink:href="#Consolas-with-Yahei-73"/>
-     <use x="274.902344" xlink:href="#Consolas-with-Yahei-41"/>
     </g>
    </g>
    <g id="text_18">
     <g id="patch_13">
-     <path d="M 176.750781 228.846142 
-L 190.249219 228.846142 
-L 190.249219 211.944579 
-L 176.750781 211.944579 
+     <path d="M 168.503125 229.056298 
+L 198.496875 229.056298 
+L 198.496875 211.734423 
+L 168.503125 211.734423 
 z
-" style="fill:#808080;opacity:0.2;stroke:#808080;stroke-linejoin:miter;"/>
+" style="fill:#20df7f;opacity:0.2;stroke:#20df7f;stroke-linejoin:miter;"/>
     </g>
-    <!-- F -->
+    <!-- F(7) -->
     <defs>
      <path d="M 46 56.390625 
 L 18.890625 56.390625 
@@ -913,52 +877,23 @@ L 46 63.8125
 z
 " id="Consolas-with-Yahei-70"/>
     </defs>
-    <g transform="translate(180.750781 222.844579)scale(0.1 -0.1)">
+    <g transform="translate(172.503125 223.004736)scale(0.1 -0.1)">
      <use xlink:href="#Consolas-with-Yahei-70"/>
+     <use x="54.980469" xlink:href="#Consolas-with-Yahei-40"/>
+     <use x="109.960938" xlink:href="#Consolas-with-Yahei-55"/>
+     <use x="164.941406" xlink:href="#Consolas-with-Yahei-41"/>
     </g>
    </g>
    <g id="text_19">
     <g id="patch_14">
-     <path d="M 113.4 242.65 
-L 152.8 242.65 
-L 152.8 225.15 
-L 113.4 225.15 
-z
-" style="fill:#20dfdf;opacity:0.2;stroke:#20dfdf;stroke-linejoin:miter;"/>
-    </g>
-    <!-- F$\sharp$(IV) -->
-    <defs>
-     <path d="M 54.78125 63.8125 
-L 33.109375 0 
-L 21.390625 0 
-L 0.203125 63.8125 
-L 10.015625 63.8125 
-L 23.78125 20.796875 
-L 27.6875 8.203125 
-L 31.6875 20.796875 
-L 45.515625 63.8125 
-z
-" id="Consolas-with-Yahei-86"/>
-    </defs>
-    <g transform="translate(117.4 236.45)scale(0.1 -0.1)">
-     <use transform="translate(0 0.296875)" xlink:href="#Consolas-with-Yahei-70"/>
-     <use transform="translate(54.980469 0.296875)" xlink:href="#Cmmi10-93"/>
-     <use transform="translate(93.798828 0.296875)" xlink:href="#Consolas-with-Yahei-40"/>
-     <use transform="translate(148.779297 0.296875)" xlink:href="#Consolas-with-Yahei-73"/>
-     <use transform="translate(203.759766 0.296875)" xlink:href="#Consolas-with-Yahei-86"/>
-     <use transform="translate(258.740234 0.296875)" xlink:href="#Consolas-with-Yahei-41"/>
-    </g>
-   </g>
-   <g id="text_20">
-    <g id="patch_15">
-     <path d="M 75.950781 228.846142 
-L 89.449219 228.846142 
-L 89.449219 211.944579 
-L 75.950781 211.944579 
+     <path d="M 116.95 242.75 
+L 149.25 242.75 
+L 149.25 225.05 
+L 116.95 225.05 
 z
 " style="fill:#808080;opacity:0.2;stroke:#808080;stroke-linejoin:miter;"/>
     </g>
-    <!-- G -->
+    <!-- F$\sharp$/G$\flat$ -->
     <defs>
      <path d="M 49.125 52.875 
 Q 45.5625 54.78125 41.796875 55.828125 
@@ -997,38 +932,78 @@ Q 45.5625 63.1875 49.125 61.53125
 z
 " id="Consolas-with-Yahei-71"/>
     </defs>
-    <g transform="translate(79.950781 222.844579)scale(0.1 -0.1)">
+    <g transform="translate(120.95 236.55)scale(0.1 -0.1)">
+     <use xlink:href="#Consolas-with-Yahei-70"/>
+     <use transform="translate(54.980469 0)" xlink:href="#Cmmi10-93"/>
+     <use transform="translate(93.798828 0)" xlink:href="#Consolas-with-Yahei-47"/>
+     <use transform="translate(148.779297 0)" xlink:href="#Consolas-with-Yahei-71"/>
+     <use transform="translate(203.759766 0)" xlink:href="#Cmmi10-91"/>
+    </g>
+   </g>
+   <g id="text_20">
+    <g id="patch_15">
+     <path d="M 67.703125 229.056298 
+L 97.696875 229.056298 
+L 97.696875 211.734423 
+L 67.703125 211.734423 
+z
+" style="fill:#2080df;opacity:0.2;stroke:#2080df;stroke-linejoin:miter;"/>
+    </g>
+    <!-- G(R) -->
+    <defs>
+     <path d="M 51.3125 0 
+L 41.5 0 
+L 31.984375 20.40625 
+Q 30.90625 22.75 29.78125 24.28125 
+Q 28.65625 25.828125 27.359375 26.734375 
+Q 26.078125 27.640625 24.53125 28.03125 
+Q 23 28.421875 21.09375 28.421875 
+L 17 28.421875 
+L 17 0 
+L 8.296875 0 
+L 8.296875 63.8125 
+L 25.390625 63.8125 
+Q 30.953125 63.8125 34.953125 62.59375 
+Q 38.96875 61.375 41.53125 59.171875 
+Q 44.09375 56.984375 45.28125 53.875 
+Q 46.484375 50.78125 46.484375 47.015625 
+Q 46.484375 44.046875 45.609375 41.375 
+Q 44.734375 38.71875 43 36.546875 
+Q 41.265625 34.375 38.703125 32.78125 
+Q 36.140625 31.203125 32.8125 30.421875 
+Q 35.5 29.5 37.375 27.171875 
+Q 39.265625 24.859375 41.21875 21 
+z
+M 37.40625 46.296875 
+Q 37.40625 51.421875 34.203125 53.953125 
+Q 31 56.5 25.203125 56.5 
+L 17 56.5 
+L 17 35.40625 
+L 24.03125 35.40625 
+Q 27.09375 35.40625 29.5625 36.109375 
+Q 32.03125 36.8125 33.765625 38.203125 
+Q 35.5 39.59375 36.453125 41.625 
+Q 37.40625 43.65625 37.40625 46.296875 
+z
+" id="Consolas-with-Yahei-82"/>
+    </defs>
+    <g transform="translate(71.703125 223.004736)scale(0.1 -0.1)">
      <use xlink:href="#Consolas-with-Yahei-71"/>
+     <use x="54.980469" xlink:href="#Consolas-with-Yahei-40"/>
+     <use x="109.960938" xlink:href="#Consolas-with-Yahei-82"/>
+     <use x="164.941406" xlink:href="#Consolas-with-Yahei-41"/>
     </g>
    </g>
    <g id="text_21">
     <g id="patch_16">
-     <path d="M 28.854639 192.25 
-L 62.754639 192.25 
-L 62.754639 174.75 
-L 28.854639 174.75 
-z
-" style="fill:#2020df;opacity:0.2;stroke:#2020df;stroke-linejoin:miter;"/>
-    </g>
-    <!-- G$\sharp$(V) -->
-    <g transform="translate(32.854639 186.05)scale(0.1 -0.1)">
-     <use transform="translate(0 0.296875)" xlink:href="#Consolas-with-Yahei-71"/>
-     <use transform="translate(54.980469 0.296875)" xlink:href="#Cmmi10-93"/>
-     <use transform="translate(93.798828 0.296875)" xlink:href="#Consolas-with-Yahei-40"/>
-     <use transform="translate(148.779297 0.296875)" xlink:href="#Consolas-with-Yahei-86"/>
-     <use transform="translate(203.759766 0.296875)" xlink:href="#Consolas-with-Yahei-41"/>
-    </g>
-   </g>
-   <g id="text_22">
-    <g id="patch_17">
-     <path d="M 25.550781 141.550781 
-L 39.049219 141.550781 
-L 39.049219 124.649219 
-L 25.550781 124.649219 
+     <path d="M 29.654639 192.35 
+L 61.954639 192.35 
+L 61.954639 174.65 
+L 29.654639 174.65 
 z
 " style="fill:#808080;opacity:0.2;stroke:#808080;stroke-linejoin:miter;"/>
     </g>
-    <!-- A -->
+    <!-- G$\sharp$/A$\flat$ -->
     <defs>
      <path d="M 54.5 0 
 L 45.015625 0 
@@ -1045,39 +1020,38 @@ L 16.5 21.6875
 z
 " id="Consolas-with-Yahei-65"/>
     </defs>
+    <g transform="translate(33.654639 186.15)scale(0.1 -0.1)">
+     <use xlink:href="#Consolas-with-Yahei-71"/>
+     <use transform="translate(54.980469 0)" xlink:href="#Cmmi10-93"/>
+     <use transform="translate(93.798828 0)" xlink:href="#Consolas-with-Yahei-47"/>
+     <use transform="translate(148.779297 0)" xlink:href="#Consolas-with-Yahei-65"/>
+     <use transform="translate(203.759766 0)" xlink:href="#Cmmi10-91"/>
+    </g>
+   </g>
+   <g id="text_22">
+    <g id="patch_17">
+     <path d="M 25.550781 141.550781 
+L 39.049219 141.550781 
+L 39.049219 124.649219 
+L 25.550781 124.649219 
+z
+" style="fill:#808080;opacity:0.2;stroke:#808080;stroke-linejoin:miter;"/>
+    </g>
+    <!-- A -->
     <g transform="translate(29.550781 135.549219)scale(0.1 -0.1)">
      <use xlink:href="#Consolas-with-Yahei-65"/>
     </g>
    </g>
    <g id="text_23">
     <g id="patch_18">
-     <path d="M 26.104639 91.45 
-L 65.504639 91.45 
-L 65.504639 73.95 
-L 26.104639 73.95 
+     <path d="M 29.654639 91.55 
+L 61.954639 91.55 
+L 61.954639 73.85 
+L 29.654639 73.85 
 z
-" style="fill:#df20df;opacity:0.2;stroke:#df20df;stroke-linejoin:miter;"/>
+" style="fill:#808080;opacity:0.2;stroke:#808080;stroke-linejoin:miter;"/>
     </g>
-    <!-- A$\sharp$(VI) -->
-    <g transform="translate(30.104639 85.25)scale(0.1 -0.1)">
-     <use transform="translate(0 0.296875)" xlink:href="#Consolas-with-Yahei-65"/>
-     <use transform="translate(54.980469 0.296875)" xlink:href="#Cmmi10-93"/>
-     <use transform="translate(93.798828 0.296875)" xlink:href="#Consolas-with-Yahei-40"/>
-     <use transform="translate(148.779297 0.296875)" xlink:href="#Consolas-with-Yahei-86"/>
-     <use transform="translate(203.759766 0.296875)" xlink:href="#Consolas-with-Yahei-73"/>
-     <use transform="translate(258.740234 0.296875)" xlink:href="#Consolas-with-Yahei-41"/>
-    </g>
-   </g>
-   <g id="text_24">
-    <g id="patch_19">
-     <path d="M 62.204687 54.465577 
-L 103.195312 54.465577 
-L 103.195312 37.143702 
-L 62.204687 37.143702 
-z
-" style="fill:#df2080;opacity:0.2;stroke:#df2080;stroke-linejoin:miter;"/>
-    </g>
-    <!-- B(VII) -->
+    <!-- A$\sharp$/B$\flat$ -->
     <defs>
      <path d="M 49.609375 19.09375 
 Q 49.609375 14.5 47.828125 10.953125 
@@ -1121,212 +1095,68 @@ Q 40.375 12.890625 40.375 18.796875
 z
 " id="Consolas-with-Yahei-66"/>
     </defs>
-    <g transform="translate(66.204687 48.414014)scale(0.1 -0.1)">
+    <g transform="translate(33.654639 85.35)scale(0.1 -0.1)">
+     <use xlink:href="#Consolas-with-Yahei-65"/>
+     <use transform="translate(54.980469 0)" xlink:href="#Cmmi10-93"/>
+     <use transform="translate(93.798828 0)" xlink:href="#Consolas-with-Yahei-47"/>
+     <use transform="translate(148.779297 0)" xlink:href="#Consolas-with-Yahei-66"/>
+     <use transform="translate(203.759766 0)" xlink:href="#Cmmi10-91"/>
+    </g>
+   </g>
+   <g id="text_24">
+    <g id="patch_19">
+     <path d="M 67.703125 54.465577 
+L 97.696875 54.465577 
+L 97.696875 37.143702 
+L 67.703125 37.143702 
+z
+" style="fill:#df2080;opacity:0.2;stroke:#df2080;stroke-linejoin:miter;"/>
+    </g>
+    <!-- B(3) -->
+    <g transform="translate(71.703125 48.414014)scale(0.1 -0.1)">
      <use xlink:href="#Consolas-with-Yahei-66"/>
      <use x="54.980469" xlink:href="#Consolas-with-Yahei-40"/>
-     <use x="109.960938" xlink:href="#Consolas-with-Yahei-86"/>
-     <use x="164.941406" xlink:href="#Consolas-with-Yahei-73"/>
-     <use x="219.921875" xlink:href="#Consolas-with-Yahei-73"/>
-     <use x="274.902344" xlink:href="#Consolas-with-Yahei-41"/>
+     <use x="109.960938" xlink:href="#Consolas-with-Yahei-51"/>
+     <use x="164.941406" xlink:href="#Consolas-with-Yahei-41"/>
     </g>
    </g>
    <g id="text_25">
     <g id="patch_20">
-     <path d="M 12.46 30.16 
-L 145.96 30.16 
-L 145.96 12.46 
+     <path d="M 12.46 29.361563 
+L 42.45375 29.361563 
+L 42.45375 12.46 
 L 12.46 12.46 
 z
 " style="fill:none;stroke:#000000;stroke-linejoin:miter;"/>
     </g>
-    <!-- C Ionian($\flat$2, $\sharp$4, $\sharp$5, $\sharp$6) -->
+    <!-- G7+5 -->
     <defs>
-     <path id="Consolas-with-Yahei-32"/>
-     <path d="M 50.484375 24.90625 
-Q 50.484375 19.1875 48.875 14.421875 
-Q 47.265625 9.671875 44.234375 6.265625 
-Q 41.21875 2.875 36.859375 1 
-Q 32.515625 -0.875 27 -0.875 
-Q 21.734375 -0.875 17.546875 0.75 
-Q 13.375 2.390625 10.46875 5.5625 
-Q 7.5625 8.734375 6.03125 13.421875 
-Q 4.5 18.109375 4.5 24.21875 
-Q 4.5 29.9375 6.109375 34.640625 
-Q 7.71875 39.359375 10.734375 42.75 
-Q 13.765625 46.140625 18.109375 48.015625 
-Q 22.46875 49.90625 27.984375 49.90625 
-Q 33.25 49.90625 37.421875 48.265625 
-Q 41.609375 46.625 44.5 43.46875 
-Q 47.40625 40.328125 48.9375 35.640625 
-Q 50.484375 30.953125 50.484375 24.90625 
+     <path d="M 50.875 22.90625 
+L 31.6875 22.90625 
+L 31.6875 2.984375 
+L 23.296875 2.984375 
+L 23.296875 22.90625 
+L 4.109375 22.90625 
+L 4.109375 30.328125 
+L 23.296875 30.328125 
+L 23.296875 50.09375 
+L 31.6875 50.09375 
+L 31.6875 30.328125 
+L 50.875 30.328125 
 z
-M 41.796875 24.515625 
-Q 41.796875 29.046875 40.796875 32.4375 
-Q 39.796875 35.84375 37.9375 38.109375 
-Q 36.078125 40.375 33.421875 41.515625 
-Q 30.765625 42.671875 27.484375 42.671875 
-Q 23.6875 42.671875 20.96875 41.1875 
-Q 18.265625 39.703125 16.53125 37.203125 
-Q 14.796875 34.71875 13.984375 31.421875 
-Q 13.1875 28.125 13.1875 24.515625 
-Q 13.1875 19.96875 14.1875 16.546875 
-Q 15.1875 13.140625 17.03125 10.859375 
-Q 18.890625 8.59375 21.53125 7.4375 
-Q 24.171875 6.296875 27.484375 6.296875 
-Q 31.296875 6.296875 34 7.78125 
-Q 36.71875 9.28125 38.453125 11.765625 
-Q 40.1875 14.265625 40.984375 17.546875 
-Q 41.796875 20.84375 41.796875 24.515625 
-z
-" id="Consolas-with-Yahei-111"/>
-     <path d="M 7.8125 49.03125 
-L 15.375 49.03125 
-L 15.71875 41.109375 
-Q 17.875 43.65625 19.875 45.328125 
-Q 21.875 47.015625 23.796875 48.046875 
-Q 25.734375 49.078125 27.734375 49.484375 
-Q 29.734375 49.90625 31.890625 49.90625 
-Q 39.453125 49.90625 43.328125 45.4375 
-Q 47.21875 40.96875 47.21875 31.984375 
-L 47.21875 0 
-L 38.71875 0 
-L 38.71875 31.296875 
-Q 38.71875 37.0625 36.5625 39.8125 
-Q 34.421875 42.578125 30.171875 42.578125 
-Q 28.609375 42.578125 27.125 42.109375 
-Q 25.640625 41.65625 24.015625 40.5 
-Q 22.40625 39.359375 20.53125 37.40625 
-Q 18.65625 35.453125 16.3125 32.515625 
-L 16.3125 0 
-L 7.8125 0 
-z
-" id="Consolas-with-Yahei-110"/>
-     <path d="M 24.515625 42 
-L 10.015625 42 
-L 10.015625 49.03125 
-L 33.109375 49.03125 
-L 33.109375 7.078125 
-L 47.703125 7.078125 
-L 47.703125 0 
-L 8.40625 0 
-L 8.40625 7.078125 
-L 24.515625 7.078125 
-z
-M 27.484375 69.578125 
-Q 28.90625 69.578125 30.125 69.0625 
-Q 31.34375 68.5625 32.25 67.625 
-Q 33.15625 66.703125 33.671875 65.5 
-Q 34.1875 64.3125 34.1875 62.890625 
-Q 34.1875 61.53125 33.671875 60.296875 
-Q 33.15625 59.078125 32.25 58.15625 
-Q 31.34375 57.234375 30.125 56.71875 
-Q 28.90625 56.203125 27.484375 56.203125 
-Q 26.078125 56.203125 24.859375 56.71875 
-Q 23.640625 57.234375 22.734375 58.15625 
-Q 21.828125 59.078125 21.3125 60.296875 
-Q 20.796875 61.53125 20.796875 62.890625 
-Q 20.796875 64.3125 21.3125 65.5 
-Q 21.828125 66.703125 22.734375 67.625 
-Q 23.640625 68.5625 24.859375 69.0625 
-Q 26.078125 69.578125 27.484375 69.578125 
-z
-" id="Consolas-with-Yahei-105"/>
-     <path d="M 39.3125 0 
-L 39.109375 6.59375 
-Q 35.109375 2.640625 30.984375 0.875 
-Q 26.859375 -0.875 22.3125 -0.875 
-Q 18.109375 -0.875 15.125 0.1875 
-Q 12.15625 1.265625 10.21875 3.140625 
-Q 8.296875 5.03125 7.390625 7.5625 
-Q 6.5 10.109375 6.5 13.09375 
-Q 6.5 20.453125 11.984375 24.625 
-Q 17.484375 28.8125 28.21875 28.8125 
-L 38.375 28.8125 
-L 38.375 33.109375 
-Q 38.375 37.453125 35.59375 40.0625 
-Q 32.8125 42.671875 27.09375 42.671875 
-Q 22.953125 42.671875 18.921875 41.75 
-Q 14.890625 40.828125 10.59375 39.109375 
-L 10.59375 46.78125 
-Q 12.203125 47.359375 14.171875 47.921875 
-Q 16.15625 48.484375 18.359375 48.921875 
-Q 20.5625 49.359375 22.953125 49.625 
-Q 25.34375 49.90625 27.78125 49.90625 
-Q 32.234375 49.90625 35.796875 48.921875 
-Q 39.359375 47.953125 41.8125 45.953125 
-Q 44.28125 43.953125 45.59375 40.921875 
-Q 46.921875 37.890625 46.921875 33.796875 
-L 46.921875 0 
-z
-M 38.375 22.3125 
-L 27.59375 22.3125 
-Q 24.421875 22.3125 22.125 21.671875 
-Q 19.828125 21.046875 18.359375 19.875 
-Q 16.890625 18.703125 16.1875 17.0625 
-Q 15.484375 15.4375 15.484375 13.375 
-Q 15.484375 11.96875 15.921875 10.671875 
-Q 16.359375 9.375 17.328125 8.375 
-Q 18.3125 7.375 19.875 6.78125 
-Q 21.4375 6.203125 23.6875 6.203125 
-Q 26.609375 6.203125 30.390625 7.984375 
-Q 34.1875 9.765625 38.375 13.625 
-z
-" id="Consolas-with-Yahei-97"/>
-     <path d="M 11.625 -10.015625 
-Q 14.109375 -10.109375 16.453125 -9.5625 
-Q 18.796875 -9.03125 20.578125 -7.984375 
-Q 22.359375 -6.9375 23.4375 -5.375 
-Q 24.515625 -3.8125 24.515625 -1.8125 
-Q 24.515625 0.25 23.796875 1.515625 
-Q 23.09375 2.78125 22.21875 3.859375 
-Q 21.34375 4.9375 20.625 6.15625 
-Q 19.921875 7.375 19.921875 9.421875 
-Q 19.921875 10.453125 20.3125 11.578125 
-Q 20.703125 12.703125 21.5 13.625 
-Q 22.3125 14.546875 23.5625 15.125 
-Q 24.8125 15.71875 26.515625 15.71875 
-Q 28.21875 15.71875 29.796875 15.015625 
-Q 31.390625 14.3125 32.59375 12.84375 
-Q 33.796875 11.375 34.5 9.171875 
-Q 35.203125 6.984375 35.203125 4 
-Q 35.203125 -0.046875 33.71875 -3.78125 
-Q 32.234375 -7.515625 29.265625 -10.390625 
-Q 26.3125 -13.28125 21.890625 -14.984375 
-Q 17.484375 -16.703125 11.625 -16.703125 
-z
-" id="Consolas-with-Yahei-44"/>
+" id="Consolas-with-Yahei-43"/>
     </defs>
-    <g transform="translate(16.46 23.96)scale(0.1 -0.1)">
-     <use xlink:href="#Consolas-with-Yahei-67"/>
-     <use transform="translate(54.980469 0)" xlink:href="#Consolas-with-Yahei-32"/>
-     <use transform="translate(109.960938 0)" xlink:href="#Consolas-with-Yahei-73"/>
-     <use transform="translate(164.941406 0)" xlink:href="#Consolas-with-Yahei-111"/>
-     <use transform="translate(219.921875 0)" xlink:href="#Consolas-with-Yahei-110"/>
-     <use transform="translate(274.902344 0)" xlink:href="#Consolas-with-Yahei-105"/>
-     <use transform="translate(329.882812 0)" xlink:href="#Consolas-with-Yahei-97"/>
-     <use transform="translate(384.863281 0)" xlink:href="#Consolas-with-Yahei-110"/>
-     <use transform="translate(439.84375 0)" xlink:href="#Consolas-with-Yahei-40"/>
-     <use transform="translate(494.824219 0)" xlink:href="#Cmmi10-91"/>
-     <use transform="translate(533.642578 0)" xlink:href="#Consolas-with-Yahei-50"/>
-     <use transform="translate(588.623047 0)" xlink:href="#Consolas-with-Yahei-44"/>
-     <use transform="translate(643.603516 0)" xlink:href="#Consolas-with-Yahei-32"/>
-     <use transform="translate(698.583984 0)" xlink:href="#Cmmi10-93"/>
-     <use transform="translate(737.402344 0)" xlink:href="#Consolas-with-Yahei-52"/>
-     <use transform="translate(792.382812 0)" xlink:href="#Consolas-with-Yahei-44"/>
-     <use transform="translate(847.363281 0)" xlink:href="#Consolas-with-Yahei-32"/>
-     <use transform="translate(902.34375 0)" xlink:href="#Cmmi10-93"/>
-     <use transform="translate(941.162109 0)" xlink:href="#Consolas-with-Yahei-53"/>
-     <use transform="translate(996.142578 0)" xlink:href="#Consolas-with-Yahei-44"/>
-     <use transform="translate(1051.123047 0)" xlink:href="#Consolas-with-Yahei-32"/>
-     <use transform="translate(1106.103516 0)" xlink:href="#Cmmi10-93"/>
-     <use transform="translate(1144.921875 0)" xlink:href="#Consolas-with-Yahei-54"/>
-     <use transform="translate(1199.902344 0)" xlink:href="#Consolas-with-Yahei-41"/>
+    <g transform="translate(16.46 23.36)scale(0.1 -0.1)">
+     <use xlink:href="#Consolas-with-Yahei-71"/>
+     <use x="54.980469" xlink:href="#Consolas-with-Yahei-55"/>
+     <use x="109.960938" xlink:href="#Consolas-with-Yahei-43"/>
+     <use x="164.941406" xlink:href="#Consolas-with-Yahei-53"/>
     </g>
    </g>
   </g>
  </g>
  <defs>
-  <clipPath id="p65a31ef669">
+  <clipPath id="p16f1593c3f">
    <rect height="259.2" width="259.2" x="3.5" y="3.5"/>
   </clipPath>
  </defs>
