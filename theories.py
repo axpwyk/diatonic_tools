@@ -39,7 +39,7 @@ def altered_note_parser(altered_note):
 # for `Chord`
 def chord_name_parser(chord_name):
     # examples: 'CM7', 'Dm7(9, 11, 13)', 'Bm7-5/F', etc.
-    search_obj = re.search(r'(?P<root_name>[ABCDEFG][b#]*)(?P<chord_type>\w*[-+]?\d?)(?P<tension_type>(\([^ac-z]*\)))?(/(?P<bass_name>[ABCDEFG][b#]*))?', chord_name)
+    search_obj = re.search(r'(?P<root_name>[ABCDEFG][b#]*)(?P<chord_type>\w*[-+]?\d?\w*)(?P<tension_type>(\([^ac-z]*\)))?(/(?P<bass_name>[ABCDEFG][b#]*))?', chord_name)
     return search_obj.groupdict()
 
 
@@ -212,6 +212,12 @@ class Interval(object):
         degree = f'{abs(self._delta_step)+1}'
         return type + degree if self._delta_step >= 0 else '-' + type + degree
 
+    def normalize(self):
+        octs = (self._delta_step % 7 - self._delta_step) // 7
+        self._delta_step = self._delta_step % 7
+        self._delta_nn = self._delta_nn + 12 * octs
+        return self
+
 
 class DiatonicScale(object):
     def __init__(self, scale_name='C Ionian'):
@@ -339,6 +345,17 @@ class DiatonicScale(object):
             notes.append(self[idx%l]+add_interval)
 
         return Chord().set_notes(body=notes[:4], tensions=notes[4:])
+
+    def get_full_chord_ex(self, step=0):
+        l = len(self.get_notes())
+        step = step % l
+        notes = []
+        for i in range(7):
+            idx = (step+2*i)
+            add_interval = sum([Interval('P8') for _ in range(idx//l)], Interval('P1'))
+            notes.append(self[idx%l]+add_interval)
+
+        return ChordEx().set_notes(notes=notes)
 
 
 class AlteredDiatonicScale(DiatonicScale):
@@ -515,6 +532,155 @@ class Chord(object):
             return chord_type
         else:
             return f'{self._body[0].get_name(show_group=False)}{chord_type}'
+
+    def get_scale(self, top_k=1, return_class_idx=False):
+        ''' get least-order scale of current chord '''
+        def _dist(l1, l2):
+                return sum([abs(i-j) for i, j in zip(l1, l2)])
+
+        def _lshift(l, k):
+            return l[k:] + l[:k]
+
+        def _is_equal(list_1, list_2):
+            if len(list_1) != len(list_2): return False
+            if _dist(list_1, list_2) < 1e-5: return True
+            else: return False
+
+        chord_notes = self.get_notes(bass_on=False)
+        root_name = chord_notes[0].get_name(show_group=False)
+        iv = [abs(n2-n1) for n1, n2 in zip(chord_notes[:-1], chord_notes[1:])]
+
+        # find all root positions in 66 classes of current chord
+        all_steps = [[(k*2)%7 for k in range(7) if _is_equal(_lshift(interval_vector, k)[:len(iv)], iv)] for interval_vector in CHORD_INTERVAL_VECTOR_LIST]
+
+        all_scales = []
+        all_indices = []
+        num_class = 0
+        for k, indices in enumerate(all_steps):
+            if num_class >= top_k: break
+            if indices:
+                class_k = CLASS_LIST[k]
+                step = len(class_k) // 7
+                # from the least accidentals to the most accidentals, return top k nearest scales
+                class_k_reshuffle = sum([[class_k[s+step*j] for j in range(7)] for s in range(step)], [])
+                for idx in indices:
+                    cur_scale_type = class_k_reshuffle[(idx*2)%7]
+                    sharps_on_tonics = cur_scale_type.count('#1')
+                    flats_on_tonics = cur_scale_type.count('b1')
+                    new_root_name = root_name + '#'*flats_on_tonics + 'b'*sharps_on_tonics
+                    cur_scale = AlteredDiatonicScale(new_root_name + ' ' + cur_scale_type)
+                    all_scales.append(cur_scale)
+                    all_indices.append(k)
+                num_class += 1
+
+        if return_class_idx:
+            return all_scales, all_indices
+        else:
+            return all_scales
+
+    def get_icd(self, note_name):
+        ''' get in-chord degree of a note '''
+        scales = self.get_scale(66)
+        icds = []
+        for scale in scales:
+            scale_nvs = [note.get_vector(return_group=False) for note in scale]  # nvs = note vectors
+            note = Note(note_name)
+            note_nv = note.get_vector(return_group=False)
+            if note_nv not in scale_nvs:
+                icds.append((scale.get_name()[0], -1))
+            else:
+                icds.append((scale.get_name()[0], scale_nvs.index(note_nv) + 1))
+        return icds[[x[1]!=-1 for x in icds].index(True)]
+
+
+class ChordEx(object):
+    def __init__(self):
+        self._bass = None
+        self._notes = []
+        self._steps = []
+
+    def __repr__(self):
+        note_names = [note.get_name() for note in self.get_notes() if note is not None]
+        return '[' + ''.join([name+', ' for name in note_names[:-1]]) + note_names[-1] + ']'
+
+    def __getitem__(self, item):
+        return self.get_notes()[item]
+
+    def __abs__(self):
+        return [abs(note) for note in self.get_notes()]
+
+    def set_notes(self, bass=None, notes=None):
+        if bass:
+            self._bass = bass
+        if notes:
+            self._notes = notes
+            intervals = [note - notes[0] for note in notes]
+            delta_steps = [interval.get_vector()[1] for interval in intervals]
+            for note, ds in zip(notes, delta_steps):
+                self._steps.append(ds % 7 + 1)
+        return self
+
+    def get_notes(self, bass_on=True):
+        if bass_on:
+            return self._bass + self._notes
+        else:
+            return self._notes
+
+    def get_name(self, type_only=False):
+        intervals = [note - self._notes[0] for note in self._notes]
+        intervals = [interval.normalize().get_name() for interval in intervals]
+
+        # get bass type
+        if self._bass:
+            bass_type = '/' + self._bass[0].get_name(show_group=False)
+        else:
+            bass_type = ''
+
+        # get body type
+        if 3 in self._steps:
+            third_idx = self._steps.index(3)
+            third_type = INTERVAL_NAME_TO_CHORD_TYPE[intervals[third_idx]]
+            if third_type not in ['m', 'M']:
+                third_type_post, third_type = third_type, ''
+            else:
+                third_type_post = ''
+        else:
+            third_type, third_type_post = '', ''
+
+        if 5 in self._steps:
+            fifth_idx = self._steps.index(5)
+            fifth_type = INTERVAL_NAME_TO_CHORD_TYPE[intervals[fifth_idx]]
+            if fifth_type not in ['']:
+                fifth_type_post, fifth_type = fifth_type, ''
+            else:
+                fifth_type_post = ''
+        else:
+            fifth_type, fifth_type_post = '', ''
+
+        if 7 in self._steps:
+            seventh_idx = self._steps.index(7)
+            seventh_type = INTERVAL_NAME_TO_CHORD_TYPE[intervals[seventh_idx]]
+        else:
+            seventh_type = ''
+
+        # get tension type
+        tension_types = []
+        for k in [2, 4, 6]:
+            if k in self._steps:
+                idx = self._steps.index(k)
+                tension_types.append(INTERVAL_NAME_TO_CHORD_TYPE[intervals[idx]])
+
+        # generate chord type
+        body_type = third_type + fifth_type + seventh_type + fifth_type_post + third_type_post
+        if tension_types:
+            tension_type = '(' + ''.join([t + ', ' for t in tension_types[:-1]]) + tension_types[-1] + ')'
+        else:
+            tension_type = ''
+        chord_type =  body_type + tension_type + bass_type
+        if type_only:
+            return chord_type
+        else:
+            return f'{self._notes[0].get_name(show_group=False)}{chord_type}'
 
     def get_scale(self, top_k=1, return_class_idx=False):
         ''' get least-order scale of current chord '''

@@ -98,7 +98,7 @@ ALTERNATIVE_NAME_SUBS = {
 ''' for Chord '''
 
 
-CHORD_TYPE_TO_SCALE_TYPE = {
+CHORD_TYPE_TO_SCALE_TYPE_OLD = {
     'aug': 'Ionian(#5)',
     '': 'Ionian',
     '-5': 'Ionian(b5)',
@@ -123,7 +123,42 @@ CHORD_TYPE_TO_SCALE_TYPE = {
     '9': 'Mixolydian'
 }
 
-CHORD_TYPE_TO_STEPS = {
+CHORD_TYPE_TO_SCALE_TYPE = {
+    # 5**
+    'M7+5sus4': 'Ionian(#5)',  # M7+5+3
+    'M7sus4': 'Ionian',  # M7+3
+    'sus4': 'Ionian',  # +3
+    # 4**
+    'augM7': 'Ionian(#5)',  # M7+5
+    'aug7': 'Mixolydian(#5)',  # 7+5
+    'aug': 'Ionian(#5)',  # +5
+    'M7': 'Lydian',
+    '9': 'Mixolydian',
+    '7': 'Mixolydian',
+    '6': 'Lydian',  # -7
+    '': 'Lydian',
+    'M7-5': 'Ionian(b5)',
+    '7-5': 'Locrian(#3)',
+    '-5': 'Ionian(b5)',
+    # 3**
+    'm7+5': 'Dorian(#5)',
+    'mM7': 'Aeolian(#7)',
+    'm7': 'Aeolian',
+    'm6': 'Dorian',  # m-7
+    'm': 'Aeolian',
+    'mM7-5': 'Locrian(#7)',
+    'm7-5': 'Locrian',
+    'dim7': 'Locrian(b7)',  # m-7-5
+    'dim': 'Locrian',  # m-5
+    # 2**
+    '7sus2': 'Mixolydian',  # 7-3
+    '7-5sus2': 'Mixolydian(b5)',  # 7-5-3
+    '6-5sus2': 'Mixolydian(b5)',  # -7-5-3
+    'sus2': 'Mixolydian',  # -3
+    '-5sus2': 'Mixolydian(b5)',  # -5-3
+}
+
+CHORD_TYPE_TO_STEPS_OLD = {
     'aug': [0, 2, 4],
     '': [0, 2, 4],
     '-5': [0, 2, 4],
@@ -148,64 +183,137 @@ CHORD_TYPE_TO_STEPS = {
     '9': [0, 2, 4, 6, 1]
 }
 
+CHORD_TYPE_TO_STEPS = {
+# 5**
+    'M7+5sus4': [0, 3, 4, 6],  # M7+5+3
+    'M7sus4': [0, 3, 4, 6],  # M7+3
+    'sus4': [0, 3, 4],  # +3
+    # 4**
+    'augM7': [0, 2, 4, 6],  # M7+5
+    'aug7': [0, 2, 4, 6],  # 7+5
+    'aug': [0, 2, 4],  # +5
+    'M7': [0, 2, 4, 6],
+    '9': [0, 2, 4, 6, 1],
+    '7': [0, 2, 4, 6],
+    '6': [0, 2, 4, 5],  # -7
+    '': [0, 2, 4],
+    'M7-5': [0, 2, 4, 6],
+    '7-5': [0, 2, 4, 6],
+    '-5': [0, 2, 4],
+    # 3**
+    'm7+5': [0, 2, 4, 6],
+    'mM7': [0, 2, 4, 6],
+    'm7': [0, 2, 4, 6],
+    'm6': [0, 2, 4, 5],  # m-7
+    'm': [0, 2, 4],
+    'mM7-5': [0, 2, 4, 6],
+    'm7-5': [0, 2, 4, 6],
+    'dim7': [0, 2, 4, 6],  # m-7-5
+    'dim': [0, 2, 4],  # m-5
+    # 2**
+    '7sus2': [0, 1, 4, 6],  # 7-3
+    '7-5sus2': [0, 1, 4, 6],  # 7-5-3
+    '6-5sus2': [0, 1, 4, 5],  # -7-5-3
+    'sus2': [0, 1, 4],  # -3
+    '-5sus2': [0, 1, 4],  # -5-3
+}
+
 TENSION_NAME_TO_INTERVAL_NAME = {
+    # 9th
     'b9': 'm9',
     '9': 'M9',
     '#9': 'A9',
+    # 11th
     'b11': 'd11',
     '11': 'P11',
     '#11': 'A11',
+    # 13th
+    'bb13': 'd13',
     'b13': 'm13',
     '13': 'M13',
     '#13': 'A13'
 }
 
-INTERVAL_NAME_TO_TENSION_NAME = {
-    'm9': 'b9',
-    'M9': '9',
-    'A9': '#9',
-    'd11': 'b11',
-    'P11': '11',
-    'A11': '#11',
-    'm13': 'b13',
-    'M13': '13',
-    'A13': '#13'
-}
+INTERVAL_NAME_TO_TENSION_NAME = dict((v, k) for k, v in TENSION_NAME_TO_INTERVAL_NAME.items())
 
 # recognize chord type from intervals
 INTERVAL_VECTOR_TO_CHORD_TYPE = {
-    '44': 'aug',
-    '43': '',
-    '42': '-5',
-    '34': 'm',
-    '33': 'dim',
-    '24': 'dim-3',
-    '443': 'M7+5',
-    '442': '7+5',
+    # 5**
+    '533': 'M7+5sus4',  # M7+5+3
+    '524': 'M7sus4',  # M7+3
+    '52': 'sus4',  # +3
+    # 4**
+    '443': 'augM7',  # M7+5
+    '442': 'aug7',  # 7+5
+    '44': 'aug',  # +5
     '434': 'M7',
+    '4334': '9',
     '433': '7',
+    '432': '6',  # -7
+    '43': '',
+    '425': 'M7-5',
     '424': '7-5',
+    '42': '-5',
+    # 3**
+    '352': 'm7+5',
     '344': 'mM7',
     '343': 'm7',
+    '342': 'm6',  # m-7
+    '34': 'm',
+    '335': 'mM7-5',
     '334': 'm7-5',
-    '333': 'dim7',
-    '244': 'm7-5-3',
-    '243': 'dim7-3',
-    '25': 'sus2',
-    '52': 'sus4',
-    '432': '6',  # dim7+5
-    '342': 'm6',
-    '4334': '9'
+    '333': 'dim7',  # m-7-5
+    '33': 'dim',  # m-5
+    # 2**
+    '253': '7sus2',  # 7-3
+    '244': '7-5sus2',  # 7-5-3
+    '243': '6-5sus2',  # -7-5-3
+    '25': 'sus2',  # -3
+    '24': '-5sus2',  # -5-3
 }
 
-CHORD_TYPE_TO_COLOR = {
-    'M7': 'red',
+CHORD_TYPE_TO_CONSOLE_COLOR = {
     'M7+5': 'magenta',
+    'M7': 'red',
     '7': 'white',
     'mM7': 'cyan',
     'm7': 'blue',
     'm7-5': 'cyan',
     'dim7': 'green'
+}
+
+
+''' for ChordEx '''
+
+
+# for `ChordEx.get_name_ex()` method
+INTERVAL_NAME_TO_CHORD_TYPE = {
+    # 3rd
+    'd3': '-3',
+    'm3': 'm',
+    'M3': '',
+    'A3': '+3',
+    # 5th
+    'd5': '-5',
+    'P5': '',
+    'A5': '+5',
+    # 7th
+    'd7': '-7',
+    'm7': '7',
+    'M7': 'M7',
+    # 9th
+    'm2': 'b9',
+    'M2': '9',
+    'A2': '#9',
+    # 11th
+    'd4': 'b11',
+    'P4': '11',
+    'A4': '#11',
+    # 13th
+    'd6': 'bb13',
+    'm6': 'b13',
+    'M6': '13',
+    'A6': '#13'
 }
 
 
