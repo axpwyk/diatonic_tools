@@ -10,9 +10,11 @@ def sign(x): return 1 if x > 0 else 0 if x == 0 else -1
 # natural note numbers (midi encoding numbers), C=0, D=2, E=4, F=5, G=7, A=9, B=11
 NATURAL_NNS = [0, 2, 4, 5, 7, 9, 11]
 
-
 # 12 notes' names, only natural notes are shown
 NOTE_NAMES = ['C', '', 'D', '', 'E', 'F', '', 'G', '', 'A', '', 'B']
+
+# 12 note variables
+C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B = 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'
 
 
 ''' for Interval '''
