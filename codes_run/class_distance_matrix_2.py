@@ -70,6 +70,5 @@ for i in range(66):
                                    (distances[k, i] + distances[i, j] >= distances[k, j])
 print(np.where(dist_tensor==False))
 
-
 plt.imshow(distances)
 plt.show()

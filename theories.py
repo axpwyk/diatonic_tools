@@ -151,6 +151,26 @@ class Note(object):
     def get_message(self):
         return self._message
 
+    def get_enharmonic_note(self):
+        nn_abs = abs(self)  # note number when accidental = 0
+        flag = sign(self._accidental)
+        if nn_abs % len(NOTE_NAMES) not in NATURAL_NNS:
+            new_nn_abs = nn_abs + flag
+            new_accidental = -flag
+            new_nn = new_nn_abs % len(NOTE_NAMES)
+            new_group = new_nn_abs // len(NOTE_NAMES)
+            return Note().set_vector(new_nn, new_accidental, new_group)
+        else:
+            new_nn_abs = nn_abs
+            new_accidental = 0
+            new_nn = new_nn_abs % len(NOTE_NAMES)
+            new_group = new_nn_abs // len(NOTE_NAMES)
+            return Note().set_vector(new_nn, new_accidental, new_group)
+
+
+
+
+
 
 class Interval(object):
     def __init__(self, interval_name='P1'):

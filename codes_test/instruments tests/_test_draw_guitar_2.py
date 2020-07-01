@@ -27,7 +27,7 @@ def get_scale(scale_name='C Dorian', fret_interval=(0, 12), save_name=''):
 # get_chord('Dm7(9, 11, 13)', '', (0, 12), 'Dm7(9, 11, 13).svg')
 # get_chord('Dm7', 'x57700', (4, 8), 'Dm7.svg')
 # get_chord('AM7(9)/B', '', (0, 12))
-get_chord('Caug/F#', '', (0, 12))
+get_chord('C7/F#', '', (0, 12))
 
 # get_chord('C', 'x32010', (0, 4), 'C0.svg')
 # get_chord('C', 'x35553', (2, 6), 'C2.svg')

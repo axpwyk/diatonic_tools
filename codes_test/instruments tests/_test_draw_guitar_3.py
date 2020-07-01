@@ -9,6 +9,6 @@ for ax in [axss]:  # .flat:
     ax.annotate('')
     ins = ax.inset_axes([0.2, 0.1, 0.2, 0.2], aspect='equal')
 
-    g = Guitar(Chord('F')[1:])
+    g = Guitar(Chord('E7')[1:])
     g.select('x8aaa8')
     g.plot1(7, 11, ins)

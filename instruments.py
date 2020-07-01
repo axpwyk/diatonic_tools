@@ -412,7 +412,7 @@ class ColorScheme(object):
     def __init__(self, notes):
         self._notes = notes
 
-    def plot(self, title):
+    def plot(self, title, filename=''):
         h = np.linspace(0, 1, 12, endpoint=False)
         hs = [abs(t)%12 for t in self._notes]
         # save_name = ''
@@ -444,7 +444,5 @@ class ColorScheme(object):
                 ax.annotate(oct2hex(colors[n_colors-i-1, j]), ((x_margins+w)*j+w/2, (y_margins+h)*i-h_text/2), va='center', ha='center')
         ax.annotate(f'{title} {[k*360//12 for k in hs]}',
                     (((x_margins+w)*n_gradients-x_margins)/2, (y_margins+h)*n_colors-y_margins+h_text/2), ha='center', va='center')
-        # if not save_name:
-        #     plt.savefig('debug.svg', bbox_inches='tight', pad_inches=0.0)
-        # else:
-        #     plt.savefig(save_name+'.svg', bbox_inches='tight', pad_inches=0.0)
+        if filename:
+            plt.savefig(f'{filename}.svg', bbox_inches='tight', pad_inches=0.0)

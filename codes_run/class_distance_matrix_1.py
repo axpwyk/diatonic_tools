@@ -48,16 +48,19 @@ print(np.any(distances.transpose()!=distances))
 
 
 # triangle ineq.
-# dist_tensor = np.zeros((66, 66, 66), np.bool)
-#
-# for i in range(66):
-#     for j in range(66):
-#         for k in range(66):
-#             dist_tensor[i, j, k] = (distances[i, j] + distances[j, k] >= distances[i, k]) and \
-#                                    (distances[j, k] + distances[k, i] >= distances[j, i]) and \
-#                                    (distances[k, i] + distances[i, j] >= distances[k, j])
-#
-# print(np.any(dist_tensor==False))
+dist_tensor = np.zeros((66, 66, 66), np.bool)
+
+for i in range(66):
+    for j in range(66):
+        for k in range(66):
+            dist_tensor[i, j, k] = (distances[i, j] + distances[j, k] >= distances[i, k]) and \
+                                   (distances[j, k] + distances[k, i] >= distances[j, i]) and \
+                                   (distances[k, i] + distances[i, j] >= distances[k, j])
+
+print(np.any(dist_tensor==False))
+
+plt.imshow(distances)
+plt.show()
 
 
 # plot

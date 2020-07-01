@@ -237,14 +237,15 @@ def max_ticks(sheet):
     return ticks
 
 
-def note2label(note, type='piano', show_group=True, mode='A phrygian(#3)'):
+def note2label(note, type='piano', show_group=True, mode='Ab Ionian'):
     # note: midi note number
     if type == 'piano':
         modes = {'b': ['C', r'D$\flat$', 'D', r'E$\flat$', 'E', 'F', r'G$\flat$', 'G', r'A$\flat$', 'A', r'B$\flat$', 'B'],
                  '#': ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
                  '2': ['♭7', '7', '1', '#1', '2', '♭3', '3', '4', '#4', '5', '#5', '6'],
                  '7b': ['2', '♭3', '3', '4', '#4', '5', '#5', '6', '♭7', '7', '1', '#1'],
-                 'A phrygian(#3)': ['C', r'C$\sharp$', 'D', r'$D\sharp$', 'E', 'F', r'F$\sharp$', 'G', r'G$\sharp$', 'A', r'B$\flat$', 'B']}
+                 'A phrygian(#3)': ['C', r'C$\sharp$', 'D', r'$D\sharp$', 'E', 'F', r'F$\sharp$', 'G', r'G$\sharp$', 'A', r'B$\flat$', 'B'],
+                 'Ab Ionian': ['3', '4', '4$\sharp$', '5', '5$\sharp$', '6', '7$\\flat$', '7', '1', '2$\\flat$', '2', '3$\\flat$']}
         note_names = modes[mode]
         if show_group:
             return f'[{note}]{note_names[note%12]}{note//12-2}'
