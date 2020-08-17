@@ -7,11 +7,13 @@ def sign(x): return 1 if x > 0 else 0 if x == 0 else -1
 ''' for Note '''
 
 
-# natural note numbers (midi encoding numbers), C=0, D=2, E=4, F=5, G=7, A=9, B=11
-NATURAL_NNS = [0, 2, 4, 5, 7, 9, 11]
+# natural notes (midi encoding numbers), e.g. C=0, D=2, E=4, F=5, G=7, A=9, B=11
+NATURAL_NOTES = [0, 2, 4, 5, 7, 9, 11]
+NUMEL_1 = len(NATURAL_NOTES)
 
-# 12 notes' names, only natural notes are shown
+# 12 note names, only natural notes are shown
 NOTE_NAMES = ['C', '', 'D', '', 'E', 'F', '', 'G', '', 'A', '', 'B']
+NUMEL_2 = len(NOTE_NAMES)
 
 # 12 note variables
 C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B = 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'
@@ -20,8 +22,8 @@ C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B = 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 
 ''' for Interval '''
 
 
-# axis 0: delta_nn, axis 1: delta_step, e.g. (delta_nn, delta_step) = (0, 0) ==> P1
-INTERVAL_TYPES = [
+# axis 0: delta_note, axis 1: delta_step, e.g. (delta_note, delta_step) = (0, 0) ==> P1
+INTERVAL_TYPES_OLD = [
     ['P', 'd', '!', '!', '!', '!', '!'],
     ['A', 'm', '!', '!', '!', '!', '!'],
     ['!', 'M', 'd', '!', '!', '!', '!'],
@@ -35,6 +37,56 @@ INTERVAL_TYPES = [
     ['!', '!', '!' ,'!' ,'!' ,'A' ,'m'],
     ['!', '!', '!' ,'!' ,'!' ,'!' ,'M']
 ]
+
+# 0   3 - 4   7  (..., dd, d, P, A, AA, ...)
+# |   |   |   |
+# 1 - 2   5 - 6  (..., dd, d, m, (P), M, A, AA, ...)
+
+# finding center P
+DELTA_STEP_TO_DELTA_NOTE_X2_CENTER = [0, 3, 7, 10, 14, 17, 21]
+
+
+# offsets
+def delta_note_x2_rel_to_interval_type(delta_note_x2_rel, interval_class):
+    if interval_class == '0347':
+        if delta_note_x2_rel < 0:
+            return -delta_note_x2_rel // 2 * 'd'
+        elif delta_note_x2_rel == 0:
+            return 'P'
+        else:
+            return delta_note_x2_rel // 2 * 'A'
+    elif interval_class == '1256':
+        if delta_note_x2_rel < 0:
+            return -delta_note_x2_rel // 2 * 'd' if delta_note_x2_rel < -1 else 'm'
+        else:
+            return delta_note_x2_rel // 2 * 'A' if delta_note_x2_rel > 1 else 'M'
+    else:
+        raise ValueError('No such type!')
+
+
+def interval_type_to_delta_note_x2_rel(interval_type, interval_class):
+    if interval_class == '0347':
+        if interval_type == 'P':
+            return 0
+        else:
+            ds = interval_type.count('d')
+            As = interval_type.count('A')
+            if any([ds, As]):
+                return -2 * ds + 2 * As
+            else:
+                raise ValueError('No such interval type!')
+    if interval_class == '1256':
+        if interval_type in ['m', 'M']:
+            return {'m': -1, 'M': 1}[interval_type]
+        else:
+            ds = interval_type.count('d')
+            As = interval_type.count('A')
+            if any([ds, As]) and not all([ds, As]):
+                return (-1 - 2*ds)*(ds!=0) + (1 + 2*As)*(As!=0)
+            else:
+                raise ValueError('No such interval type!')
+    else:
+        raise ValueError('No such type!')
 
 
 ''' for DiatonicScale '''

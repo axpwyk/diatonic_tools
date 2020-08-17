@@ -3,7 +3,7 @@ from copy import copy
 from consts import *
 
 
-''' all kinds of name parsers '''
+''' all kinds of parsers '''
 
 
 # for `Note`
@@ -16,7 +16,7 @@ def note_name_parser(note_name):
 # for `Interval`
 def interval_name_parser(interval_name):
     # examples: 'm2', 'M3', 'P4', etc.
-    search_obj = re.search(r'(?P<neg_str>-)?(?P<interval_type>[dmPMA])(?P<degree_str>[\d]+)', interval_name)
+    search_obj = re.search(r'(?P<negative_str>-)?(?P<interval_type>[dmPMA]+)(?P<degree_str>[\d]+)', interval_name)
     return search_obj.groupdict()
 
 
@@ -54,8 +54,8 @@ def tension_type_parser(tension_type):
 class Note(object):
     def __init__(self, note_name='C0'):
         par = note_name_parser(note_name)
-        # get note midi encoding number (0, 11), integer
-        self._nn = NOTE_NAMES.index(par['note_name'])
+        # get relative midi encoding number [0, 11], integer
+        self._note = NOTE_NAMES.index(par['note_name'])
         # get accidentals (-\infty, \infty), integer
         accidental = 0
         accidental += par['accidental_str'].count('#')
@@ -75,8 +75,8 @@ class Note(object):
     def __sub__(self, other):
         # `Note` - `Note` = `Interval`
         if isinstance(other, Note):
-            step1 = NATURAL_NNS.index(self._nn) + self._group * len(NATURAL_NNS)
-            step2 = NATURAL_NNS.index(other._nn) + other._group * len(NATURAL_NNS)
+            step1 = NATURAL_NOTES.index(self._note) + self._group * NUMEL_1
+            step2 = NATURAL_NOTES.index(other._note) + other._group * NUMEL_1
             return Interval().set_vector(abs(self) - abs(other), step1 - step2)
         # `Note` - `Interval` = `Note`
         if isinstance(other, Interval):
@@ -87,24 +87,24 @@ class Note(object):
     def __add__(self, other):
         # `Note` + `Interval` = `Note`
         if isinstance(other, Interval):
-            delta_nn = other._delta_nn
+            delta_note = other._delta_note
             delta_step = other._delta_step
-            step = NATURAL_NNS.index(self._nn) + delta_step
-            nn = NATURAL_NNS[step % len(NATURAL_NNS)]
-            group = self._group + step // len(NATURAL_NNS)
-            accidental = abs(self) + delta_nn - nn - len(NOTE_NAMES) * group
-            return Note().set_vector(nn, accidental, group)
+            step = NATURAL_NOTES.index(self._note) + delta_step
+            note = NATURAL_NOTES[step % NUMEL_1]
+            group = self._group + step // NUMEL_1
+            accidental = abs(self) + delta_note - note - NUMEL_2 * group
+            return Note().set_vector(note, accidental, group)
         else:
             raise TypeError('ClassError: `Note` could only add an `Interval`!')
 
     def __abs__(self):
         # return absolute midi encoding number (-\infty, \infty), integer, e.g. 'Bb2' = (11, -1, 2) = 11-1+2*12 = 34
-        return self._nn + self._accidental + self._group * len(NOTE_NAMES)
+        return self._note + self._accidental + self._group * NUMEL_2
 
-    def set_vector(self, nn=None, accidental=None, group=None):
-        # set note vector (nn, accidental, group) manually
-        if nn:
-            self._nn = nn
+    def set_vector(self, note=None, accidental=None, group=None):
+        # set note vector (note, accidental, group) manually
+        if note:
+            self._note = note
         if accidental:
             self._accidental = accidental
         if group:
@@ -113,16 +113,16 @@ class Note(object):
 
     def get_vector(self, return_group=True):
         if return_group:
-            return self._nn, self._accidental, self._group
+            return self._note, self._accidental, self._group
         else:
-            return self._nn, self._accidental
+            return self._note, self._accidental
 
     def get_name(self, show_group=True):
         # get name of `Note`, e.g. Note('C0').get_name() = 'C0', Note('C0').get_name(show_group=False) = 'C', etc.
         if show_group:
-            return NOTE_NAMES[self._nn] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b') + f'{self._group}'
+            return NOTE_NAMES[self._note] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b') + f'{self._group}'
         else:
-            return NOTE_NAMES[self._nn] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b')
+            return NOTE_NAMES[self._note] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b')
 
     def add_sharp(self, n=1):
         self._accidental += n
@@ -133,7 +133,7 @@ class Note(object):
         return self
 
     def add_accidental(self, n=0):
-        # a combination of multiple `add_sharp` or `add-flat` methods
+        # a combination of multiple `add_sharp` or `add_flat` methods
         self._accidental += n
 
     def add_oct(self):
@@ -144,6 +144,10 @@ class Note(object):
         self._group -= 1
         return self
 
+    def add_group(self, n=0):
+        # a combination of multiple `add_oct` or `sub_oct` methods
+        self._group += n
+
     def set_message(self, message):
         self._message = message
         return self
@@ -152,41 +156,40 @@ class Note(object):
         return self._message
 
     def get_enharmonic_note(self):
-        nn_abs = abs(self)  # note number when accidental = 0
+        # change a note to its enharmonic note, e.g. C#0 -> Db0; C##0 -> D0, etc.
+        note_abs = abs(self)
         flag = sign(self._accidental)
-        if nn_abs % len(NOTE_NAMES) not in NATURAL_NNS:
-            new_nn_abs = nn_abs + flag
+        if note_abs % NUMEL_2 not in NATURAL_NOTES:
+            new_note_abs = note_abs + flag
             new_accidental = -flag
-            new_nn = new_nn_abs % len(NOTE_NAMES)
-            new_group = new_nn_abs // len(NOTE_NAMES)
-            return Note().set_vector(new_nn, new_accidental, new_group)
+            new_note = new_note_abs % NUMEL_2
+            new_group = new_note_abs // NUMEL_2
+            return Note().set_vector(new_note, new_accidental, new_group)
         else:
-            new_nn_abs = nn_abs
+            new_note_abs = note_abs
             new_accidental = 0
-            new_nn = new_nn_abs % len(NOTE_NAMES)
-            new_group = new_nn_abs // len(NOTE_NAMES)
-            return Note().set_vector(new_nn, new_accidental, new_group)
-
-
-
-
+            new_note = new_note_abs % NUMEL_2
+            new_group = new_note_abs // NUMEL_2
+            return Note().set_vector(new_note, new_accidental, new_group)
 
 
 class Interval(object):
     def __init__(self, interval_name='P1'):
         par = interval_name_parser(interval_name)
-        # positive or negative
-        pn = -1 if par['neg_str'] else 1
-        # get interval type 'd', 'm', 'M', or 'A'
-        type = par['interval_type']
+        # negative or positive
+        flag = -1 if par['negative_str'] else 1
+        # get interval type 'd', 'm', 'P', 'M', or 'A'
+        interval_type = par['interval_type']
         # get interval degree, positive integer
         degree = eval(par['degree_str'])
-        # degree-1 for calculating and indexing
-        delta_step = degree - 1
-        # calculate interval vector (delta_nn, delta_step)
-        delta_nn = [INTERVAL_TYPES_k[delta_step % len(NATURAL_NNS)] for INTERVAL_TYPES_k in INTERVAL_TYPES].index(type)
-        delta_nn = delta_nn + delta_step // len(NATURAL_NNS) * len(NOTE_NAMES)
-        self._delta_nn, self._delta_step = pn * delta_nn, pn * delta_step
+        # flag * (degree - 1) for calculating and indexing
+        delta_step = flag * (degree - 1)
+        # calculate interval vector (delta_note, delta_step)
+        interval_class = '0347' if f'{delta_step % NUMEL_1}' in '0347' else '1256'
+        octs = (delta_step % NUMEL_1 - delta_step) // NUMEL_1
+        center = DELTA_STEP_TO_DELTA_NOTE_X2_CENTER[delta_step % NUMEL_1] - octs * 2 * NUMEL_2
+        delta_note_x2 = center + flag * interval_type_to_delta_note_x2_rel(interval_type, interval_class)
+        self._delta_note, self._delta_step = delta_note_x2 // 2, delta_step
 
     def __repr__(self):
         return self.get_name()
@@ -197,45 +200,53 @@ class Interval(object):
             return other + self
         # `Interval` + `Interval` = `Interval`
         elif isinstance(other, Interval):
-            return Interval().set_vector(self._delta_nn + other._delta_nn, self._delta_step + other._delta_step)
+            return Interval().set_vector(self._delta_note + other._delta_note, self._delta_step + other._delta_step)
         else:
             raise TypeError('ClassError: `Interval` could only add a `Note` or an `Interval`!')
 
     def __sub__(self, other):
         # `Interval` - `Interval` = `Interval`
         if isinstance(other, Interval):
-            return Interval().set_vector(self._delta_nn - other._delta_nn, self._delta_step - other._delta_step)
+            return Interval().set_vector(self._delta_note - other._delta_note, self._delta_step - other._delta_step)
         else:
             raise TypeError('ClassError: `Interval` could only subtract an `Interval`!')
 
     def __neg__(self):
-        return Interval().set_vector(-self._delta_nn, -self._delta_step)
+        return Interval().set_vector(-self._delta_note, -self._delta_step)
 
     def __abs__(self):
-        # absolute interval is `self._delta_nn`
-        return self._delta_nn
+        # absolute interval is `self._delta_note`
+        return self._delta_note
 
-    def set_vector(self, delta_nn=None, delta_step=None):
-        # set interval vector (delta_nn, delta_step) manually
-        if delta_nn:
-            self._delta_nn = delta_nn
+    def set_vector(self, delta_note=None, delta_step=None):
+        # set interval vector (delta_note, delta_step) manually
+        if delta_note:
+            self._delta_note = delta_note
         if delta_step:
             self._delta_step = delta_step
         return self
 
     def get_vector(self):
-        return self._delta_nn, self._delta_step
+        return self._delta_note, self._delta_step
 
     def get_name(self):
         # get name of `Interval`, e.g. Interval('M2').get_name() = 'M2', etc.
-        type = INTERVAL_TYPES[abs(self._delta_nn) % len(NOTE_NAMES)][abs(self._delta_step) % len(NATURAL_NNS)]
+        flag = 1 if self._delta_step >= 0 else -1
+        octs = (self._delta_step % NUMEL_1 - self._delta_step) // NUMEL_1
+        center = DELTA_STEP_TO_DELTA_NOTE_X2_CENTER[self._delta_step % NUMEL_1] - octs * 2 * NUMEL_2
+
+        delta_note_x2_rel = flag * (self._delta_note * 2 - center)
+        interval_class = '0347' if f'{self._delta_step % NUMEL_1}' in '0347' else '1256'
+
+        interval_type = delta_note_x2_rel_to_interval_type(delta_note_x2_rel, interval_class)
         degree = f'{abs(self._delta_step)+1}'
-        return type + degree if self._delta_step >= 0 else '-' + type + degree
+
+        return interval_type + degree if flag >= 0 else '-' + interval_type + degree
 
     def normalize(self):
-        octs = (self._delta_step % 7 - self._delta_step) // 7
-        self._delta_step = self._delta_step % 7
-        self._delta_nn = self._delta_nn + 12 * octs
+        octs = (self._delta_step % NUMEL_1 - self._delta_step) // NUMEL_1
+        self._delta_step = self._delta_step % NUMEL_1
+        self._delta_note = self._delta_note + NUMEL_2 * octs
         return self
 
 
@@ -648,6 +659,7 @@ class ChordEx(object):
 
     def get_name(self, type_only=False):
         intervals = [note - self._notes[0] for note in self._notes]
+        print(intervals)
         intervals = [interval.normalize().get_name() for interval in intervals]
 
         # get bass type

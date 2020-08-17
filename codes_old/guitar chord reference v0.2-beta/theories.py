@@ -50,8 +50,8 @@ class Note(object):
 
     def __sub__(self, other):
         if isinstance(other, Note):
-            step1 = NATURAL_NNS.index(self._note) + self._group * len(NATURAL_NNS)
-            step2 = NATURAL_NNS.index(other.get_note()) + other.get_group() * len(NATURAL_NNS)
+            step1 = NATURAL_NOTES.index(self._note) + self._group * len(NATURAL_NOTES)
+            step2 = NATURAL_NOTES.index(other.get_note()) + other.get_group() * len(NATURAL_NOTES)
             return Interval().set(abs(self) - abs(other), step1 - step2)
         if isinstance(other, Interval):
             return self + (-other)
@@ -62,9 +62,9 @@ class Note(object):
         if isinstance(other, Interval):
             delta_note = other.get_delta_note()
             delta_step = other.get_delta_step()
-            step = NATURAL_NNS.index(self._note) + delta_step
-            note = NATURAL_NNS[step % len(NATURAL_NNS)]
-            group = self._group + step // len(NATURAL_NNS)
+            step = NATURAL_NOTES.index(self._note) + delta_step
+            note = NATURAL_NOTES[step % len(NATURAL_NOTES)]
+            group = self._group + step // len(NATURAL_NOTES)
             accidental = abs(self) + delta_note - note - len(NOTE_NAMES) * group
             return Note().set(note, accidental, group)
         else:
@@ -154,13 +154,13 @@ class Interval(object):
         type = par['interval_type']
         degree = eval(par['degree_str'])
         delta_step = degree - 1
-        delta_note = [INTERVAL_TYPES_k[delta_step % len(NATURAL_NNS)] for INTERVAL_TYPES_k in INTERVAL_TYPES].index(type)
-        delta_note = delta_note + delta_step // len(NATURAL_NNS) * len(NOTE_NAMES)
+        delta_note = [INTERVAL_TYPES_k[delta_step % len(NATURAL_NOTES)] for INTERVAL_TYPES_k in INTERVAL_TYPES].index(type)
+        delta_note = delta_note + delta_step // len(NATURAL_NOTES) * len(NOTE_NAMES)
         self._delta_note, self._delta_step = np * delta_note, np * delta_step
         return self
 
     def _to_name(self):
-        type = INTERVAL_TYPES[abs(self._delta_note) % len(NOTE_NAMES)][abs(self._delta_step) % len(NATURAL_NNS)]
+        type = INTERVAL_TYPES[abs(self._delta_note) % len(NOTE_NAMES)][abs(self._delta_step) % len(NATURAL_NOTES)]
         degree = f'{abs(self._delta_step)+1}'
         return type + degree if self._delta_step >= 0 else '-' + type + degree
 

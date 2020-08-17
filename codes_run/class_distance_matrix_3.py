@@ -1,3 +1,4 @@
+import os; os.chdir('..')
 from theories import *
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,7 +29,7 @@ def d(xs, ys):
     return min(ds), ds
 
 
-with open('../all_heptatonic_scale_classes.txt', 'r') as f:
+with open('all_heptatonic_scale_classes.txt', 'r') as f:
     classes = []
     for line in f:
         classes.append(eval(line)[0])
