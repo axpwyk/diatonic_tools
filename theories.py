@@ -659,7 +659,6 @@ class ChordEx(object):
 
     def get_name(self, type_only=False):
         intervals = [note - self._notes[0] for note in self._notes]
-        print(intervals)
         intervals = [interval.normalize().get_name() for interval in intervals]
 
         # get bass type

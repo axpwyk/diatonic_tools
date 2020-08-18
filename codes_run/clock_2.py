@@ -8,7 +8,7 @@ def get_chord(chord_name, tonic=None, margin_anno_type='', colorize=None, save_n
     if save_name:
         plt.savefig(save_name, bbox_inches='tight', pad_inches=0.0)
     else:
-        plt.savefig('debug.svg', bbox_inches='tight', pad_inches=0.0)
+        plt.savefig('三个和弦的键盘示意图.svg', bbox_inches='tight', pad_inches=0.0)
 
 
 def get_scale(scale_name, tonic=None, margin_anno_type='', colorize=None, save_name=''):
@@ -18,7 +18,7 @@ def get_scale(scale_name, tonic=None, margin_anno_type='', colorize=None, save_n
     if save_name:
         plt.savefig(save_name, bbox_inches='tight', pad_inches=0.0)
     else:
-        plt.savefig('debug.svg', bbox_inches='tight', pad_inches=0.0)
+        plt.savefig('三个和弦的键盘示意图.svg', bbox_inches='tight', pad_inches=0.0)
 
 
 # get_scale('Eb Ionian(#5,#5,#6,b2,b3,b3,b4,b4)', 3, '', None, '9_heptatonic_sacle_of_order_8.svg')

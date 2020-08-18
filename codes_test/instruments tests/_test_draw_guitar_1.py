@@ -39,4 +39,4 @@ _ = [ax.annotate(text, (fret[4]+w_scale*0.25, strings[i]), va='center', ha='left
 texts2 = ['R', '5', 'R', '3', '5', 'R']
 _ = [ax.annotate(text, (fret[4]+w_scale*0.75, strings[i]), va='center', ha='left', bbox=dict(facecolor='orange', alpha=0.2)) for i, text in enumerate(texts2)]
 
-fig.savefig('debug.svg', bbox_inches='tight', pad_inches=0.0)
+fig.savefig('三个和弦的键盘示意图.svg', bbox_inches='tight', pad_inches=0.0)

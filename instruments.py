@@ -17,7 +17,7 @@ plt.rc('font', **{'sans-serif': 'Consolas-with-Yahei'})
 plt.rc('axes', **{'unicode_minus': False})
 
 
-''' utils '''
+''' utilities '''
 
 
 def hex2oct(hex_string):
@@ -235,7 +235,7 @@ class Guitar(object):
         _ = [ax.annotate(text.replace('b', r'$\flat$').replace('#', r'$\sharp$'), (fret[fret_interval[1]]+1.75, strings[i]), rotation=rotation,
                          fontsize=fontsize, va='center', ha='left', bbox=dict(facecolor=colors[-1], alpha=0.2)) for i, text in enumerate(text_br357ts)]
 
-        # plt.savefig('debug.svg', bbox_inches='tight', pad_inches=0.0)
+        # plt.savefig('三个和弦的键盘示意图.svg', bbox_inches='tight', pad_inches=0.0)
         # plt.close()
 
     def plot2(self, fret_left=0, fret_right=4, ax=None, title=None):
@@ -320,12 +320,134 @@ class Guitar(object):
                                     (string-radius*np.sqrt(2)/2, string+radius*np.sqrt(2)/2), c='black')]
                 ax.add_line(cross[0]); ax.add_line(cross[1])
 
-        # fig.savefig('debug.svg', bbox_inches='tight', pad_inches=0.0)
+        # fig.savefig('三个和弦的键盘示意图.svg', bbox_inches='tight', pad_inches=0.0)
         # plt.close()
 
 
 class Piano(object):
-    pass
+    def __init__(self, notes=None):
+        # default notes
+        if notes:
+            self._notes = notes
+        else:
+            self._notes = Chord('C').get_notes()
+
+        # find range of notes
+        self._get_note_range()
+
+    def _get_note_range(self):
+        notes = [abs(note) for note in self._notes]
+        note_min = min(notes)
+        note_max = max(notes)
+        self._note_range = (note_min, note_max)
+        return self._note_range
+
+    def set_notes(self, notes):
+        self._notes = notes
+        self._get_note_range()
+        return self
+
+    def plot(self, note_range=None, ax=None, title=None):
+        # get plot range
+        if note_range is None:
+            note_range = list(self._note_range)
+        else:
+            note_range = list(note_range)
+
+        # note to position mappings
+        def _note2pos_xy(note):
+            group = note // 12
+            note = note % 12
+            if note in range(5):
+                if note in [0, 2, 4]:
+                    return 10.5 * group + 1.5 / 2 * note, 0
+                else:
+                    return 10.5 * group + 1.5 / 2 * (note + 1) - 0.5, 2.5
+            else:
+                if note in [5, 7, 9, 11]:
+                    return 10.5 * group + 1.5 / 2 * (note + 1), 0
+                else:
+                    return 10.5 * group + 1.5 / 2 * (note + 2) - 0.5, 2.5
+
+        def _note2pos_rect(note):
+            if note % 12 in [0, 2, 4, 5, 7, 9, 11]:
+                return dict(
+                    xy=_note2pos_xy(note),
+                    width=1.5,
+                    height=6,
+                    fc='white',
+                    ec='black',
+                    ls='-',
+                    lw=2,
+                    joinstyle='round',
+                    zorder=1
+                )
+            else:
+                return dict(
+                    xy=_note2pos_xy(note),
+                    width=1,
+                    height=3.5,
+                    fc='black',
+                    ec='black',
+                    ls='-',
+                    lw=2,
+                    joinstyle='round',
+                    zorder=2
+                )
+
+        def _note2pos_mark(note):
+            group = note // 12
+            note = note % 12
+            if note in range(5):
+                x = 10.5 * group + 1.5 / 2 * (note + 1)
+            else:
+                x = 10.5 * group + 1.5 / 2 * (note + 2)
+            if note in [0, 2, 4, 5, 7, 9, 11]:
+                y = 0.75
+            else:
+                y = 3.25
+            return x, y
+
+        # constants
+        expand = 1
+        fontsize = 20
+        scale = 1
+        w = _note2pos_xy(note_range[1]+expand)[0] - _note2pos_xy(note_range[0]-expand)[0]
+        h = 6
+        margin = 0.2
+
+        # new figure
+        if not ax:
+            fig = plt.figure(figsize=(w * scale + 2 * margin, h * scale + 2 * margin), dpi=72)
+            ax = plt.gca(aspect='equal')
+        else:
+            fig = plt.gcf()
+            ax.set_aspect('equal')
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_axis_off()
+        ax.margins(0.0)
+        ax.set_xlim(_note2pos_mark(note_range[0]-expand)[0]-margin, _note2pos_mark(note_range[1]+expand)[0]+margin)
+        ax.set_ylim(0-margin, h+margin)
+
+        # add title
+        if title:
+            ax.text(0.5, 0.895, title, fontsize=fontsize * 1.5, va='bottom', ha='center', transform=ax.transAxes)
+            ax.set_ylim(0-margin, h+0.75+margin)
+
+        # draw
+        rects = [plt.Rectangle(**_note2pos_rect(note)) for note in range(note_range[0]-1-expand, note_range[1]+2+expand)]
+        _ = [ax.add_patch(rect) for rect in rects]
+
+        # add annotation
+        c2s = ['red' if note.get_message() == 'R' else
+               'green' if note.get_message() == 'B' else
+               'blue' for note in self._notes]
+        circs = [plt.Circle(_note2pos_mark(abs(note)), 0.4, ls='-', lw=1, ec=c, fc=c, zorder=3) for note, c in zip(self._notes, c2s)]
+        _ = [ax.add_patch(circ) for circ in circs]
+        _ = [ax.annotate(note.get_name(show_group=False), _note2pos_mark(abs(note)), color='white', fontsize=fontsize, ha='center', va='center', zorder=4) for note in self._notes]
+
+        # plt.show()
 
 
 class Clock(object):

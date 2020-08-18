@@ -15,9 +15,6 @@ NUMEL_1 = len(NATURAL_NOTES)
 NOTE_NAMES = ['C', '', 'D', '', 'E', 'F', '', 'G', '', 'A', '', 'B']
 NUMEL_2 = len(NOTE_NAMES)
 
-# 12 note variables
-C, Db, D, Eb, E, F, Gb, G, Ab, A, Bb, B = 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'
-
 
 ''' for Interval '''
 

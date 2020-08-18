@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 
-''' utils '''
+''' utilities '''
 
 
 def bezier3(lambdas, position_1, position_2, control_point_1, control_point_2):

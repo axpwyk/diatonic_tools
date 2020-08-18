@@ -87,4 +87,4 @@ plt.show()
 #     ax.text(i, 0, i-1, fontsize=5, ha='center', va='center', color='w')
 #     ax.text(i, 67, i-1, fontsize=5, ha='center', va='center', color='w')
 #
-# fig.savefig('debug.svg', fc='none', bbox_inches='tight', pad_inches=0.0, dpi=300)
+# fig.savefig('三个和弦的键盘示意图.svg', fc='none', bbox_inches='tight', pad_inches=0.0, dpi=300)

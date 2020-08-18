@@ -6,7 +6,7 @@ def get_chord(chord_name='Caug/F#', selection='x9a99x', fret_interval=(7, 11), s
     g.select(selection)
     g.plot2(*fret_interval, title=chord_name.replace('#', r'$\sharp$').replace('b', r'$\flat$'))
     if not save_name:
-        plt.savefig('debug.svg', bbox_inches='tight', pad_inches=0.0)
+        plt.savefig('三个和弦的键盘示意图.svg', bbox_inches='tight', pad_inches=0.0)
     if save_name:
         plt.savefig(f'{fret_interval[0]}-{fret_interval[1]}_'+save_name, bbox_inches='tight', pad_inches=0.0)
 
@@ -15,7 +15,7 @@ def get_scale(scale_name='C Dorian', fret_interval=(0, 12), save_name=''):
     g = Guitar(AlteredDiatonicScale(scale_name).get_notes())
     g.plot2(*fret_interval, title=scale_name.replace('#', r'$\sharp$').replace('b', r'$\flat$'))
     if not save_name:
-        plt.savefig('debug.svg', bbox_inches='tight', pad_inches=0.0)
+        plt.savefig('三个和弦的键盘示意图.svg', bbox_inches='tight', pad_inches=0.0)
     if save_name:
         plt.savefig(f'{fret_interval[0]}-{fret_interval[1]}_'+save_name, bbox_inches='tight', pad_inches=0.0)
 
