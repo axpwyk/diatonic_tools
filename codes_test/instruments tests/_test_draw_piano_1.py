@@ -13,4 +13,4 @@ for ax, chord in zip(axs, chords):
         notes = [note.sub_oct() for note in notes]
     inst.Piano(notes).plot(note_range=(-7, 16), ax=ax, title=chord)
 
-inst.plt.savefig('debug.svg', bbox_inches='tight', pad_inches=0.0)
+inst.plt.savefig('test_piano_plot.svg', bbox_inches='tight', pad_inches=0.0)

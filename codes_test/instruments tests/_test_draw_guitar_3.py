@@ -1,6 +1,6 @@
 from instruments import *
 
-chords = ['EM7', 'F#m7', 'G#m7', 'AM7', 'B7', 'C#m7', 'D#m7-5']
+chords = ['G7(13)', 'Db7(#9)']
 
 n = len(chords)
 fig, axs = plt.subplots(n, 1)
@@ -11,7 +11,8 @@ print(axs)
 for i in range(n):
     g = Guitar(Chord(chords[i]).get_notes())
     # g.select('x8aaa8')
-    g.plot1(0, 12, axs[i], chords[i])
+    g.plot2(0, 12, axs[i], chords[i])
 
-plt.savefig('test.svg', bbox_inches='tight')
+plt.savefig('test_guitar_plot.svg', bbox_inches='tight')
 plt.show()
+a

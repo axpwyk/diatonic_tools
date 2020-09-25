@@ -16,4 +16,4 @@ notes = [root.set_message('R'),
 
 inst.Piano(notes).plot(title=ChordEx().set_notes(notes=notes).get_name())
 
-inst.plt.savefig('debug.svg', bbox_inches='tight', pad_inches=0.0)
+inst.plt.savefig('test_piano_plot.svg', bbox_inches='tight', pad_inches=0.0)

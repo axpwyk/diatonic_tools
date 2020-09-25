@@ -93,7 +93,7 @@ class Note(object):
             note = NATURAL_NOTES[step % NUMEL_1]
             group = self._group + step // NUMEL_1
             accidental = abs(self) + delta_note - note - NUMEL_2 * group
-            return Note().set_vector(note, accidental, group)
+            return Note().set_vector(note, accidental, group).set_message(self.get_message())
         else:
             raise TypeError('ClassError: `Note` could only add an `Interval`!')
 
@@ -364,7 +364,7 @@ class DiatonicScale(object):
             idx = (step+2*i)
             body.append(self[idx%l] if idx<l else self[idx%l]+Interval('P8'))
 
-        return Chord().set_notes(body=body)
+        return ChordEx().set_notes(notes=body)
 
     def get_full_chord(self, step=0):
         l = len(self.get_notes())
@@ -412,7 +412,7 @@ class AlteredDiatonicScale(DiatonicScale):
         else:
             super().__init__(scale_name)
 
-    def get_name(self, top_k=1, return_class_idx=False):
+    def get_name(self, top_k=1, type_only=False, return_class_idx=False):
         def _dist(l1, l2):
                 return sum([abs(i-j) for i, j in zip(l1, l2)])
 
@@ -467,14 +467,23 @@ class AlteredDiatonicScale(DiatonicScale):
         flats_on_tonics = [scale_name.count('b1') for scale_name in top_k_scales]
         tonic_names = [copy(self[0]).add_flat(sharps_on_tonic).add_sharp(flats_on_tonic).get_name(show_group=False)
                        for sharps_on_tonic, flats_on_tonic in zip(sharps_on_tonics, flats_on_tonics)]
-        names = [tonic_name + ' ' + top_k_scale for tonic_name, top_k_scale in zip(tonic_names, top_k_scales)]
 
-        # print(f'Class={idx}, Root={tonic_name}, Type={top_k_scales}')
+        if type_only:
+            names = [top_k_scale for tonic_name, top_k_scale in zip(tonic_names, top_k_scales)]
+        else:
+            names = [tonic_name + ' ' + top_k_scale for tonic_name, top_k_scale in zip(tonic_names, top_k_scales)]
 
         if return_class_idx:
             return names, idx
         else:
             return names
+
+    def get_conventional_name(self):
+        name = self.get_name(type_only=True)[0]
+        if name in CONVENTIONAL_NAMES.keys():
+            return CONVENTIONAL_NAMES[name]
+        else:
+            return []
 
 
 class Chord(object):
@@ -773,9 +782,91 @@ class ChordEx(object):
         return icds[[x[1]!=-1 for x in icds].index(True)]
 
 
-class ChordScale(object):
-    #TODO: finish class `ChordScale`, example: Gm(C Aeolian), Gm(C Dorian), etc.
-    pass
+class ChordScale(AlteredDiatonicScale):
+    def __init__(self, scale_name):
+        super().__init__(scale_name)
+        self._chord_notes = [0, 2, 4, 6]
+        self._tension_notes = [k for k in range(7) if k not in self._chord_notes]
+
+    def get_info(self):
+        notes = self.get_notes()
+        notes_abs = [abs(n) for n in notes]
+        notes_abs_mod = [n % 12 for n in notes_abs]
+        itvs = [n - notes[0] for n in notes]
+        degs = [INTERVAL_NAME_TO_TENSION_NAME[str(i)] for i in itvs]
+        labels = [''] * len(degs)
+        fake_dom7 = False
+        fake_m7 = False
+
+        # add "[CN]" to every base chord note
+        for i in self._chord_notes:
+            labels[i] = '[CN]'
+
+        # add "[TN]" to every tension note
+        for i in self._tension_notes:
+            labels[i] = '[TN]'
+
+        # if it contains dom7 chord (include enharmonic equivalents)
+        if all([na in notes_abs_mod for na in [4, 10]]):
+            # if it contains real dom7 chord
+            if '3' in degs and 'b7' in degs:
+                # half tone above base chord note, but available because of dom7 base chord
+                for idx in range(1, len(notes_abs)):
+                    if any([notes_abs[idx]-notes_abs[j]==1 for j in self._chord_notes]):
+                            labels[idx] = '[OK]'
+                # avoid_type_0: tonic note in dom7 chord
+                if 5 in notes_abs_mod:
+                    idx = notes_abs_mod.index(5)
+                    labels[idx] = '[A0]'
+            # if it contains fake dom7 chord
+            else:
+                fake_dom7 = True
+                # avoid_type_1: half tone above 7th chord note
+                for idx in range(1, len(notes_abs)):
+                    if any([notes_abs[idx] - notes_abs[j] == 1 for j in self._chord_notes]):
+                        labels[idx] = '[A1]'
+
+        # if it contains m7 chord (include enharmonic equivalents)
+        if all([na in notes_abs_mod for na in [3, 10]]):
+            # if it contains real m7 chord
+            if 'b3' in degs and 'b7' in degs:
+                # avoid_type_1: half tone above 7th chord note
+                for idx in range(1, len(notes_abs)):
+                    if any([notes_abs[idx] - notes_abs[j] == 1 for j in self._chord_notes]):
+                        labels[idx] = '[A1]'
+                # avoid_type_2: dorian b3-13th (fake dominant 7th chord)
+                if 9 in notes_abs_mod:
+                    idx = notes_abs_mod.index(9)
+                    labels[idx] = '[A2]'
+            # if it contains fake m7 chord
+            else:
+                fake_m7 = True
+                # avoid_type_1: half tone above 7th chord note
+                for idx in range(1, len(notes_abs)):
+                    if any([notes_abs[idx] - notes_abs[j] == 1 for j in self._chord_notes]):
+                        labels[idx] = '[A1]'
+
+        if not (all([na in notes_abs_mod for na in [4, 10]]) or all([na in notes_abs_mod for na in [3, 10]])):
+            # avoid_type_1: half tone above 7th chord note
+            for idx in range(1, len(notes_abs)):
+                if any([notes_abs[idx] - notes_abs[j] == 1 for j in self._chord_notes]):
+                    labels[idx] = '[A1]'
+
+        long_list = ['x'] * 12
+        for i, n in enumerate(notes_abs_mod):
+            long_list[n] = labels[i] + ' ' + degs[i]
+
+        return long_list, fake_dom7, fake_m7
+
+    def get_color(self):
+        notes = self.get_notes()
+        color = '#'
+        for i in self._chord_notes + self._tension_notes:
+            if i == 0: continue
+
+            color = color + f'{hex(abs(notes[i] - notes[0]))}'[2:]
+
+        return color
 
 
 ''' other exciting functions '''

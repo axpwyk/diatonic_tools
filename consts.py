@@ -146,6 +146,51 @@ ALTERNATIVE_NAME_SUBS = {
 }
 
 
+# conventional names
+CONVENTIONAL_NAMES = {
+    # Class 1
+    'Phrygian(#3)': ['Phrygian Dominant', 'HmP5b'],
+    'Aeolian(#7)': ['Harmonic Minor'],
+    'Dorian(#4)': ['Ukrainian Dorian'],
+    'Mixolydian(#1)': ['Ultra Locrian'],
+
+    # Class 3
+    'Mixolydian(#4)': ['Lydian Dominant', 'Acoustic'],
+    'Lydian(b7)': ['Lydian Dominant', 'Acoustic'],
+
+    'Aeolian(#3)': ['Aeolian Dominant', 'Melodic Major'],
+    'Mixolydian(b6)': ['Aeolian Dominant', 'Melodic Major'],
+
+    'Ionian(#1)': ['Super Locrian', 'Altered Dominant'],
+    'Locrian(b4)': ['Super Locrian', 'Altered Dominant'],
+
+    'Dorian(#7)': ['Melodic Minor'],
+    'Ionian(b3)': ['Melodic Minor'],
+
+    'Locrian(#2)': ['Half Diminished'],
+    'Aeolian(b5)': ['Half Diminished'],
+
+    # Class 4
+    'Phrygian(#7)': ['Minor Neapolitan'],
+
+    # Class 6
+    'Ionian(b6)': ['Harmonic Major'],
+    'Mixolydian(b2)': ['HMP5b'],
+
+    # Class 9
+    'Phrygian(#3,#7)': ['Double Harmonic', 'Gypsy Major'],
+    'Ionian(b2,b6)': ['Double Harmonic', 'Gypsy Major'],
+
+    'Aeolian(#4,#7)': ['Hungarian Minor'],
+    'Lydian(b3,b6)': ['Hungarian Minor'],
+
+    # Class 16
+    'Phrygian(#6,#7)': ['Major Neapolitan'],
+    'Dorian(#7,b2)': ['Major Neapolitan'],
+    'Ionian(b2,b3)': ['Major Neapolitan']
+}
+
+
 ''' for Chord '''
 
 
@@ -270,19 +315,40 @@ CHORD_TYPE_TO_STEPS = {
 }
 
 TENSION_NAME_TO_INTERVAL_NAME = {
+    # Root
+    'R': 'P1',
     # 9th
-    'b9': 'm9',
-    '9': 'M9',
-    '#9': 'A9',
+    'b9': 'm2',
+    '9': 'M2',
+    '#9': 'A2',
+    '##9': 'AA2',
+    # 3rd
+    'bb3': 'd3',
+    'b3': 'm3',
+    '3': 'M3',
+    '#3': 'A3',
     # 11th
-    'b11': 'd11',
-    '11': 'P11',
-    '#11': 'A11',
+    'bb11': 'dd4',
+    'b11': 'd4',
+    '11': 'P4',
+    '#11': 'A4',
+    '##11': 'AA4',
+    # 5th
+    'bb5': 'dd5',
+    'b5': 'd5',
+    '5': 'P5',
+    '#5': 'A5',
+    '##5': 'AA5',
     # 13th
-    'bb13': 'd13',
-    'b13': 'm13',
-    '13': 'M13',
-    '#13': 'A13'
+    'bb13': 'd6',
+    'b13': 'm6',
+    '13': 'M6',
+    '#13': 'A6',
+    # 7th
+    'bbb7': 'dd7',
+    'bb7': 'd7',
+    'b7': 'm7',
+    '7': 'M7'
 }
 
 INTERVAL_NAME_TO_TENSION_NAME = dict((v, k) for k, v in TENSION_NAME_TO_INTERVAL_NAME.items())
@@ -345,10 +411,13 @@ INTERVAL_NAME_TO_CHORD_TYPE = {
     'M3': '',
     'A3': '+3',
     # 5th
+    'dd5': '--5',
     'd5': '-5',
     'P5': '',
     'A5': '+5',
+    'AA5': '++5',
     # 7th
+    'dd7': '--7',
     'd7': '-7',
     'm7': '7',
     'M7': 'M7',
