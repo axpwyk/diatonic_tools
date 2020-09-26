@@ -440,9 +440,12 @@ class Piano(object):
         _ = [ax.add_patch(rect) for rect in rects]
 
         # add annotation
-        c2s = ['red' if note.get_message() == 'R' else
-               'green' if note.get_message() == 'B' else
-               'blue' for note in self._notes]
+        c2s = ['red' if note.get_message() == '[A1]' else
+               'orange' if note.get_message() == '[A0]' else
+               'gold' if note.get_message() == '[A2]' else
+               'dodgerblue' if note.get_message() == '[OK]' else
+               'slategrey' if note.get_message() == '[TN]' else
+               'limegreen' for note in self._notes]
         circs = [plt.Circle(_note2pos_mark(abs(note)), 0.4, ls='-', lw=1, ec=c, fc=c, zorder=3) for note, c in zip(self._notes, c2s)]
         _ = [ax.add_patch(circ) for circ in circs]
         _ = [ax.annotate(note.get_name(show_group=False), _note2pos_mark(abs(note)), color='white', fontsize=fontsize, ha='center', va='center', zorder=4) for note in self._notes]

@@ -30,7 +30,7 @@ def avoid_note(class_num):
         print(cs.get_7th_chord().get_name(type_only=True), '\t', end='')
 
         # print fake dom7, fake m7, info
-        info, fake_dom7, fake_m7 = cs.get_info()
+        _, info, fake_dom7, fake_m7 = cs.get_info()
         print(fake_dom7, '\t', end='')
         print(fake_m7, '\t', end='')
         for i in info:
