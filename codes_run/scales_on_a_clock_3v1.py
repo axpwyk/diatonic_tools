@@ -1,3 +1,4 @@
+import os; os.chdir('..')
 import matplotlib.pyplot as plt
 import numpy as np
 from colorsys import hls_to_rgb

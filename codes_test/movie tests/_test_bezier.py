@@ -60,5 +60,5 @@ _ = [plt.text(cp[0]+0.02, cp[1]+0.02, f'{k}', fontdict={'fontsize': 16}) for k, 
 # scatter(*bz.get_control_points(99, 50), zorder=4)
 plt.gca().set_xlim([-2.2, 2.2])
 plt.gca().set_ylim([-2.2, 2.2])
-plt.savefig('../../output/matplotlib/grid_bezier.svg')
+# plt.savefig('../../output/matplotlib/grid_bezier.svg')
 plt.show()

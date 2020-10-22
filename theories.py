@@ -661,7 +661,7 @@ class ChordEx(object):
         return self
 
     def get_notes(self, bass_on=True):
-        if bass_on:
+        if bass_on and self._bass is not None:
             return self._bass + self._notes
         else:
             return self._notes

@@ -571,3 +571,62 @@ class ColorScheme(object):
                     (((x_margins+w)*n_gradients-x_margins)/2, (y_margins+h)*n_colors-y_margins+h_text/2), ha='center', va='center')
         if filename:
             plt.savefig(f'{filename}.svg', bbox_inches='tight', pad_inches=0.0)
+
+
+class P5Line(object):
+    def __init__(self, chords, names=None):
+        self._chords = chords
+        self._names = names
+
+    def draw(self):
+        color_map = ['salmon', 'darkorange', 'gold', 'yellowgreen', 'mediumaquamarine', 'dodgerblue', 'mediumpurple']
+        n_chords = len(self._chords)
+
+        fig, ax = plt.subplots()
+        fig.set_figwidth(16)
+        fig.set_figheight(16)
+        ax.margins(0.0)
+        ax.set_axis_off()
+        # ax.set_xticks([])
+        # ax.set_yticks([])
+        ax.set_aspect('equal')
+
+        x_mins = []
+        x_maxs = []
+        for y, chord in enumerate(self._chords):
+            pos_map = dict(((key, value) for value, key in enumerate([5, 0, 7, 2, 9, 4, 11])))
+            pos_map_inv = dict(((key, value) for value, key in pos_map.items()))
+            def x2text(x): return Note().set_vector(note=pos_map_inv[x%7], accidental=x//7).get_name(show_group=False)
+
+            rect_xs = [pos_map[note.get_vector()[0]]+7*note.get_vector()[1] for note in chord]
+            bg_xs = [x for x in range(min(rect_xs), max(rect_xs)+1) if x not in rect_xs]
+
+            rects = [plt.Rectangle((rect_x, y), 1, 1, facecolor=color_map[i], edgecolor='black', lw=2, joinstyle='round', zorder=0) for i, rect_x in enumerate(rect_xs)]
+            rects_bg = [plt.Rectangle((bg_x, y), 1, 1, facecolor='gray', edgecolor='black', lw=2, joinstyle='round', zorder=-1) for bg_x in bg_xs]
+
+            _ = [ax.add_patch(rect) for rect in rects+rects_bg]
+            _ = [ax.annotate(r'$\mathbf{'+x2text(int(x)).replace('b', r'\flat').replace('#', r'\sharp')+r'}$',
+                              (x+1/2, y+1/2), c='white', fontsize=15, ha='center', va='center', zorder=1) for x in rect_xs]
+            _ = [ax.annotate(r'$\mathbf{'+x2text(int(x)).replace('b', r'\flat').replace('#', r'\sharp')+r'}$',
+                              (x+1/2, y+1/2), c='white', fontsize=15, ha='center', va='center', zorder=1) for x in bg_xs]
+
+            x_mins.append(min(rect_xs))
+            x_maxs.append(max(rect_xs))
+
+        x_min = min(x_mins)
+        x_max = max(x_maxs)
+
+        left_offset = 3
+
+        if self._names is not None:
+            _ = [ax.annotate(self._names[y], (x_min-left_offset, y+1/2),
+                              c='black', fontsize=15, ha='left', va='center', zorder=1) for y in range(n_chords)]
+        else:
+            _ = [ax.annotate(chord.get_name(), (x_min-left_offset, y+1/2),
+                              c='black', fontsize=15, ha='left', va='center', zorder=1) for y, chord in enumerate(self._chords)]
+
+        vertical_line_xs = [x for x in range(x_min, x_max+1+1) if x%7==0]
+        _ = [ax.plot((x, x), (0, n_chords), 'b', lw=3, solid_capstyle='round') for x in vertical_line_xs]
+
+        ax.set_xlim(x_min-left_offset-1/2, x_max+1+1/2)
+        ax.set_ylim(-1/2, n_chords+1/2)

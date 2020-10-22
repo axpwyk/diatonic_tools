@@ -36,5 +36,5 @@ scatter(*control_points_rotated.T, color='red', zorder=0)
 
 plt.gca().set_xlim([-2.5, 2.5])
 plt.gca().set_ylim([-2.5, 2.5])
-plt.savefig('../../output/matplotlib/grid_bezier.svg')
+# plt.savefig('../../output/matplotlib/grid_bezier.svg')
 plt.show()
