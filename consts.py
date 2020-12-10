@@ -1,39 +1,22 @@
-T = 2**(1/12)
-
-
 def sign(x): return 1 if x > 0 else 0 if x == 0 else -1
 
 
 ''' for Note '''
 
 
-# natural notes (midi encoding numbers), e.g. C=0, D=2, E=4, F=5, G=7, A=9, B=11
-NATURAL_NOTES = [0, 2, 4, 5, 7, 9, 11]
-NUMEL_1 = len(NATURAL_NOTES)
-
-# 12 note names, only natural notes are shown
-NOTE_NAMES = ['C', '', 'D', '', 'E', 'F', '', 'G', '', 'A', '', 'B']
-NUMEL_2 = len(NOTE_NAMES)
+# named notes (natural notes)
+N = 19  # `N`-equal temperament
+T = 2**(1/N)  # semi-tone
+NAMED_NOTES = [0, 3, 6, 8, 11, 14, 17]  # we call index of `NAMED_NOTES` `step`, and index in a scale `degree`
+NOTE_NAMES_STR = 'CDEFGAB'  # symbols for named notes ('CDEFGAB' is convention for 12-equal temperament diatonic heptatonic scales)
+NOTE_NAMES = [''] * N  # a list of length `N` where i-th position is its corresponding note name (if no name use '')
+for i, j in enumerate(NAMED_NOTES):
+    NOTE_NAMES[j] = NOTE_NAMES_STR[i]
+M = len(NAMED_NOTES)
 
 
 ''' for Interval '''
 
-
-# axis 0: delta_note, axis 1: delta_step, e.g. (delta_note, delta_step) = (0, 0) ==> P1
-INTERVAL_TYPES_OLD = [
-    ['P', 'd', '!', '!', '!', '!', '!'],
-    ['A', 'm', '!', '!', '!', '!', '!'],
-    ['!', 'M', 'd', '!', '!', '!', '!'],
-    ['!', 'A', 'm', '!', '!', '!', '!'],
-    ['!', '!', 'M' ,'d' ,'!' ,'!' ,'!'],
-    ['!', '!', 'A' ,'P' ,'!' ,'!' ,'!'],
-    ['!', '!', '!' ,'A' ,'d' ,'!' ,'!'],
-    ['!', '!', '!' ,'!' ,'P' ,'d' ,'!'],
-    ['!', '!', '!' ,'!' ,'A' ,'m' ,'!'],
-    ['!', '!', '!' ,'!' ,'!' ,'M' ,'d'],
-    ['!', '!', '!' ,'!' ,'!' ,'A' ,'m'],
-    ['!', '!', '!' ,'!' ,'!' ,'!' ,'M']
-]
 
 # 0   3 - 4   7  (..., dd, d, P, A, AA, ...)
 # |   |   |   |
@@ -477,3 +460,13 @@ if use_vocaloid:
     CC_NAMES[80] = 'PBS'
     CC_NAMES[81] = 'XSY'
     CC_NAMES[82] = 'GWL'
+
+
+''' for audio.py '''
+
+
+# sampling frequency
+SF = 44100
+
+# bit depth
+BD = 16

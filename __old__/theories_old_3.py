@@ -75,8 +75,8 @@ class Note(object):
     def __sub__(self, other):
         # `Note` - `Note` = `Interval`
         if isinstance(other, Note):
-            step1 = NATURAL_NOTES.index(self._note) + self._group * NUMEL_1
-            step2 = NATURAL_NOTES.index(other._note) + other._group * NUMEL_1
+            step1 = NATURAL_NOTES.index(self._note) + self._group * M
+            step2 = NATURAL_NOTES.index(other._note) + other._group * M
             return Interval().set_vector(abs(self) - abs(other), step1 - step2)
         # `Note` - `Interval` = `Note`
         if isinstance(other, Interval):
@@ -90,16 +90,16 @@ class Note(object):
             delta_nn = other._delta_nn
             delta_step = other._delta_step
             step = NATURAL_NOTES.index(self._note) + delta_step
-            nn = NATURAL_NOTES[step % NUMEL_1]
-            group = self._group + step // NUMEL_1
-            accidental = abs(self) + delta_nn - nn - NUMEL_2 * group
+            nn = NATURAL_NOTES[step % M]
+            group = self._group + step // M
+            accidental = abs(self) + delta_nn - nn - N * group
             return Note().set_vector(nn, accidental, group)
         else:
             raise TypeError('ClassError: `Note` could only add an `Interval`!')
 
     def __abs__(self):
         # return absolute midi encoding number (-\infty, \infty), integer, e.g. 'Bb2' = (11, -1, 2) = 11-1+2*12 = 34
-        return self._note + self._accidental + self._group * NUMEL_2
+        return self._note + self._accidental + self._group * N
 
     def set_vector(self, note=None, accidental=None, group=None):
         # set note vector (nn, accidental, group) manually
@@ -159,17 +159,17 @@ class Note(object):
         # change a note to its enharmonic note, e.g. C#0 -> Db0; C##0 -> D0, etc.
         note_abs = abs(self)
         flag = sign(self._accidental)
-        if note_abs % NUMEL_2 not in NATURAL_NOTES:
+        if note_abs % N not in NATURAL_NOTES:
             new_nn_abs = note_abs + flag
             new_accidental = -flag
-            new_nn = new_nn_abs % NUMEL_2
-            new_group = new_nn_abs // NUMEL_2
+            new_nn = new_nn_abs % N
+            new_group = new_nn_abs // N
             return Note().set_vector(new_nn, new_accidental, new_group)
         else:
             new_nn_abs = note_abs
             new_accidental = 0
-            new_nn = new_nn_abs % NUMEL_2
-            new_group = new_nn_abs // NUMEL_2
+            new_nn = new_nn_abs % N
+            new_group = new_nn_abs // N
             return Note().set_vector(new_nn, new_accidental, new_group)
 
 
@@ -185,8 +185,8 @@ class Interval(object):
         # degree-1 for calculating and indexing
         delta_step = degree - 1
         # calculate interval vector (delta_nn, delta_step)
-        delta_nn = [INTERVAL_TYPES_k[delta_step % NUMEL_1] for INTERVAL_TYPES_k in INTERVAL_TYPES].index(type)
-        delta_nn = delta_nn + delta_step // NUMEL_1 * NUMEL_2
+        delta_nn = [INTERVAL_TYPES_k[delta_step % M] for INTERVAL_TYPES_k in INTERVAL_TYPES].index(type)
+        delta_nn = delta_nn + delta_step // M * N
         self._delta_nn, self._delta_step = pn * delta_nn, pn * delta_step
 
     def __repr__(self):
@@ -229,7 +229,7 @@ class Interval(object):
 
     def get_name(self):
         # get name of `Interval`, e.g. Interval('M2').get_name() = 'M2', etc.
-        type = INTERVAL_TYPES[abs(self._delta_nn) % NUMEL_2][abs(self._delta_step) % NUMEL_1]
+        type = INTERVAL_TYPES[abs(self._delta_nn) % N][abs(self._delta_step) % M]
         degree = f'{abs(self._delta_step)+1}'
         return type + degree if self._delta_step >= 0 else '-' + type + degree
 

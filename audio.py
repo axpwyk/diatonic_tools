@@ -1,28 +1,24 @@
 import numpy as np
 import scipy.signal as ss
 from theories import *
-SF = 44100
-BD = 16
 
 
-# ns: number of samples
-
-
-def triple_to_frequency(triple):
-    nn = triple_to_note_number(triple)
+def note_to_frequency(note):
+    note, accidental, group = note.get_vector()
+    note = note + accidental + 12 * group
     # A4 concerto pitch == nn57 == 440Hz
-    return 440*(T**(nn-69))
+    return 440*(T**(note-57))
 
 
 def nn_to_frequency(nn):
-    return 440*(T**(nn-69))
+    return 440*(T**(nn-57))
 
 
 def triple_to_wav_mono(wavetable, triple, tl, amp):
     """ generate a ndarray from `triple` given lasting time `tl` (>=0.0s) and amplitude `amp` (0.0-1.0) """
     # consts
     wt_length = len(wavetable)
-    freq = triple_to_frequency(triple)
+    freq = note_to_frequency(triple)
     ns = int(SF*tl)
     # linear interpolation
     step_size = wt_length * freq / SF
