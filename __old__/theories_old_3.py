@@ -24,8 +24,8 @@ def interval_name_parser(interval_name):
 def scale_name_parser(scale_name):
     # examples: 'C Ionian', 'Bb Dorian', 'Ionian(#5)', 'Lydian(b6)', 'Phrygian(#3)', 'Aeolian(#3, #7)', etc.
     temp = scale_name
-    for pat in ALTERNATIVE_NAME_SUBS.keys():
-        temp = re.sub(pat, ALTERNATIVE_NAME_SUBS[pat], temp)
+    for pat in ALTERNATIVE_NAMES.keys():
+        temp = re.sub(pat, ALTERNATIVE_NAMES[pat], temp)
     search_obj = re.search(r'(?P<tonic_name>[ABCDEFG][b#]*-?\d*) ?(?P<scale_type>\w+) ?(?P<altered_note>(\([^ac-z]*\)))?', temp)
     return search_obj.groupdict()
 

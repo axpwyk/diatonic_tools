@@ -3,13 +3,6 @@ import scipy.signal as ss
 from theories import *
 
 
-def note_to_frequency(note):
-    note, accidental, group = note.get_vector()
-    note = note + accidental + 12 * group
-    # A4 concerto pitch == nn57 == 440Hz
-    return 440*(T**(note-57))
-
-
 def nn_to_frequency(nn):
     return 440*(T**(nn-57))
 

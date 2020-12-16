@@ -1,50 +1,64 @@
 def sign(x): return 1 if x > 0 else 0 if x == 0 else -1
 
 
-''' for Note '''
+''' for `Note` Class '''
 
 
-# named notes (natural notes)
-N = 19  # `N`-equal temperament
+# alterable consts
+N = 12  # `N`-tone equal temperament (`N`-TET)
+L = 7  # step length of diatonic generator
+S = 5  # starting point of diatonic generator
+
+# some calculations
+M = pow(L, -1, N)  # number of notes in `N`-TET `L`-tone diatonic scale
 T = 2**(1/N)  # semi-tone
-NAMED_NOTES = [0, 3, 6, 8, 11, 14, 17]  # we call index of `NAMED_NOTES` `step`, and index in a scale `degree`
-NOTE_NAMES_STR = 'CDEFGAB'  # symbols for named notes ('CDEFGAB' is convention for 12-equal temperament diatonic heptatonic scales)
-NOTE_NAMES = [''] * N  # a list of length `N` where i-th position is its corresponding note name (if no name use '')
-for i, j in enumerate(NAMED_NOTES):
-    NOTE_NAMES[j] = NOTE_NAMES_STR[i]
-M = len(NAMED_NOTES)
+
+# define named notes (natural notes)
+# symbols for named notes ('CDEFGAB' is convention for 12-TET 7-tone diatonic scale)
+NOTE_NAMES_STR = 'CDEFGAB'
+# NOTE_NAMES_STR = str().join([chr(int('03B1', 16)+j) for j in range(M)])
+if len(NOTE_NAMES_STR) != M: raise ValueError('Number of symbols must equal to number of notes!')
+
+# linear nnrels
+# we call elements of `NAMED_NOTES` `nnrel`, index of `NAMED_NOTES` `step`, and index in a scale `degree`
+NAMED_NOTES = sorted([(S+i*L)%N for i in range(M)])
+
+# a list of length `N` where i-th position is its corresponding note name (if no name use '')
+NOTE_NAMES = [''] * N
+for i, j in enumerate(NAMED_NOTES): NOTE_NAMES[j] = NOTE_NAMES_STR[i]
 
 
-''' for Interval '''
+''' for `Interval` Class '''
 
 
+# currently it's only available for 12-TET 7-tone diatonic scale
 # 0   3 - 4   7  (..., dd, d, P, A, AA, ...)
 # |   |   |   |
 # 1 - 2   5 - 6  (..., dd, d, m, (P), M, A, AA, ...)
 
-# finding center P
-DELTA_STEP_TO_DELTA_NOTE_X2_CENTER = [0, 3, 7, 10, 14, 17, 21]
+# find center
+DELTA_STEP_TO_DELTA_NOTE_CENTER_X2 = [0, 3, 7, 10, 14, 17, 21]
 
 
-# offsets
-def delta_note_x2_rel_to_interval_type(delta_note_x2_rel, interval_class):
+# find offsets
+def delta_nnabs_x2_to_interval_type(delta_nnabs_x2, interval_class):
     if interval_class == '0347':
-        if delta_note_x2_rel < 0:
-            return -delta_note_x2_rel // 2 * 'd'
-        elif delta_note_x2_rel == 0:
+        if delta_nnabs_x2 < 0:
+            return -delta_nnabs_x2 // 2 * 'd'
+        elif delta_nnabs_x2 == 0:
             return 'P'
         else:
-            return delta_note_x2_rel // 2 * 'A'
+            return delta_nnabs_x2 // 2 * 'A'
     elif interval_class == '1256':
-        if delta_note_x2_rel < 0:
-            return -delta_note_x2_rel // 2 * 'd' if delta_note_x2_rel < -1 else 'm'
+        if delta_nnabs_x2 < 0:
+            return -delta_nnabs_x2 // 2 * 'd' if delta_nnabs_x2 < -1 else 'm'
         else:
-            return delta_note_x2_rel // 2 * 'A' if delta_note_x2_rel > 1 else 'M'
+            return delta_nnabs_x2 // 2 * 'A' if delta_nnabs_x2 > 1 else 'M'
     else:
         raise ValueError('No such type!')
 
 
-def interval_type_to_delta_note_x2_rel(interval_type, interval_class):
+def interval_type_to_delta_nnabs_x2(interval_type, interval_class):
     if interval_class == '0347':
         if interval_type == 'P':
             return 0
@@ -69,9 +83,10 @@ def interval_type_to_delta_note_x2_rel(interval_type, interval_class):
         raise ValueError('No such type!')
 
 
-''' for DiatonicScale '''
+''' for `DiatonicScale` Class '''
 
 
+# currently it's only available for 12-TET 7-tone diatonic scale
 # these two encoders are used to calculate number of accidentals
 SCALE_TYPE_ENCODER = {'Locrian': -3, 'Phrygian': -2, 'Aeolian': -1, 'Dorian': 0, 'Mixolydian': 1, 'Ionian': 2, 'Lydian':3}
 
@@ -81,29 +96,35 @@ TONIC_NAME_ENCODER = {'F': -3, 'C': -2, 'G': -1, 'D': 0, 'A': 1, 'E': 2, 'B': 3}
 SCALE_TYPE_DECODER = ['Locrian', 'Phrygian', 'Aeolian', 'Dorian', 'Mixolydian', 'Ionian', 'Lydian']
 
 
-''' for AlteredDiatonicScale '''
+''' for `DiatonicScaleV2` Class '''
 
 
-# get interval vectors of all 66 classes
+
+
+
+''' for `AlteredDiatonicScale` Class '''
+
+
+# get interval vectors of all 66 classes (stacking 2nds)
 SCALE_INTERVAL_VECTOR_LIST = []
 with open('all_heptatonic_scale_intervals.txt', 'r') as f:
     for line in f:
         SCALE_INTERVAL_VECTOR_LIST.append(eval(line))
 
+# get interval vectors of all 66 classes (stacking 3rds)
 CHORD_INTERVAL_VECTOR_LIST = []
 with open('all_heptatonic_chord_intervals.txt', 'r') as f:
     for line in f:
         CHORD_INTERVAL_VECTOR_LIST.append(eval(line))
 
-# get all names of 66 classes
+# get names of all 66 classes
 CLASS_LIST = []
 with open('all_heptatonic_scale_classes.txt', 'r') as f:
     for line in f:
         CLASS_LIST.append(eval(line))
 
-
 # alternative names
-ALTERNATIVE_NAME_SUBS = {
+ALTERNATIVE_NAMES = {
     'Ukrainian Dorian': 'Dorian(#4)',
     'Harmonic Minor': 'Aeolian(#7)',
     'Phrygian Dominant': 'Phrygian(#3)',
@@ -127,7 +148,6 @@ ALTERNATIVE_NAME_SUBS = {
     'Major': 'Ionian',  # keep these two at the end!!!
     'Minor': 'Aeolian'  # keep these two at the end!!!
 }
-
 
 # conventional names
 CONVENTIONAL_NAMES = {
@@ -174,7 +194,7 @@ CONVENTIONAL_NAMES = {
 }
 
 
-''' for Chord '''
+''' for `Chord` Class '''
 
 
 CHORD_TYPE_TO_SCALE_TYPE_OLD = {
@@ -383,7 +403,7 @@ CHORD_TYPE_TO_CONSOLE_COLOR = {
 }
 
 
-''' for ChordEx '''
+''' for `ChordEx` Class '''
 
 
 # for `ChordEx.get_name_ex()` method
@@ -466,7 +486,19 @@ if use_vocaloid:
 
 
 # sampling frequency
-SF = 44100
+SF = 48000
 
 # bit depth
-BD = 16
+BD = 24
+
+
+''' end of `const.py` '''
+
+
+out_str_1 = f'{N}-TET | {M}-tone | step length: {L} | starting: {S}'
+out_str_2 = 'named notes: ' + str().join([f'{ni}={NAMED_NOTES[i]} ' for i, ni in enumerate(NOTE_NAMES_STR)])
+num_dash = max(len(out_str_1), len(out_str_2))
+print('-'*num_dash)
+print(out_str_1)
+print(out_str_2)
+print('-'*num_dash)

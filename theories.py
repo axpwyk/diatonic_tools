@@ -9,7 +9,8 @@ from consts import *
 # for `Note`
 def note_name_parser(note_name):
     # `note_name` is a string, examples: 'C#3', 'Bb1', 'Fbb3', etc.
-    search_obj = re.search(r'(?P<note_name>[' + NOTE_NAMES_STR + r'])(?P<accidental_str>[b#]*)(?P<group_str>-?\d+)?', note_name)
+    pattern = r'(?P<note_name>[' + NOTE_NAMES_STR + r'])(?P<accidental_str>[b#]*)(?P<group_str>-?\d+)?'
+    search_obj = re.search(pattern, note_name)
     return search_obj.groupdict()
 
 
@@ -22,56 +23,66 @@ def interval_name_parser(interval_name):
 
 # for `DiatonicScale`
 def scale_name_parser(scale_name):
-    # `scale_name` is a string, examples: 'C Ionian', 'Bb Dorian', 'Ionian(#5)', 'Lydian(b6)', 'Phrygian(#3)', 'Aeolian(#3, #7)', etc.
+    # `scale_name` is a string, examples: 'C Ionian', 'D Ionian(#5)', 'E Aeolian(#3, #7)', etc.
     temp = scale_name
-    for pat in ALTERNATIVE_NAME_SUBS.keys():
-        temp = re.sub(pat, ALTERNATIVE_NAME_SUBS[pat], temp)
-    search_obj = re.search(r'(?P<tonic_name>[' + NOTE_NAMES_STR + r'][b#]*-?\d*) ?(?P<scale_type>\w+) ?(?P<altered_note>(\([^ac-z]*\)))?', temp)
+    for pat in ALTERNATIVE_NAMES.keys():
+        temp = re.sub(pat, ALTERNATIVE_NAMES[pat], temp)
+    pattern = r'(?P<tonic_name>[' + NOTE_NAMES_STR + r'][b#]*-?\d*) ?(?P<scale_type>[\w-]+) ?(?P<altered_note>(\([^ac-z]*\)))?'
+    search_obj = re.search(pattern, temp)
     return search_obj.groupdict()
+
+
+def scale_type_parser(scale_type):
+    pass
 
 
 # for `AlteredDiatonicScale`
 def altered_note_parser(altered_note):
     # `altered note` is a string, examples: '(b3)', '(b3, b7)', '(#5)', etc.
-    return re.findall(r'[#b]+\d', altered_note)
+    return re.findall(r'[#b]+\d+', altered_note)
 
 
-# for `Chord`
+# for `Chord` and `ChordEx`
 def chord_name_parser(chord_name):
     # `chord_name` is a string, examples: 'CM7', 'Dm7(9, 11, 13)', 'Bm7-5/F', etc.
-    search_obj = re.search(r'(?P<root_name>[' + NOTE_NAMES_STR + '][b#]*)(?P<chord_type>\w*[-+]?\d?\w*)(?P<tension_type>(\([^ac-z]*\)))?(/(?P<bass_name>[ABCDEFG][b#]*))?', chord_name)
+    pattern = r'(?P<root_name>[' + NOTE_NAMES_STR + '][b#]*)(?P<chord_type>\w*[-+]?\d?\w*)(?P<tension_type>(\([^ac-z]*\)))?(/(?P<bass_name>[ABCDEFG][b#]*))?'
+    search_obj = re.search(pattern, chord_name)
     return search_obj.groupdict()
 
 
 def tension_type_parser(tension_type):
     # `tension_type` is a string, examples: '(9)', '(b9, #11)', '(9, 11, 13)', '(9, 13)', etc.
-    return re.findall(r'[#b]*\d{1,2}', tension_type)
+    return re.findall(r'[#b]*\d+', tension_type)
 
 
 ''' fancy music theory classes '''
 
 
 class Note(object):
-    def __init__(self, note_name='C0'):
-        par = note_name_parser(note_name)
+    def __init__(self, note_name='C0', vector=(0, 0, 0)):
+        if all([N==12, M==7]) :
+            par = note_name_parser(note_name)
 
-        # get relative midi encoding number, integer in [0, 11]
-        self._nnrel = NOTE_NAMES.index(par['note_name'])
+            # get relative midi encoding number, integer in [0, 11]
+            self._nnrel = NOTE_NAMES.index(par['note_name'])
 
-        # get accidentals, integer in (-\infty, \infty)
-        accidental = 0
-        accidental += par['accidental_str'].count('#')
-        accidental -= par['accidental_str'].count('b')
-        self._accidental = accidental
+            # get accidentals, integer in (-\infty, \infty)
+            accidental = 0
+            accidental += par['accidental_str'].count('#')
+            accidental -= par['accidental_str'].count('b')
+            self._accidental = accidental
 
-        # get group number, integer in (-\infty, \infty)
-        if par['group_str']:
-            self._group = int(par['group_str'])
+            # get group number, integer in (-\infty, \infty)
+            if par['group_str']:
+                self._group = int(par['group_str'])
+            else:
+                self._group = 0
+
+            # additional message (such as br357t for `Chord`, etc.)
+            self._message = ''
+
         else:
-            self._group = 0
-
-        # additional message (such as br357t for `Chord`, etc.)
-        self._message = ''
+            self._nnrel, self._accidental, self._group = vector
 
     def __repr__(self):
         return self.get_name()
@@ -103,13 +114,16 @@ class Note(object):
 
     def __abs__(self):
         # return absolute midi encoding number, integer in (-\infty, \infty), e.g.
-        # (in 12-equal temperament, diatonic) 'Bb2' = (11, -1, 2) = 11-1+2*12 = 34
+        # (in 12-tone equal temperament, diatonic) 'Bb2' = (11, -1, 2) = 11-1+2*12 = 34
         return self._nnrel + self._accidental + self._group * N
 
     def set_vector(self, nnrel=None, accidental=None, group=None):
         # set note vector (nnrel, accidental, group) manually
         if nnrel:
-            self._nnrel = nnrel
+            if nnrel not in NAMED_NOTES:
+                raise ValueError('Given `nnrel` is not a named note. Please consider to choose another one!')
+            else:
+                self._nnrel = nnrel
         if accidental:
             self._accidental = accidental
         if group:
@@ -128,6 +142,13 @@ class Note(object):
             return NOTE_NAMES[self._nnrel] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b') + f'{self._group}'
         else:
             return NOTE_NAMES[self._nnrel] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b')
+
+    def get_frequency(self):
+        nnabs = abs(self)
+        # in 12-TET 7-tone diatonic scale:
+        # A4 concerto pitch == nnabs57 == 440Hz
+        # A3 cubase pitch == nnabs45 == 440Hz
+        return 440 * (T ** (nnabs - 45))
 
     def add_sharp(self, n=1):
         self._accidental += n
@@ -161,52 +182,67 @@ class Note(object):
     def get_message(self):
         return self._message
 
-    def get_enharmonic_note(self):
+    def get_enharmonic_note(self, direction='auto'):
         # change a note to its enharmonic note, e.g.
-        # (in 12-equal temperament, diatonic) [C, _, D, _, E, F, _, G, _, A, _, B]
+        # (in 12-tone equal temperament, diatonic scale) [C, _, D, _, E, F, _, G, _, A, _, B]
         # C#0 -> Db0; C##0 -> D0; D0 -> D0, etc.
-        # (in 12-equal temperament, diatonic pentatonic) [C, _, D, _, E, _, _, G, _, A, _, _]
+        # (in 12-tone equal temperament, diatonic pentatonic scale) [C, _, D, _, E, _, _, G, _, A, _, _]
         # C#0 -> Db0; E#0 -> Gbb0; E##0 -> Gb0; E###0 -> G0; G0 -> G0, etc.
-        # (in 19-equal temperament, diatonic) [C, _, _, D, _, _, E, _, F, _, _, G, _, _, A, _, _, B, _]
+        # (in 19-tone equal temperament, diatonic scale) [C, _, _, D, _, _, E, _, F, _, _, G, _, _, A, _, _, B, _]
         # C#0 -> Dbb0; C##0 -> Db0; C###0 -> D0; D0 -> D0, etc.
         nnabs = abs(self)
-        nnrel = nnabs % N
 
-        named_notes = NAMED_NOTES + [NAMED_NOTES[0]+N]
-
-        if self._accidental >= 0:
-            idx = [nnrel<=named_note for named_note in named_notes].index(True)
+        if direction == 'up':
+            offset = 1
+        elif direction == 'down':
+            offset = -1
+        elif direction == 'auto':
+            offset = sign(self._accidental)
         else:
-            idx = [nnrel>=named_note for named_note in named_notes].index(True)
-        step = idx % M
+            raise ValueError(r"Illegal `direction`! Please choose one from 'up', 'down' or 'auto'!")
 
-        new_nnrel = NAMED_NOTES[step]
-        new_group = nnabs // N + self._group
+        idx = [self._nnrel == k for k in NAMED_NOTES].index(True)
+        new_idx = idx + offset
+
+        new_nnrel = NAMED_NOTES[new_idx % M]
+        new_group = self._group + new_idx // M
         new_accidental = nnabs - new_nnrel - new_group * N
 
         return Note().set_vector(new_nnrel, new_accidental, new_group)
 
 
 class Interval(object):
-    def __init__(self, interval_name='P1'):
-        par = interval_name_parser(interval_name)
-        # negative or positive
-        flag = -1 if par['negative_str'] else 1
-        # get interval type 'd', 'm', 'P', 'M', or 'A'
-        interval_type = par['interval_type']
-        # get interval degree, positive integer
-        degree = eval(par['degree_str'])
-        # flag * (degree - 1) for calculating and indexing
-        delta_step = flag * (degree - 1)
-        # calculate interval vector (delta_note, delta_step)
-        interval_class = '0347' if f'{delta_step % M}' in '0347' else '1256'
-        octs = (delta_step % M - delta_step) // M
-        center = DELTA_STEP_TO_DELTA_NOTE_X2_CENTER[delta_step % M] - octs * 2 * N
-        delta_note_x2 = center + flag * interval_type_to_delta_note_x2_rel(interval_type, interval_class)
-        self._delta_nnabs, self._delta_step = delta_note_x2 // 2, delta_step
+    def __init__(self, interval_name='P1', vector=(0, 0)):
+        if all([N==12, M==7]):
+            par = interval_name_parser(interval_name)
+
+            # negative or positive
+            sgn = -1 if par['negative_str'] else 1
+
+            # get interval type 'd', 'm', 'P', 'M', or 'A'
+            interval_type = par['interval_type']
+
+            # get interval degree, positive integer
+            degree = int(par['degree_str'])
+
+            # sgn * (degree - 1) for calculating and indexing
+            delta_step = sgn * (degree - 1)
+
+            # calculate interval vector (delta_nnabs, delta_step)
+            octs = (delta_step % M - delta_step) // M
+            center = DELTA_STEP_TO_DELTA_NOTE_CENTER_X2[delta_step % M] - octs * 2 * N
+            interval_class = '0347' if delta_step % M in [0, 3, 4, 7] else '1256'
+            delta_nnabs_x2 = center + sgn * interval_type_to_delta_nnabs_x2(interval_type, interval_class)
+            self._delta_nnabs, self._delta_step = delta_nnabs_x2 // 2, delta_step
+
+        else:
+            self._delta_nnabs, self._delta_step = vector
 
     def __repr__(self):
-        return self.get_name()
+        if any([N!=12, M!=7]):
+            return f'({self._delta_nnabs}, {self._delta_step})'
+        else:
+            return self.get_name()
 
     def __add__(self, other):
         # `Interval` + `Note` = `Note`
@@ -229,13 +265,13 @@ class Interval(object):
         return Interval().set_vector(-self._delta_nnabs, -self._delta_step)
 
     def __abs__(self):
-        # absolute interval is `self._delta_note`
+        # absolute interval is `self._delta_nnabs`
         return self._delta_nnabs
 
-    def set_vector(self, delta_note=None, delta_step=None):
-        # set interval vector (delta_note, delta_step) manually
-        if delta_note:
-            self._delta_nnabs = delta_note
+    def set_vector(self, delta_nnabs=None, delta_step=None):
+        # set interval vector (delta_nnabs, delta_step) manually
+        if delta_nnabs:
+            self._delta_nnabs = delta_nnabs
         if delta_step:
             self._delta_step = delta_step
         return self
@@ -245,17 +281,19 @@ class Interval(object):
 
     def get_name(self):
         # get name of `Interval`, e.g. Interval('M2').get_name() = 'M2', etc.
-        flag = 1 if self._delta_step >= 0 else -1
-        octs = (self._delta_step % M - self._delta_step) // M
-        center = DELTA_STEP_TO_DELTA_NOTE_X2_CENTER[self._delta_step % M] - octs * 2 * N
+        if any([N!=12, M!=7]): raise NotImplementedError('`Interval.get_name` method currently requires `N`=12, `M`=7!')
 
-        delta_note_x2_rel = flag * (self._delta_nnabs * 2 - center)
+        sgn = 1 if self._delta_step >= 0 else -1
+        octs = (self._delta_step % M - self._delta_step) // M
+        center = DELTA_STEP_TO_DELTA_NOTE_CENTER_X2[self._delta_step % M] - octs * 2 * N
+
+        delta_nnabs_x2 = sgn * (self._delta_nnabs * 2 - center)
         interval_class = '0347' if f'{self._delta_step % M}' in '0347' else '1256'
 
-        interval_type = delta_note_x2_rel_to_interval_type(delta_note_x2_rel, interval_class)
+        interval_type = delta_nnabs_x2_to_interval_type(delta_nnabs_x2, interval_class)
         degree = f'{abs(self._delta_step) + 1}'
 
-        return interval_type + degree if flag >= 0 else '-' + interval_type + degree
+        return interval_type + degree if sgn >= 0 else '-' + interval_type + degree
 
     def normalize(self):
         octs = (self._delta_step % M - self._delta_step) // M

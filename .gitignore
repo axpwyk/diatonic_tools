@@ -1,10 +1,12 @@
+__old__/
 __pycache__/
 irs/
-midi/
-output/
+midis/
+outputs/
+references/
 wavetables/
 wavs/
-old/
+
 user interfaces/
 manimlib/
 media/
