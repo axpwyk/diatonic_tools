@@ -1,13 +1,18 @@
+from ast import literal_eval
+
+
 def sign(x): return 1 if x > 0 else 0 if x == 0 else -1
 
 
-''' for `Note` Class '''
+''' ----------------------------------------------------------------------------------------- '''
+''' ************************************ for `Note` Class *********************************** '''
+''' ----------------------------------------------------------------------------------------- '''
 
 
 # alterable consts
 N = 12  # `N`-tone equal temperament (`N`-TET)
-L = 7  # step length of diatonic generator
-S = 5  # starting point of diatonic generator
+L = 5  # step length of diatonic generator
+S = 4  # starting point of diatonic generator
 
 # some calculations
 M = pow(L, -1, N)  # number of notes in `N`-TET `L`-tone diatonic scale
@@ -15,26 +20,36 @@ T = 2**(1/N)  # semi-tone
 
 # define named notes (natural notes)
 # symbols for named notes ('CDEFGAB' is convention for 12-TET 7-tone diatonic scale)
-NOTE_NAMES_STR = 'CDEFGAB'
+NOTE_NAMES_STR = 'CDEGA'
 # NOTE_NAMES_STR = str().join([chr(int('03B1', 16)+j) for j in range(M)])
 if len(NOTE_NAMES_STR) != M: raise ValueError('Number of symbols must equal to number of notes!')
 
 # linear nnrels
 # we call elements of `NAMED_NOTES` `nnrel`, index of `NAMED_NOTES` `step`, and index in a scale `degree`
-NAMED_NOTES = sorted([(S+i*L)%N for i in range(M)])
+NAMED_NOTES_G = [(S+i*L)%N for i in range(M)]
+NAMED_NOTES = sorted(NAMED_NOTES_G)
 
 # a list of length `N` where i-th position is its corresponding note name (if no name use '')
 NOTE_NAMES = [''] * N
 for i, j in enumerate(NAMED_NOTES): NOTE_NAMES[j] = NOTE_NAMES_STR[i]
 
+# change `NOTE_NAMES_STR` into generating order
+NOTE_NAMES_STR_G = ''.join([NOTE_NAMES[k] for k in NAMED_NOTES_G])
 
-''' for `Interval` Class '''
+
+''' ----------------------------------------------------------------------------------------- '''
+''' ********************************** for `Interval` Class ********************************* '''
+''' ----------------------------------------------------------------------------------------- '''
 
 
-# currently it's only available for 12-TET 7-tone diatonic scale
-# 0   3 - 4   7  (..., dd, d, P, A, AA, ...)
-# |   |   |   |
-# 1 - 2   5 - 6  (..., dd, d, m, (P), M, A, AA, ...)
+''' ----------------------------------------------------------------------------------------- '''
+''' for 12-TET 7-tone diatonic scale                                                          '''
+''' ----------------------------------------------------------------------------------------- '''
+''' 0   3 - 4   7  (..., dd, d, P, A, AA, ...)                                                '''
+''' |   |   |   |                                                                             '''
+''' 1 - 2   5 - 6  (..., dd, d, m, (P), M, A, AA, ...)                                        '''
+''' ----------------------------------------------------------------------------------------- '''
+
 
 # find center
 DELTA_STEP_TO_DELTA_NOTE_CENTER_X2 = [0, 3, 7, 10, 14, 17, 21]
@@ -83,45 +98,52 @@ def interval_type_to_delta_nnabs_x2(interval_type, interval_class):
         raise ValueError('No such type!')
 
 
-''' for `DiatonicScale` Class '''
+''' ----------------------------------------------------------------------------------------- '''
+''' ******************************* for `DiatonicScale` Class ******************************* '''
+''' ----------------------------------------------------------------------------------------- '''
 
 
-# currently it's only available for 12-TET 7-tone diatonic scale
-# these two encoders are used to calculate number of accidentals
-SCALE_TYPE_ENCODER = {'Locrian': -3, 'Phrygian': -2, 'Aeolian': -1, 'Dorian': 0, 'Mixolydian': 1, 'Ionian': 2, 'Lydian':3}
+# scale type converter, change old name to new name, e.g. Ionian -> C-mode
+SCALE_TYPE_OLD_TO_NEW = {
+    'Lydian': 'F-mode',
+    'Ionian': 'C-mode',
+    'Mixolydian': 'G-mode',
+    'Dorian': 'D-mode',
+    'Aeolian': 'A-mode',
+    'Phrygian': 'E-mode',
+    'Locrian': 'B-mode'
+}
 
-TONIC_NAME_ENCODER = {'F': -3, 'C': -2, 'G': -1, 'D': 0, 'A': 1, 'E': 2, 'B': 3}
-
-# for `get_name` method
-SCALE_TYPE_DECODER = ['Locrian', 'Phrygian', 'Aeolian', 'Dorian', 'Mixolydian', 'Ionian', 'Lydian']
-
-
-''' for `DiatonicScaleV2` Class '''
-
-
-
+SCALE_TYPE_NEW_TO_OLD = dict((v, k) for k, v in SCALE_TYPE_OLD_TO_NEW.items())
 
 
-''' for `AlteredDiatonicScale` Class '''
+''' ----------------------------------------------------------------------------------------- '''
+''' **************************** for `AlteredDiatonicScale` Class *************************** '''
+''' ----------------------------------------------------------------------------------------- '''
+
+
+''' ----------------------------------------------------------------------------------------- '''
+''' for 12-TET 7-tone diatonic scale                                                          '''
+''' ----------------------------------------------------------------------------------------- '''
 
 
 # get interval vectors of all 66 classes (stacking 2nds)
 SCALE_INTERVAL_VECTOR_LIST = []
 with open('all_heptatonic_scale_intervals.txt', 'r') as f:
     for line in f:
-        SCALE_INTERVAL_VECTOR_LIST.append(eval(line))
+        SCALE_INTERVAL_VECTOR_LIST.append(literal_eval(line))
 
 # get interval vectors of all 66 classes (stacking 3rds)
 CHORD_INTERVAL_VECTOR_LIST = []
 with open('all_heptatonic_chord_intervals.txt', 'r') as f:
     for line in f:
-        CHORD_INTERVAL_VECTOR_LIST.append(eval(line))
+        CHORD_INTERVAL_VECTOR_LIST.append(literal_eval(line))
 
 # get names of all 66 classes
 CLASS_LIST = []
 with open('all_heptatonic_scale_classes.txt', 'r') as f:
     for line in f:
-        CLASS_LIST.append(eval(line))
+        CLASS_LIST.append(literal_eval(line))
 
 # alternative names
 ALTERNATIVE_NAMES = {
@@ -194,33 +216,15 @@ CONVENTIONAL_NAMES = {
 }
 
 
-''' for `Chord` Class '''
+''' ----------------------------------------------------------------------------------------- '''
+''' *********************************** for `Chord` Class *********************************** '''
+''' ----------------------------------------------------------------------------------------- '''
 
 
-CHORD_TYPE_TO_SCALE_TYPE_OLD = {
-    'aug': 'Ionian(#5)',
-    '': 'Ionian',
-    '-5': 'Ionian(b5)',
-    'm': 'Aeolian',
-    'dim': 'Locrian',
-    'dim-3': 'Locrian(b3)',
-    'M7+5': 'Ionian(#5)',
-    '7+5': 'Mixolydian(#5)',
-    'M7': 'Ionian',
-    '7': 'Mixolydian',
-    '7-5': 'Mixolydian(b5)',
-    'mM7': 'Aeolian(#7)',
-    'm7': 'Aeolian',
-    'm7-5': 'Locrian',
-    'dim7': 'Locrian(b7)',
-    'm7-5-3': 'Locrian(b3)',
-    'dim7-3': 'Locrian(b7, b3)',  # b Dorian(#1)
-    'sus2': 'Ionian',
-    'sus4': 'Ionian',
-    '6': 'Ionian',
-    'm6': 'Dorian',
-    '9': 'Mixolydian'
-}
+''' ----------------------------------------------------------------------------------------- '''
+''' for 12-TET 7-tone diatonic scale                                                          '''
+''' ----------------------------------------------------------------------------------------- '''
+
 
 CHORD_TYPE_TO_SCALE_TYPE = {
     # 5**
@@ -255,31 +259,6 @@ CHORD_TYPE_TO_SCALE_TYPE = {
     '6-5sus2': 'Mixolydian(b5)',  # -7-5-3
     'sus2': 'Mixolydian',  # -3
     '-5sus2': 'Mixolydian(b5)',  # -5-3
-}
-
-CHORD_TYPE_TO_STEPS_OLD = {
-    'aug': [0, 2, 4],
-    '': [0, 2, 4],
-    '-5': [0, 2, 4],
-    'm': [0, 2, 4],
-    'dim': [0, 2, 4],
-    'dim-3': [0, 2, 4],
-    'M7+5': [0, 2, 4, 6],
-    '7+5': [0, 2, 4, 6],
-    'M7': [0, 2, 4, 6],
-    '7': [0, 2, 4, 6],
-    '7-5': [0, 2, 4, 6],
-    'mM7': [0, 2, 4, 6],
-    'm7': [0, 2, 4, 6],
-    'm7-5': [0, 2, 4, 6],
-    'dim7': [0, 2, 4, 6],
-    'm7-5-3': [0, 2, 4, 6],
-    'dim7-3': [0, 2, 4, 6],
-    'sus2': [0, 1, 4],
-    'sus4': [0, 3, 4],
-    '6': [0, 2, 4, 5],
-    'm6': [0, 2, 4, 5],
-    '9': [0, 2, 4, 6, 1]
 }
 
 CHORD_TYPE_TO_STEPS = {
@@ -392,21 +371,18 @@ INTERVAL_VECTOR_TO_CHORD_TYPE = {
     '24': '-5sus2',  # -5-3
 }
 
-CHORD_TYPE_TO_CONSOLE_COLOR = {
-    'M7+5': 'magenta',
-    'M7': 'red',
-    '7': 'white',
-    'mM7': 'cyan',
-    'm7': 'blue',
-    'm7-5': 'cyan',
-    'dim7': 'green'
-}
+
+''' ----------------------------------------------------------------------------------------- '''
+''' ********************************** for `ChordEx` Class ********************************** '''
+''' ----------------------------------------------------------------------------------------- '''
 
 
-''' for `ChordEx` Class '''
+''' ----------------------------------------------------------------------------------------- '''
+''' for 12-TET 7-tone diatonic scale                                                          '''
+''' ----------------------------------------------------------------------------------------- '''
 
 
-# for `ChordEx.get_name_ex()` method
+# for `ChordEx.get_name_ex` method
 INTERVAL_NAME_TO_CHORD_TYPE = {
     # 3rd
     'd3': '-3',
@@ -440,7 +416,9 @@ INTERVAL_NAME_TO_CHORD_TYPE = {
 }
 
 
-''' for midi.py '''
+''' -----------------------------------------------------------------------------------------'''
+''' ************************************* for `midi.py` *************************************'''
+''' -----------------------------------------------------------------------------------------'''
 
 
 # ADD2 MIDI mapping
@@ -464,7 +442,7 @@ ADD2_NOTE_NAMES = [
     '---', '---', '---', '---', '---', '---', '---', '---'
 ]
 
-# AGTC MIDI mapping
+# TODO: AGTC MIDI mapping
 AGTC_NOTE_NAMES = [0]*128
 
 # CC name list
@@ -482,7 +460,9 @@ if use_vocaloid:
     CC_NAMES[82] = 'GWL'
 
 
-''' for audio.py '''
+''' -----------------------------------------------------------------------------------------'''
+''' ************************************* for `audio.py` ************************************'''
+''' -----------------------------------------------------------------------------------------'''
 
 
 # sampling frequency
@@ -492,13 +472,15 @@ SF = 48000
 BD = 24
 
 
-''' end of `const.py` '''
+''' -----------------------------------------------------------------------------------------'''
+''' *************************************** Show Info ***************************************'''
+''' -----------------------------------------------------------------------------------------'''
 
 
 out_str_1 = f'{N}-TET | {M}-tone | step length: {L} | starting: {S}'
 out_str_2 = 'named notes: ' + str().join([f'{ni}={NAMED_NOTES[i]} ' for i, ni in enumerate(NOTE_NAMES_STR)])
-num_dash = max(len(out_str_1), len(out_str_2))
-print('-'*num_dash)
+n_hyphens = max(len(out_str_1), len(out_str_2))
+print('-' * n_hyphens)
 print(out_str_1)
 print(out_str_2)
-print('-'*num_dash)
+print('-' * n_hyphens)

@@ -4,8 +4,8 @@ import copy
 from mido import MidiFile, MidiTrack
 from mido import Message, MetaMessage
 from mido import bpm2tempo, tempo2bpm, tick2second, second2tick
-from consts import ADD2_NOTE_NAMES, AGTC_NOTE_NAMES, CC_NAMES
 from pathlib import Path
+from consts import ADD2_NOTE_NAMES, AGTC_NOTE_NAMES, CC_NAMES
 
 
 ''' other functions '''

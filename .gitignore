@@ -1,17 +1,12 @@
 __old__/
 __pycache__/
 irs/
+media/
 midis/
 outputs/
 references/
 wavetables/
 wavs/
-
-user interfaces/
-manimlib/
-media/
-audio/
-
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839

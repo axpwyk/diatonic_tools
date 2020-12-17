@@ -3,69 +3,82 @@ import scipy.signal as ss
 from theories import *
 
 
-def nn_to_frequency(nn):
-    return 440*(T**(nn-57))
+wt_sine = np.sin(np.linspace(0, 2*np.pi, 65536))
+wt_sawtooth = ss.sawtooth(np.linspace(0, 1, 65536), 1)
 
 
-def triple_to_wav_mono(wavetable, triple, tl, amp):
-    """ generate a ndarray from `triple` given lasting time `tl` (>=0.0s) and amplitude `amp` (0.0-1.0) """
-    # consts
-    wt_length = len(wavetable)
-    freq = note_to_frequency(triple)
-    ns = int(SF*tl)
+def note_to_wav_mono(wt, note, tl, amp):
+    """
+        generate a ndarray from `note`
+        `wt`:   wavetable, 1 period
+        `tl`:   lasting time, positive float, seconds
+        `amp`:  amplitude, float in (0.0, 1.0)
+    """
+    # constants
+    wt_length = len(wt)
+    freq = note.get_frequency()
+
     # linear interpolation
+    n_samples = int(SF * tl)
     step_size = wt_length * freq / SF
-    poses = [step_size*k % wt_length for k in range(ns)]
+    poses = [step_size*k % wt_length for k in range(n_samples)]
+
     xs_left = [int(pos) for pos in poses]
     xs_right = [(x+1) % wt_length for x in xs_left]
     deltas_left = np.array(poses) - np.array(xs_left)
     deltas_right = np.array(xs_right) - np.array(poses)
-    values_left = wavetable[xs_left]
-    values_right = wavetable[xs_right]
+    values_left = wt[xs_left]
+    values_right = wt[xs_right]
+
     values = values_left*deltas_right + values_right*deltas_left
+
+    # envelope
+    eps = 0.01
+    values[:int(SF*eps)] = values[:int(SF*eps)] * np.linspace(0, 1, int(SF*eps))
+    values[-int(SF*eps):] = values[-int(SF*eps):] * np.linspace(1, 0, int(SF*eps))
 
     return amp * values
 
 
-def triples_to_wav_mono(wavetable, triples, tl, amp):
-    wavs = [triple_to_wav_mono(wavetable, triple, tl, amp) for triple in triples]
-    return np.sum(wavs, axis=0)
+def notes_to_wav_mono(wt, notes, tl, amp):
+    wavs = [note_to_wav_mono(wt, note, tl, amp) for note in notes]
+    return np.average(wavs, axis=0)
 
 
-def note_to_wav_mono(wavetable, note):
-    """ generate a ndarray from `note` given lasting time `tl` (>=0.0s) and amplitude `amp` (0.0-1.0) """
-    # consts
-    wt_length = len(wavetable)
-    freq = nn_to_frequency(note[2])
-    ns = int(SF*note[1])
-    # linear interpolation
-    step_size = wt_length * freq / SF
-    poses = [step_size*k % wt_length for k in range(ns)]
-    xs_left = [int(pos) for pos in poses]
-    xs_right = [(x+1) % wt_length for x in xs_left]
-    deltas_left = np.array(poses) - np.array(xs_left)
-    deltas_right = np.array(xs_right) - np.array(poses)
-    values_left = wavetable[xs_left]
-    values_right = wavetable[xs_right]
-    values = values_left*deltas_right + values_right*deltas_left
+# def note_to_wav_mono(wavetable, note):
+#     """ generate a ndarray from `note` given lasting time `tl` (>=0.0s) and amplitude `amp` (0.0-1.0) """
+#     # consts
+#     wt_length = len(wavetable)
+#     freq = nn_to_frequency(note[2])
+#     ns = int(SF*note[1])
+#     # linear interpolation
+#     step_size = wt_length * freq / SF
+#     poses = [step_size*k % wt_length for k in range(ns)]
+#     xs_left = [int(pos) for pos in poses]
+#     xs_right = [(x+1) % wt_length for x in xs_left]
+#     deltas_left = np.array(poses) - np.array(xs_left)
+#     deltas_right = np.array(xs_right) - np.array(poses)
+#     values_left = wavetable[xs_left]
+#     values_right = wavetable[xs_right]
+#     values = values_left*deltas_right + values_right*deltas_left
+#
+#     return note[3]/127.0 * values
 
-    return note[3]/127.0 * values
 
-
-def sheet_to_wav_mono(wavetable, sheet):
-    total_time = max([note[0]+note[1] for note in sheet])
-    ns = int(total_time*SF)
-
-    values = np.zeros((ns, ))
-    for note in sheet:
-        # _tss: starting time in samples
-        _tss = int(note[0]*SF)
-        value = note_to_wav_mono(wavetable, note)
-        _ns = int(note[1]*SF)
-        print(_tss, _ns)
-        values[_tss:_tss+_ns] += value
-
-    return values
+# def sheet_to_wav_mono(wavetable, sheet):
+#     total_time = max([note[0]+note[1] for note in sheet])
+#     ns = int(total_time*SF)
+#
+#     values = np.zeros((ns, ))
+#     for note in sheet:
+#         # _tss: starting time in samples
+#         _tss = int(note[0]*SF)
+#         value = note_to_wav_mono(wavetable, note)
+#         _ns = int(note[1]*SF)
+#         print(_tss, _ns)
+#         values[_tss:_tss+_ns] += value
+#
+#     return values
 
 
 def add_vibrato(wav, f, amp_min=0.5, amp_max=1.0):
