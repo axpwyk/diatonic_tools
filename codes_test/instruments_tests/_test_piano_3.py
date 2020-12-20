@@ -5,7 +5,7 @@ root = Note('C')
 itv1 = Interval('m2')
 itv2 = Interval('M2')
 
-notes = [root.set_message('R'),
+notes = [root.set_message_old('R'),
          root+itv2,
          root+itv2+itv2,
          root+itv2+itv2+itv1,

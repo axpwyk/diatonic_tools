@@ -17,4 +17,4 @@ for i in range(21):
     print(']', end='')
     print()
 
-    s.add_sharp()
+    s.add_accidental(1)

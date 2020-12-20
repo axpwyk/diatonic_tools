@@ -10,7 +10,7 @@ fig.set_figheight(12); fig.set_figwidth(36)
 for ax, chord in zip(axs, chords):
     notes = Chord(chord).get_notes()
     if chord == 'FM7(9, #11, 13)':
-        notes = [note.sub_oct() for note in notes]
+        notes = [note.add_group(-1) for note in notes]
     inst.Piano(notes).plot(note_range=(-7, 16), ax=ax, title=chord)
 
 inst.plt.savefig('test_piano_plot.svg', bbox_inches='tight', pad_inches=0.0)

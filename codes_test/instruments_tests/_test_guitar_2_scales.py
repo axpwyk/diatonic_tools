@@ -7,7 +7,7 @@ scales = []
 tonality = ['C Ionian', 'D Mixolydian']
 for t in tonality:
     s = Mode(t)
-    s.add_sharp()
+    s.add_accidental(0)
     scales.append(s.scale)
 
 # 显示 triples

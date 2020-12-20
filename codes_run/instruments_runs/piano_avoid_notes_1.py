@@ -14,7 +14,7 @@ labels, _, _, _ = cs.get_info()
 # labels = ['[CN]', '[TN]', '[TN]', '[CN]', '[TN]', '[TN]', '[CN]']
 
 for i in range(len(notes)):
-    notes[i].set_message(labels[i])
+    notes[i].set_message_old(labels[i])
 
 piano = inst.Piano(notes)
 piano.plot(title=scale)

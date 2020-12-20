@@ -6,15 +6,14 @@ from consts import *
 ''' ----------------------------------------------------------------------------------------- '''
 ''' ********************************** all kinds of parsers ********************************* '''
 ''' ----------------------------------------------------------------------------------------- '''
-
-
-# TODO: think more reasonable pattern strings
+''' TODO: more reasonable pattern strings                                                     '''
+''' ----------------------------------------------------------------------------------------- '''
 
 
 # for `Note`
 def note_name_parser(note_name):
     # `note_name` is a string, examples: 'C#3', 'Bb1', 'Fbb3', etc.
-    pattern = r'(?P<note_name>[' + NOTE_NAMES_STR + r'])(?P<accidental_str>[b#]*)(?P<group_str>-?\d*)'
+    pattern = r'(?P<note_name>[' + NOTE_NAMES_STR + r'])(?P<accidental_str>[b#]*)(?P<register_str>-?\d*)'
     search_obj = re.search(pattern, note_name)
     return search_obj.groupdict()
 
@@ -74,7 +73,6 @@ def tension_type_parser(tension_type):
 ''' ----------------------------------------------------------------------------------------- '''
 
 
-# TODO: deprecate `Note.add_sharp`, `Note.add_flat`, `Note.add_oct`, `Note.sub_oct` methods
 class Note(object):
     def __init__(self, note_name=f'{NOTE_NAMES_STR[0]}0'):
         par = note_name_parser(note_name)
@@ -88,14 +86,15 @@ class Note(object):
         accidental -= par['accidental_str'].count('b')
         self._accidental = accidental
 
-        # get group number, integer in (-\infty, \infty)
-        if par['group_str']:
-            self._group = int(par['group_str'])
+        # get register number, integer in (-\infty, \infty)
+        # TODO: change terminology 'register' to 'register'
+        if par['register_str']:
+            self._register = int(par['register_str'])
         else:
-            self._group = 0
+            self._register = 0
 
         # additional message (such as br357t for `Chord`, etc.)
-        self._message = ''
+        self._message = dict()
 
     def __repr__(self):
         return self.get_name()
@@ -103,8 +102,8 @@ class Note(object):
     def __sub__(self, other):
         # `Note` - `Note` = `Interval`
         if isinstance(other, Note):
-            step1 = NAMED_NOTES.index(self._nnrel) + self._group * M
-            step2 = NAMED_NOTES.index(other._nnrel) + other._group * M
+            step1 = NAMED_NOTES.index(self._nnrel) + self._register * M
+            step2 = NAMED_NOTES.index(other._nnrel) + other._register * M
             return Interval().set_vector(abs(self) - abs(other), step1 - step2)
         # `Note` - `Interval` = `Note`
         if isinstance(other, Interval):
@@ -118,19 +117,19 @@ class Note(object):
             delta_nnabs, delta_step = other.get_vector()
             step = NAMED_NOTES.index(self._nnrel) + delta_step
             nnrel = NAMED_NOTES[step % M]
-            group = self._group + step // M
-            accidental = abs(self) + delta_nnabs - nnrel - N * group
-            return Note().set_vector(nnrel, accidental, group).set_message(self.get_message())
+            register = self._register + step // M
+            accidental = abs(self) + delta_nnabs - nnrel - N * register
+            return Note().set_vector(nnrel, accidental, register).set_message_old(self.get_message_old())
         else:
             raise TypeError('ClassError: `Note` could only add an `Interval`!')
 
     def __abs__(self):
         # return absolute midi encoding number, integer in (-\infty, \infty), e.g.
         # (in 12-tone equal temperament, diatonic) 'Bb2' = (11, -1, 2) = 11-1+2*12 = 34
-        return self._nnrel + self._accidental + self._group * N
+        return self._nnrel + self._accidental + self._register * N
 
-    def set_vector(self, nnrel=None, accidental=None, group=None):
-        # set note vector (nnrel, accidental, group) manually
+    def set_vector(self, nnrel=None, accidental=None, register=None):
+        # set note vector (nnrel, accidental, register) manually
         if nnrel:
             if nnrel not in NAMED_NOTES:
                 raise ValueError('Given `nnrel` is not a named note. Please consider to choose another one!')
@@ -138,20 +137,20 @@ class Note(object):
                 self._nnrel = nnrel
         if accidental:
             self._accidental = accidental
-        if group:
-            self._group = group
+        if register:
+            self._register = register
         return self
 
-    def get_vector(self, return_group=True):
-        if return_group:
-            return self._nnrel, self._accidental, self._group
+    def get_vector(self, return_register=True):
+        if return_register:
+            return self._nnrel, self._accidental, self._register
         else:
             return self._nnrel, self._accidental
 
-    def get_name(self, show_group=True):
-        # get name of `Note`, e.g. Note('C0').get_name() = 'C0', Note('C0').get_name(show_group=False) = 'C', etc.
-        if show_group:
-            return NOTE_NAMES[self._nnrel] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b') + f'{self._group}'
+    def get_name(self, show_register=True):
+        # get name of `Note`, e.g. Note('C0').get_name() = 'C0', Note('C0').get_name(show_register=False) = 'C', etc.
+        if show_register:
+            return NOTE_NAMES[self._nnrel] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b') + f'{self._register}'
         else:
             return NOTE_NAMES[self._nnrel] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b')
 
@@ -162,37 +161,22 @@ class Note(object):
         # A3 cubase pitch == nnabs45 == 440Hz
         return 440 * (T ** (nnabs - 45))
 
-    def add_sharp(self, n=1):
-        self._accidental += n
-        return self
-
-    def add_flat(self, n=1):
-        self._accidental -= n
-        return self
-
     def add_accidental(self, n=0):
         # a combination of `add_sharp` and `add_flat` methods
         self._accidental += n
-
-    def add_oct(self, n=1):
-        self._group += n
         return self
 
-    def sub_oct(self, n=1):
-        self._group -= n
-        return self
-
-    def add_group(self, n=0):
+    def add_register(self, n=0):
         # a combination of `add_oct` and `sub_oct` methods
-        self._group += n
-
-    def set_message(self, message):
-        # `message` is a string
-        self._message = message
+        self._register += n
         return self
 
-    def get_message(self):
-        return self._message
+    def add_message(self, **kwargs):
+        self._message = {**self._message, **kwargs}
+        return self
+
+    def get_message(self, key):
+        return self._message[key]
 
     def get_enharmonic_note(self, direction='auto'):
         # change a note to its enharmonic note, e.g.
@@ -217,10 +201,20 @@ class Note(object):
         new_idx = idx + offset
 
         new_nnrel = NAMED_NOTES[new_idx % M]
-        new_group = self._group + new_idx // M
-        new_accidental = nnabs - new_nnrel - new_group * N
+        new_register = self._register + new_idx // M
+        new_accidental = nnabs - new_nnrel - new_register * N
 
-        return Note().set_vector(new_nnrel, new_accidental, new_group)
+        return Note().set_vector(new_nnrel, new_accidental, new_register)
+
+    # deprecated
+
+    def set_message_old(self, message):
+        # `message` is a string
+        self._message = message
+        return self
+
+    def get_message_old(self):
+        return self._message
 
 
 # TODO: study of interval patterns in `N`-TET diatonic scale, design a new universal interval naming scheme
@@ -274,6 +268,18 @@ class Interval(object):
         else:
             raise TypeError('ClassError: `Interval` could only subtract an `Interval`!')
 
+    def __mul__(self, other):
+        if isinstance(other, int):
+            return Interval().set_vector(self._delta_nnabs*other, self._delta_step*other)
+        else:
+            raise TypeError('ClassError: `Interval` could only multiply an integer!')
+
+    def __rmul__(self, other):
+        if isinstance(other, int):
+            return Interval().set_vector(other*self._delta_nnabs, other*self._delta_step)
+        else:
+            raise TypeError('ClassError: `Interval` could only multiply an integer!')
+
     def __neg__(self):
         return Interval().set_vector(-self._delta_nnabs, -self._delta_step)
 
@@ -315,6 +321,7 @@ class Interval(object):
         return self
 
 
+# TODO: deprecate `DiatonicScale.get_full_chord` method
 class DiatonicScale(object):
     def __init__(self, scale_name=f'{NOTE_NAMES_STR[0]} {NOTE_NAMES_STR[0]}-mode'):
         """
@@ -330,7 +337,7 @@ class DiatonicScale(object):
         if scale_type in SCALE_TYPE_OLD_TO_NEW.keys():
             scale_type = SCALE_TYPE_OLD_TO_NEW[scale_type]  # change 'Ionian' to 'C-mode', etc.
 
-        # parsing `tonic_name`, get `note_name`, `accidental_str` and `group_str`
+        # parsing `tonic_name`, get `note_name`, `accidental_str` and `register_str`
         par2 = note_name_parser(tonic_name)
 
         tonic_name = par2['note_name']
@@ -339,7 +346,7 @@ class DiatonicScale(object):
         tonic_accidentals += par2['accidental_str'].count('#')
         tonic_accidentals -= par2['accidental_str'].count('b')
 
-        self._tonic_group = int(par2['group_str']) if par2['group_str'] else 0
+        self._tonic_register = int(par2['register_str']) if par2['register_str'] else 0
 
         # parsing `scale_type`, and get `mode_name`
         par3 = scale_type_parser(scale_type)
@@ -359,7 +366,7 @@ class DiatonicScale(object):
         # order of sharps: (in 12-TET 7-tone diatonic scale) FCGDAEB
         # order of flats: (in 12-TET 7-tone diatonic scale) BEADGCF
         for k in range(0, self._accidentals) if self._accidentals>0 else range(self._accidentals, 0):
-            self._meta_notes[k%M] = self._meta_notes[k%M].add_sharp() if self._accidentals>0 else self._meta_notes[k%M].add_flat()
+            self._meta_notes[k%M] = self._meta_notes[k%M].add_accidental(1) if self._accidentals>0 else self._meta_notes[k%M].add_accidental(-1)
 
     def __repr__(self):
         note_names = [note.get_name() for note in self.get_notes()]
@@ -395,19 +402,19 @@ class DiatonicScale(object):
 
         # roll `notes`, make tonic note the 1st element
         notes_left = notes[tonic_idx_linear:]
-        notes_right = [note.add_oct() for note in notes[:tonic_idx_linear]]
+        notes_right = [note.add_register(1) for note in notes[:tonic_idx_linear]]
         notes = notes_left + notes_right
 
         # add octs and degrees
         for k, note in enumerate(notes):
-            note.add_oct(self._tonic_group)
-            note.set_message(f'deg-{k}')
+            note.add_register(self._tonic_register)
+            note.set_message_old(f'deg-{k}')
 
         return notes
 
     def get_name(self, type_only=False, old_name=True):
         # calculate current scale name using `self._meta_notes` and `self._tonic_idx`
-        tonic_name_with_accidentals = self.get_notes()[0].get_name(show_group=False)
+        tonic_name_with_accidentals = self.get_notes()[0].get_name(show_register=False)
         par2 = note_name_parser(tonic_name_with_accidentals)
 
         tonic_name_without_accidentals = par2['note_name']
@@ -435,19 +442,7 @@ class DiatonicScale(object):
         notes = notes + [notes[0]+N]
         return [n2-n1 for n1, n2 in zip(notes[:-1], notes[1:])]
 
-    def add_sharp(self, n=1):
-        for k in range(self._accidentals, self._accidentals+n):
-            self._meta_notes[k%M].add_sharp()
-        self._accidentals += n
-        return self
-
-    def add_flat(self, n=1):
-        for k in range(self._accidentals-n, self._accidentals):
-            self._meta_notes[k%M].add_flat()
-        self._accidentals -= n
-        return self
-
-    def add_accidentals(self, n=0):
+    def add_accidental(self, n=0):
         r = (self._accidentals + (0 if n >= 0 else n), self._accidentals + (n if n >= 0 else 0))
         for k in range(*r):
             self._meta_notes[k%M].add_accidental(sign(n))
@@ -459,7 +454,7 @@ class DiatonicScale(object):
         body = []
         for i in range(4):
             idx = step + 2 * i
-            body.append(self[idx%N] if idx<N else self[idx%N].add_oct())
+            body.append(self[idx%N] if idx<N else self[idx%N].add_register(1))
 
         return ChordEx().set_notes(notes=body)
 
@@ -561,7 +556,7 @@ class AlteredDiatonicScale(DiatonicScale):
 
         sharps_on_tonics = [scale_name.count('#1') for scale_name in top_k_scales]
         flats_on_tonics = [scale_name.count('b1') for scale_name in top_k_scales]
-        tonic_names = [copy(self[0]).add_flat(sharps_on_tonic).add_sharp(flats_on_tonic).get_name(show_group=False)
+        tonic_names = [copy(self[0]).add_accidental(-sharps_on_tonic).add_accidental(flats_on_tonic).get_name(show_register=False)
                        for sharps_on_tonic, flats_on_tonic in zip(sharps_on_tonics, flats_on_tonics)]
 
         if type_only:
@@ -582,7 +577,7 @@ class AlteredDiatonicScale(DiatonicScale):
             return []
 
 
-# TODO: deprecate `Chord` class and `DiatonicScale.get_full_chord` method
+# TODO: deprecate `Chord` class
 class Chord(object):
     def __init__(self, chord_name='C'):
         self._bass = []
@@ -594,15 +589,15 @@ class Chord(object):
         # bass note
         if par['bass_name']:
             self._bass = [Note(par['bass_name']) - Interval('P8')]
-            self._bass[0].set_message('B')
+            self._bass[0].set_message_old('B')
 
         # r357 notes
         root = Note(par['root_name'])
         scale = AlteredDiatonicScale(par['root_name'] + ' ' + CHORD_TYPE_TO_SCALE_TYPE[par['chord_type']])
         scale_notes = scale.get_notes()
         steps = CHORD_TYPE_TO_STEPS[par['chord_type']]
-        self._body.extend([scale_notes[step].set_message(f'{step+1}') for step in steps])
-        self._body[0].set_message('R')
+        self._body.extend([scale_notes[step].set_message_old(f'{step + 1}') for step in steps])
+        self._body[0].set_message_old('R')
 
         # tension notes
         if par['tension_type']:
@@ -610,7 +605,7 @@ class Chord(object):
             tension_intervals = [TENSION_NAME_TO_INTERVAL_NAME[tension_name] for tension_name in tension_names]
             tensions = [root + Interval(interval) for interval in tension_intervals]
             self._tensions.extend(tensions)
-            _ = [tension.set_message(f'{tension_names[k]}') for k, tension in enumerate(self._tensions)]
+            _ = [tension.set_message_old(f'{tension_names[k]}') for k, tension in enumerate(self._tensions)]
 
     def __repr__(self):
         note_names = [note.get_name() for note in self.get_notes() if note is not None]
@@ -624,16 +619,16 @@ class Chord(object):
 
     def set_notes(self, bass=None, body=None, tensions=None):
         if bass:
-            self._bass = [bass.set_message('B')]
+            self._bass = [bass.set_message_old('B')]
         if body:
             self._body = body
             messages = ['R', '3', '5', '7']
             for i, note in enumerate(self._body):
-                note.set_message(messages[i])
+                note.set_message_old(messages[i])
         if tensions:
             self._tensions = tensions
             for note in self._tensions:
-                note.set_message(INTERVAL_NAME_TO_TENSION_NAME[str(note-self._body[0])])
+                note.set_message_old(INTERVAL_NAME_TO_TENSION_NAME[str(note - self._body[0])])
 
         return self
 
@@ -646,7 +641,7 @@ class Chord(object):
     def get_name(self, type_only=False):
         # get bass type
         if self._bass:
-            bass_type = '/' + self._bass[0].get_name(show_group=False)
+            bass_type = '/' + self._bass[0].get_name(show_register=False)
         else:
             bass_type = ''
 
@@ -667,7 +662,7 @@ class Chord(object):
         if type_only:
             return chord_type
         else:
-            return f'{self._body[0].get_name(show_group=False)}{chord_type}'
+            return f'{self._body[0].get_name(show_register=False)}{chord_type}'
 
     def get_scale(self, top_k=1, return_class_idx=False):
         """ get least-order scale of current chord """
@@ -683,7 +678,7 @@ class Chord(object):
             else: return False
 
         chord_notes = self.get_notes(bass_on=False)
-        root_name = chord_notes[0].get_name(show_group=False)
+        root_name = chord_notes[0].get_name(show_register=False)
         iv = [abs(n2-n1) for n1, n2 in zip(chord_notes[:-1], chord_notes[1:])]
 
         # find all root positions in 66 classes of current chord
@@ -719,9 +714,9 @@ class Chord(object):
         scales = self.get_scale(66)
         icds = []
         for scale in scales:
-            scale_nvs = [note.get_vector(return_group=False) for note in scale]  # nvs = note vectors
+            scale_nvs = [note.get_vector(return_register=False) for note in scale]  # nvs = note vectors
             note = Note(note_name)
-            note_nv = note.get_vector(return_group=False)
+            note_nv = note.get_vector(return_register=False)
             if note_nv not in scale_nvs:
                 icds.append((scale.get_name()[0], -1))
             else:
@@ -729,8 +724,7 @@ class Chord(object):
         return icds[[x[1]!=-1 for x in icds].index(True)]
 
 
-# TODO: make `ChordEx` class universal
-# TODO: change `ChordEx` class to `Chord` class
+# TODO: make `ChordEx` class universal; change `ChordEx` class to `Chord` class
 class ChordEx(object):
     def __init__(self):
         self._bass = None
@@ -770,7 +764,7 @@ class ChordEx(object):
 
         # get bass type
         if self._bass:
-            bass_type = '/' + self._bass[0].get_name(show_group=False)
+            bass_type = '/' + self._bass[0].get_name(show_register=False)
         else:
             bass_type = ''
 
@@ -818,7 +812,7 @@ class ChordEx(object):
         if type_only:
             return chord_type
         else:
-            return f'{self._notes[0].get_name(show_group=False)}{chord_type}'
+            return f'{self._notes[0].get_name(show_register=False)}{chord_type}'
 
     def get_scale(self, top_k=1, return_class_idx=False):
         """ get least-order scale of current chord """
@@ -834,7 +828,7 @@ class ChordEx(object):
             else: return False
 
         chord_notes = self.get_notes(bass_on=False)
-        root_name = chord_notes[0].get_name(show_group=False)
+        root_name = chord_notes[0].get_name(show_register=False)
         iv = [abs(n2-n1) for n1, n2 in zip(chord_notes[:-1], chord_notes[1:])]
 
         # find all root positions in 66 classes of current chord
@@ -870,9 +864,9 @@ class ChordEx(object):
         scales = self.get_scale(66)
         icds = []
         for scale in scales:
-            scale_nvs = [note.get_vector(return_group=False) for note in scale]  # nvs = note vectors
+            scale_nvs = [note.get_vector(return_register=False) for note in scale]  # nvs = note vectors
             note = Note(note_name)
-            note_nv = note.get_vector(return_group=False)
+            note_nv = note.get_vector(return_register=False)
             if note_nv not in scale_nvs:
                 icds.append((scale.get_name()[0], -1))
             else:

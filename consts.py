@@ -11,8 +11,8 @@ def sign(x): return 1 if x > 0 else 0 if x == 0 else -1
 
 # alterable consts
 N = 12  # `N`-tone equal temperament (`N`-TET)
-L = 5  # step length of diatonic generator
-S = 4  # starting point of diatonic generator
+L = 7 # step length of diatonic generator
+S = 5  # starting point of diatonic generator
 
 # some calculations
 M = pow(L, -1, N)  # number of notes in `N`-TET `L`-tone diatonic scale
@@ -20,8 +20,12 @@ T = 2**(1/N)  # semi-tone
 
 # define named notes (natural notes)
 # symbols for named notes ('CDEFGAB' is convention for 12-TET 7-tone diatonic scale)
-NOTE_NAMES_STR = 'CDEGA'
-# NOTE_NAMES_STR = str().join([chr(int('03B1', 16)+j) for j in range(M)])
+
+NOTE_NAMES_STR = 'CDEFGAB'                                                  # 12-TET 7-tone
+# NOTE_NAMES_STR = 'CDEGA'                                                  # 12-TET 5-tone
+# NOTE_NAMES_STR = str().join([chr(int('03B1', 16)+j) for j in range(M)])   # `N`-TET `M`-tone
+# NOTE_NAMES_STR = str().join([chr(ord('A')+j) for j in range(M)])          # 97-TET 26-tone
+
 if len(NOTE_NAMES_STR) != M: raise ValueError('Number of symbols must equal to number of notes!')
 
 # linear nnrels

@@ -1,13 +1,20 @@
 # -*- coding: utf-8 -*-
 # //////////////////// HEADER //////////////////// #
 import numpy as np
-import skimage.util as su
-import skimage.transform as st
+
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import fontManager
-from skimage.io import imread, imsave
+
+import skimage.util as su
+import skimage.transform as st
+import skimage.io as sio
+import skimage.feature as sf
+imread = sio.imread
+imsave = sio.imsave
+
 import os
-DPI = 150
+
+DPI = 144
 FONTSIZE = DPI // 8
 # assign a style
 plt.style.use('seaborn-pastel')
@@ -20,7 +27,9 @@ plt.rc('axes', **{'unicode_minus': False})
 # //////////////////// HEADER //////////////////// #
 
 
-''' ndimage manipulating functions '''
+# --------------------------------------------------
+# deprecated functions
+# --------------------------------------------------
 
 
 def focus(img, window=(-0.5, 0.5, -0.5, 0.5), if_save=False, file_name='untitled'):
@@ -47,7 +56,7 @@ def focus(img, window=(-0.5, 0.5, -0.5, 0.5), if_save=False, file_name='untitled
     plt.show()
     plt.close()
 
-    _add_figure_2d(patch.shape[1] / DPI, patch.shape[0] / DPI)
+    _add_figure_2d(patch.shape[1] / DPI, patch.shape[0] / DPI, 'image')
     # imshow `patch`
     plt.imshow(patch, cmap='gray')
     if if_save:
@@ -235,10 +244,131 @@ def combine_v2_avg(imgs, num_w=10, strides=(10, 10), padding=5, bg_level_1=1.0, 
         raise ValueError('no such data type for exporting!')
 
 
-def zoom(img, scale):
-    # keep the last axis unscaled
-    dims = len(img.shape)
-    return st.rescale(img, [scale]*(dims-1) + [1], multichannel=False)
+# --------------------------------------------------
+# ndimage manipulating functions
+# --------------------------------------------------
+
+
+def ndpaste(img, canvas, pos, method='replace', export_dtype='float'):
+    """ paste `img` on `canvas` with its first element at `pos` on `canvas` """
+    # check dtypes
+    img = su.img_as_float(img)
+    canvas = su.img_as_float(canvas)
+    # check shapes
+    if len(img.shape) != len(canvas.shape):
+        assert AttributeError('Dimensions of `img` and `canvas` must be equal!')
+    # get shapes
+    shape_i = img.shape
+    shape_c = canvas.shape
+    # find extent of `img` on `canvas`
+    pos_min = [max([k, 0]) for k in pos]
+    pos_max = [min([k + shape_i[d], shape_c[d]]) for d, k in enumerate(pos)]  # d stands for dimension
+    # make indices of `img` and `canvas`
+    indices_i = tuple(slice(s - k, e - k) for s, e, k in zip(pos_min, pos_max, pos))
+    indices_c = tuple(slice(s, e) for s, e in zip(pos_min, pos_max))
+    # paste `img` on `canvas`
+    if method == 'replace':
+        canvas[indices_c] = img[indices_i]
+    elif method == 'add':
+        canvas[indices_c] = canvas[indices_c] + img[indices_i]
+    else:
+        raise ValueError('no such method!')
+    # return `canvas`
+    if export_dtype == 'float':
+        return canvas
+    elif export_dtype == 'ubyte':
+        return su.img_as_ubyte(canvas)
+    else:
+        raise ValueError('no such data type for exporting!')
+
+
+def ndcombine(imgs, nums, strides, paddings, bg_level_c=1.0, bg_level_p=1.0, method='replace', export_dtype='float'):
+    """ paste `imgs` on a blank canvas with `nums` on first n-1 axis and `strides` """
+    # check dtypes
+    imgs = [su.img_as_float(img) for img in imgs]
+    # check shapes
+    shapes = [img.shape for img in imgs]
+    img_0_dims = len(shapes[0])
+    if not all([len(s) == img_0_dims for s in shapes]):
+        assert AttributeError('Dimensions of `imgs` must be equal!')
+    if len(nums) != img_0_dims - 1:
+        assert AttributeError('Length of [list of number of image patches on first n-1 axis `nums`] must equal n-1!')
+    if len(strides) != img_0_dims:
+        assert AttributeError('Length of [list of strides] must equal n!')
+    # find the shape of canvas
+    n_imgs = len(imgs)
+    nums = list(nums)
+    nums.append((n_imgs - 1) // np.prod(nums) + 1)  # calculate number of image patches on last axis
+    shape_canvas = tuple(strides[d] * (nums[d] - 1) + shapes[-1][d] for d in range(img_0_dims))
+    # img[0] = (0, 0, ...); img[1] = (1, 0, ...), ..., img[num[0]] = (0, 1, ...), img[num[0]+1] = (1, 1, ...), ...
+    aranges = [np.arange(num) for num in nums]
+    grid = np.reshape(np.stack(np.meshgrid(*aranges), axis=-1), (-1, img_0_dims))
+    corner_poses = [tuple(s * c for s, c in zip(strides, point)) for point in grid]
+    # canvas initialization
+    canvas = np.zeros(shape_canvas, np.float)
+    # paste `imgs` on `canvas`, average overlapping areas (using ones matrix `counter` to record overlapping times)
+    counter = np.zeros(shape_canvas)
+    for i, corner_pos in enumerate(corner_poses):
+        if i >= n_imgs: break
+        if method == 'average':
+            canvas = ndpaste(imgs[i], canvas, corner_pos, 'add')
+            counter = ndpaste(np.ones(shapes[i]), counter, corner_pos, 'add')
+        elif method == 'replace':
+            canvas = ndpaste(imgs[i], canvas, corner_pos, 'replace')
+            counter = ndpaste(np.ones(shapes[i]), counter, corner_pos, 'replace')
+        else:
+            raise AttributeError('No such method!')
+    canvas[counter < 0.5] = bg_level_c
+    counter[counter < 0.5] = 1.0
+    canvas = canvas / counter
+    # add padding, i.e. paste `canvas` on `fig`
+    canvas = np.pad(canvas, paddings, mode='constant', constant_values=bg_level_p)
+    # return
+    if export_dtype == 'float':
+        return canvas
+    elif export_dtype == 'ubyte':
+        return su.img_as_ubyte(canvas)
+    else:
+        raise ValueError('no such data type for exporting!')
+
+
+def ndpatchify(img, patch_size, strides):
+    shape = img.shape
+    dims = len(shape)
+    if not len(shape) == len(patch_size) == len(strides):
+        raise AttributeError('Dimensions of `img`, length of `patch_size` and length of `strides` must be equal!')
+    nums = [(a - b + c) // c for a, b, c in zip(shape, patch_size, strides)]
+    aranges = [np.arange(num) for num in nums]
+    grid = np.reshape(np.stack(np.meshgrid(*aranges), axis=-1), (-1, dims))
+    start_points = [tuple(s * c for s, c in zip(strides, point))
+                    for point in grid]
+    end_points = [tuple(point_k + patch_size_k for point_k, patch_size_k in zip(start_point, patch_size))
+                  for start_point in start_points]
+    indices = [tuple(slice(start_points_ki, end_points_ki) for start_points_ki, end_points_ki in zip(start_point, end_point))
+               for start_point, end_point in zip(start_points, end_points)]
+    patches = [img[indices_k] for indices_k in indices]
+    return patches, nums
+
+
+def patchify_pos_2d(img, patch_size, center_poses, mode='constant'):
+    offset_i = patch_size[0] // 2
+    offset_j = patch_size[1] // 2
+
+    img_paded = np.pad(img, ((offset_i, offset_i), (offset_j, offset_j)), mode=mode)
+    center_poses_paded = [[pos[0]+offset_i, pos[1]+offset_j] for pos in center_poses]
+
+    if patch_size[0] % 2 == 0:
+        end_0 = offset_i
+    else:
+        end_0 = offset_i + 1
+
+    if patch_size[1] % 2 == 0:
+        end_1 = offset_j
+    else:
+        end_1 = offset_j + 1
+
+    patches = [img_paded[pos[0]-offset_i:pos[0]+end_0, pos[1]-offset_j:pos[1]+end_1] for pos in center_poses_paded]
+    return patches
 
 
 def fenc(img):
@@ -259,68 +389,46 @@ def standardize(img):
     return (img - mu) / std
 
 
-def standardize_0(img):
-    img_max = np.max(img)
-    img_min = np.min(img)
-    A = np.max([abs(img_max), abs(img_min)])
-    return img / A
-
-
 def normalize(img):
     img_max = np.max(img)
     img_min = np.min(img)
     return (img - img_min) / (img_max - img_min)
 
 
-def std2norm(img):
-    return (img + 1) / 2
+def standardize_0(img):
+    # a, b > 0; [-a, b] -> [-1, b/a] or [-a/b, 1]
+    img_max = np.max(img)
+    img_min = np.min(img)
+    m = np.max([abs(img_max), abs(img_min)])
+    return img / m
 
 
-''' matplotlib figure and axis settings '''
+def normalize_0(img):
+    tmp = standardize_0(img)
+    return (tmp + 1) / 2
+
+
+def multi_standardize_0(imgs):
+    imgs_max = np.max(np.array(imgs))
+    imgs_min = np.min(np.array(imgs))
+    m = np.max([abs(imgs_max), abs(imgs_min)])
+    return [img / m for img in imgs]
+
+
+def multi_normalize_0(imgs):
+    tmps = multi_standardize_0(imgs)
+    return [(tmp + 1) / 2 for tmp in tmps]
+
+
+# --------------------------------------------------
+# matplotlib figure and axes settings
+# --------------------------------------------------
 
 
 def available_fonts():
     fonts = [font.name for font in fontManager.ttflist if
              os.path.exists(font.fname) and os.stat(font.fname).st_size > 1e6]
     return fonts
-
-
-def _axes_settings_2d(ax, figtype, title=None):
-    if figtype == 'image':
-        ax.set_aspect('equal')
-        ax.set_axis_off()
-        ax.set_frame_on(False)
-    elif figtype == 'figure':
-        # ax.spines['right'].set_color('none')
-        # ax.spines['top'].set_color('none')
-        # ax.xaxis.set_ticks_position('bottom')
-        # ax.spines['bottom'].set_position(('data', 0))
-        # ax.yaxis.set_ticks_position('left')
-        # ax.spines['left'].set_position(('data', 0))
-        pass
-    else:
-        pass
-    ax.margins(x=0.0, y=0.0)
-    ax.set_title(title, fontdict={'fontsize': FONTSIZE})
-    return ax
-
-
-def _axes_settings_3d(ax, figtype, title=None):
-    if figtype == 'image':
-        # ax.set_aspect('equal')
-        ax.set_axis_off()
-        ax.set_frame_on(False)
-        ax.margins(x=0.0, y=0.0, z=0.0)
-        ax.view_init(45, 30)
-        ax.grid(False)
-    elif figtype == 'figure':
-        ax.view_init(45, 30)
-        ax.grid(False)
-    else:
-        pass
-    ax.margins(x=0.0, y=0.0, z=0.0)
-    ax.set_title(title, fontdict={'fontsize': FONTSIZE})
-    return ax
 
 
 def _add_figure_2d(w, h, figtype, title=None):
@@ -352,12 +460,55 @@ def add_figure_3d(w, h, figtype='image', title=None):
     return _add_figure_3d(w, h, figtype, title)
 
 
+def _axes_settings_2d(ax, figtype, title=None):
+    if figtype == 'image':
+        ax.set_aspect('equal')
+        ax.set_axis_off()
+        ax.set_frame_on(False)
+    elif figtype == 'figure':
+        # ax.spines['right'].set_color('none')
+        # ax.spines['top'].set_color('none')
+        # ax.xaxis.set_ticks_position('bottom')
+        # ax.spines['bottom'].set_position(('data', 0))
+        # ax.yaxis.set_ticks_position('left')
+        # ax.spines['left'].set_position(('data', 0))
+        pass
+    else:
+        pass
+    ax.margins(x=0.0, y=0.0)
+    ax.set_title(title, fontdict={'fontsize': FONTSIZE})
+    return ax
+
+
+def _axes_settings_3d(ax, figtype, title=None):
+    if figtype == 'image':
+        # ax.set_aspect('equal')
+        ax.set_axis_off()
+        ax.set_frame_on(False)
+        ax.margins(x=0.0, y=0.0, z=0.0)
+        ax.view_init(45, 30)
+        ax.grid(False)
+    elif figtype == 'figure':
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        ax.set_zlabel('z')
+        ax.view_init(45, 30)
+        ax.grid(False)
+    else:
+        pass
+    ax.margins(x=0.0, y=0.0, z=0.0)
+    ax.set_title(title, fontdict={'fontsize': FONTSIZE})
+    return ax
+
+
 def savefig(file_name, transparent=False):
     # pad_inches: Amount of padding around the figure when bbox_inches is 'tight'. If None, use savefig.pad_inches
     plt.savefig(file_name, bbox_inches='tight', pad_inches=0.1, transparent=transparent)
 
 
-''' matplotlib plotting functions '''
+# --------------------------------------------------
+# matplotlib plotting functions
+# --------------------------------------------------
 
 
 def add_hist_rgb(img, bins, figsize=None, title=None, show=False):
@@ -373,9 +524,8 @@ def add_hist_rgb(img, bins, figsize=None, title=None, show=False):
     c = img.shape[-1]
     img = np.reshape(img, [-1, c])
 
-    ax.hist(img[:, 0], bins, rwidth=0.2, color='r')
-    ax.hist(img[:, 1], bins, rwidth=0.2, color='g')
-    ax.hist(img[:, 2], bins, rwidth=0.2, color='b')
+    colors = ['red', 'green', 'blue']
+    ax.hist(img, bins, density=True, histtype='step', color=colors, label=colors)
 
     if show:
         fig.show()
@@ -414,23 +564,29 @@ def add_image_2d(img, coords=None, figsize=None, title=None, colormap='gray', sh
         return fig, ax
 
 
-def add_image_3d(img, offset=0, figsize=None, title=None, show=False):
+def add_image_3d(img, offset=0, rstride=1, cstride=1, figsize=None, title=None, show=False):
     if not len(plt.get_fignums()):
         if figsize:  # figure size (w, h) in pixels
-            fig, ax = _add_figure_3d(figsize[0] / DPI, figsize[1] / DPI, figtype='image', title=title)
+            fig, ax = _add_figure_3d(figsize[0] / DPI, figsize[1] / DPI, figtype='figure', title=title)
         else:
-            fig, ax = _add_figure_3d(1024 / DPI, 1024 / DPI, figtype='image', title=title)
+            fig, ax = _add_figure_3d(1024 / DPI, 1024 / DPI, figtype='figure', title=title)
     else:
         fig, ax = plt.gcf(), plt.gca()
         ax.set_title(title, fontdict={'fontsize': FONTSIZE})
 
+    if not ax.zaxis_inverted():
+        ax.invert_zaxis()
+    if not ax.xaxis_inverted():
+        ax.invert_xaxis()
+
     h, w = img.shape[0], img.shape[1]
-    u, v = np.linspace(-1, 1, h), np.linspace(-1, 1, w)
-    u, v = np.meshgrid(u, v)
-    X = np.zeros_like(u) + offset; Y = u; Z = -v
+    u, v = np.linspace(-1, 1, w), np.linspace(-1, 1, h)
+    U, V = np.meshgrid(u, v)
+    X = np.zeros_like(U) + offset; Y = U; Z = V
 
     # not good, too slow
-    ax.plot_surface(X, Y, Z, facecolors=img, rstride=2, cstride=2)
+    colors = np.stack([img] * 3 + [np.ones_like(img) * 0.75], axis=-1)  # img is 3d grayscale image
+    ax.plot_surface(X, Y, Z, facecolors=colors, rstride=rstride, cstride=cstride, linewidth=0, zorder=-1)
 
     if show:
         fig.show()
@@ -438,7 +594,7 @@ def add_image_3d(img, offset=0, figsize=None, title=None, show=False):
         return fig, ax
 
 
-def add_images_2d(imgs, num_w, wspace=0.1, hspace=0.1, coords=None, figsize=None, titles=None, show=False):
+def add_images_2d(imgs, num_w, wspace=0.1, hspace=0.1, coords=None, figsize=None, titles=None, colormap='gray', show=False):
     n = len(imgs)
     num_h = (n - 1) // num_w + 1
     h = sum([imgs[i].shape[0] for i in range(n) if i % num_w == 0])
@@ -466,9 +622,9 @@ def add_images_2d(imgs, num_w, wspace=0.1, hspace=0.1, coords=None, figsize=None
                 extent = [-1, 1, 1, -1]
             else:
                 extent = coords
-            ax.imshow(imgs[i], cmap='gray', zorder=-1, extent=extent)
+            ax.imshow(imgs[i], cmap=colormap, zorder=-1, extent=extent)
         else:
-            ax.imshow(imgs[i], cmap='gray', zorder=-1)
+            ax.imshow(imgs[i], cmap=colormap, zorder=-1)
 
     if show:
         fig.show()
@@ -476,94 +632,14 @@ def add_images_2d(imgs, num_w, wspace=0.1, hspace=0.1, coords=None, figsize=None
         return fig, axs
 
 
-def add_images_3d(imgs, offsets=None, title=None, show=False):
+def add_images_3d(imgs, offsets=None, figsize=None, title=None, show=False):
     if not offsets:
         offsets = np.arange(len(imgs))
 
     for i, img in enumerate(imgs):
-        add_image_3d(img, offsets[i], title=None, show=False)
-    plt.gca().set_title(title)
-
-    if show:
-        plt.gcf().show()
-    else:
-        return plt.gcf(), plt.gca()
-
-
-def add_displacement_grid_2d(grid, indexing='xy', figsize=None, title=None, show=False):
-    ''' add displacement grid plot
-
-    inputs:
-        grid        image grid used to show deform field, identity grid + displacement vector field
-                    numpy ndarray, shape: (h, w, 2), value range: (-1, 1) in 'xy' indexing
-
-    comments:
-        * important: extent of the image must satisfy bottom > top, e.g. [-1, 1, 1, -1]
-        * important: if no imshow, y axis will automatically invert
-        * important: 2D image: x-y coords; 3D image: z-x-y coords
-        * author: Timmymm
-        * source: CSDN
-        * url: https://blog.csdn.net/weixin_41699811/article/details/84259755
-    '''
-    if not len(plt.get_fignums()):
-        if figsize:
-            fig, ax = _add_figure_2d(figsize[0] / DPI, figsize[1] / DPI, figtype='image', title=title)
-        else:
-            fig, ax = _add_figure_2d(grid.shape[1] / DPI, grid.shape[0] / DPI, figtype='image', title=title)
-    else:
-        fig, ax = plt.gcf(), plt.gca()
-        if title:
-            ax.set_title(title, fontdict={'fontsize': FONTSIZE})
-
-    if not ax.yaxis_inverted():
-        ax.invert_yaxis()
-
-    smooth_level = 1
-    step_length = 32
-
-    h, w = grid.shape[0], grid.shape[1]
-
-    if indexing == 'xy':
-        pixel_size = 2 / grid.shape[0], 2 / grid.shape[1]
-        x = np.linspace(-1+pixel_size[1]/2, 1-pixel_size[1]/2, w*smooth_level)
-        y = np.linspace(-1+pixel_size[0]/2, 1-pixel_size[1]/2, h*smooth_level)
-        X, Y = np.meshgrid(x, y, indexing='xy')
-        # here determines whether input grid is of format 'xy' or 'ij', here it's 'xy'
-        Zx = st.rescale(grid[:, :, 0] + abs(grid.min()), [smooth_level, smooth_level], multichannel=False, order=3, mode='wrap')
-        Zy = st.rescale(grid[:, :, 1] + abs(grid.min()), [smooth_level, smooth_level], multichannel=False, order=3, mode='wrap')
-        max_Zx, min_Zx = np.max(Zx), np.min(Zx)
-        max_Zy, min_Zy = np.max(Zy), np.min(Zy)
-        x_steps = np.linspace(min_Zx, max_Zx, step_length)
-        x_steps[0] = x_steps[0] + 1e-5
-        x_steps[-1] = x_steps[-1] - 1e-5
-        y_steps = np.linspace(min_Zy, max_Zy, step_length * (h // w))
-        y_steps[0] = y_steps[0] + 1e-5
-        y_steps[-1] = y_steps[-1] - 1e-5
-        # plot grid
-        ax.contour(X, Y, Zx, x_steps, colors=[[1.0, 1.0, 0.0]], linewidths=0.5, zorder=1)
-        ax.contour(X, Y, Zy, y_steps, colors=[[1.0, 1.0, 0.0]], linewidths=0.5, zorder=1)
-
-    elif indexing == 'ij':
-        pixel_size = 1, 1
-        i = np.linspace(pixel_size[0]/2, h-pixel_size[0]/2, h*smooth_level)
-        j = np.linspace(pixel_size[1]/2, w-pixel_size[1]/2, w*smooth_level)
-        I, J = np.meshgrid(i, j, indexing='ij')
-        # here determines whether input grid is of format 'xy' or 'ij', here it's 'ij'
-        Zi = st.rescale(grid[:, :, 0] + abs(grid.min()), [smooth_level, smooth_level], multichannel=False, order=3, mode='wrap')
-        Zj = st.rescale(grid[:, :, 1] + abs(grid.min()), [smooth_level, smooth_level], multichannel=False, order=3, mode='wrap')
-        max_Zi, min_Zi = np.max(Zi), np.min(Zi)
-        max_Zj, min_Zj = np.max(Zj), np.min(Zj)
-        i_steps = np.linspace(min_Zi, max_Zi, step_length)
-        i_steps[0] = i_steps[0] + 1e-5
-        i_steps[-1] = i_steps[-1] - 1e-5
-        j_steps = np.linspace(min_Zj, max_Zj, step_length * (h // w))
-        j_steps[0] = j_steps[0] + 1e-5
-        j_steps[-1] = j_steps[-1] - 1e-5
-        # plot grid
-        ax.contour(J, I, Zj, j_steps, colors=[[1.0, 1.0, 0.0]], linewidths=0.5, zorder=1)
-        ax.contour(J, I, Zi, i_steps, colors=[[1.0, 1.0, 0.0]], linewidths=0.5, zorder=1)
-
-    else: raise ValueError("Argument `indexing` must be 'xy' or 'ij'!")
+        add_image_3d(img, offsets[i], figsize, title=None, show=False)
+    fig, ax = plt.gcf(), plt.gca()
+    ax.set_title(title)
 
     if show:
         fig.show()
@@ -571,13 +647,11 @@ def add_displacement_grid_2d(grid, indexing='xy', figsize=None, title=None, show
         return fig, ax
 
 
-def add_displacement_grid_3d(grid, figsize=None, title=None, show=False):
-    # TODO: add_displacement_grid_3d
-    pass
-
-
-def add_displacement_vector_field_2d(field, indexing='xy', figsize=None, title=None, show=False):
-    ''' x-y coordinate '''
+def add_displacement_grid_2d(field, figsize=None, title=None, show=False):
+    '''
+    line up all the end points of displacement vectors
+    h, w = y, x; xy indexing, so prepare image of shape [w, h, (wh)]
+    '''
     if not len(plt.get_fignums()):
         if figsize:
             fig, ax = _add_figure_2d(figsize[0] / DPI, figsize[1] / DPI, figtype='image', title=title)
@@ -591,35 +665,101 @@ def add_displacement_vector_field_2d(field, indexing='xy', figsize=None, title=N
     if not ax.yaxis_inverted():
         ax.invert_yaxis()
 
-    h, w = field.shape[0], field.shape[1]
+    smooth_level = 2
 
-    if indexing == 'xy':
-        pixel_size = 2 / h, 2 / w
-        x = np.linspace(-1+pixel_size[1]/2, 1-pixel_size[1]/2, w)
-        y = np.linspace(-1+pixel_size[0]/2, 1-pixel_size[0]/2, h)
-        X, Y = np.meshgrid(x, y, indexing='xy')
-        # from documents:
-        #
-        # 'uv': The arrow axis aspect ratio is 1 so that if U == V the orientation of the arrow
-        #       on the plot is 45 degrees counter-clockwise from the horizontal axis (positive to the right).
-        #       Use this if the arrows symbolize a quantity that is not based on X, Y data coordinates.
-        #
-        # 'xy': Arrows point from (x,y) to (x+u, y+v). Use this for plotting a gradient field, for example.
-        #
-        # Note: inverting a data axis will correspondingly invert the arrows *only with* angles='xy'.
-        colors = np.concatenate([field, np.ones_like(field)], axis=-1)
-        colors = np.hypot(field[:, :, 0], field[:, :, 1])
-        ax.quiver(X, Y, field[:, :, 0], field[:, :, 1], colors, angles='xy', width=0.002, zorder=1)
+    x_max, y_max = field.shape[0], field.shape[1]
+    pixel_size = 2 / x_max, 2 / y_max
+    x = np.linspace(-1+pixel_size[0]/2, 1-pixel_size[0]/2, x_max * smooth_level)
+    y = np.linspace(-1+pixel_size[1]/2, 1-pixel_size[1]/2, y_max * smooth_level)
+    grid_id = np.stack(np.meshgrid(x, y, indexing='ij'), axis=-1)  # xy indexing is about original image; not here
+    Zxy = grid_id + st.rescale(field, smooth_level, order=3, multichannel=True)
+    # plot grid
+    color = 'salmon'
+    for var_x in range(Zxy.shape[0]):
+        ax.plot(Zxy[var_x, :, 0], Zxy[var_x, :, 1], color=color, linewidth=0.5, zorder=1)
+    for var_y in range(Zxy.shape[1]):
+        ax.plot(Zxy[:, var_y, 0], Zxy[:, var_y, 1], color=color, linewidth=0.5, zorder=1)
 
-    elif indexing == 'ij':
-        pixel_size = 1, 1
-        i = np.linspace(pixel_size[0] / 2, h - pixel_size[0] / 2, h)
-        j = np.linspace(pixel_size[1] / 2, w - pixel_size[1] / 2, w)
-        I, J = np.meshgrid(i, j, indexing='ij')
-        # ax.quiver only supports 'xy' coordinates, so J, I, ~[1], ~[0]
-        colors = np.concatenate([normalize(np.roll(field, 1, -1)), np.ones_like(field)], axis=-1)
-        colors = np.hypot(field[:, :, 1], field[:, :, 0])
-        ax.quiver(J, I, field[:, :, 1], field[:, :, 0], colors, angles='xy', width=0.002, zorder=1)
+    if show:
+        fig.show()
+    else:
+        return fig, ax
+
+
+def add_displacement_grid_3d(field, figsize=None, title=None, show=False):
+    '''
+    line up all the end points of displacement vectors
+    h, w, d = z, y, x; xyz indexing, so prepare image of shape [d, w, h, (dwh)]
+    '''
+    if not len(plt.get_fignums()):
+        if figsize:
+            fig, ax = _add_figure_3d(figsize[0] / DPI, figsize[1] / DPI, figtype='figure', title=title)
+        else:
+            fig, ax = _add_figure_3d(1024 / DPI, 1024 / DPI, figtype='figure', title=title)
+    else:
+        fig, ax = plt.gcf(), plt.gca()
+        if title:
+            ax.set_title(title, fontdict={'fontsize': FONTSIZE})
+
+    if not ax.zaxis_inverted():
+        ax.invert_zaxis()
+    if not ax.xaxis_inverted():
+        ax.invert_xaxis()
+
+    smooth_level = 2
+
+    x_max, y_max, z_max = field.shape[0], field.shape[1], field.shape[2]
+    pixel_size = 2 / x_max, 2 / y_max, 2 / z_max
+    x = np.linspace(-1 + pixel_size[0] / 2, 1 - pixel_size[0] / 2, x_max * smooth_level)
+    y = np.linspace(-1 + pixel_size[1] / 2, 1 - pixel_size[1] / 2, y_max * smooth_level)
+    z = np.linspace(-1 + pixel_size[2] / 2, 1 - pixel_size[2] / 2, z_max * smooth_level)
+    grid_id = np.stack(np.meshgrid(x, y, z, indexing='ij'), axis=-1)  # xy indexing is about original image; not here
+    Wxyz = grid_id + st.rescale(field, smooth_level, order=3, multichannel=True)
+    # plot grid
+    color = 'salmon'
+    for var_x in range(Wxyz.shape[0]):
+        for var_y in range(Wxyz.shape[1]):
+            ax.plot(Wxyz[var_x, var_y, :, 0], Wxyz[var_x, var_y, :, 1], Wxyz[var_x, var_y, :, 2], color=color, linewidth=0.5, zorder=1)
+        for var_z in range(Wxyz.shape[2]):
+            ax.plot(Wxyz[var_x, :, var_z, 0], Wxyz[var_x, :, var_z, 1], Wxyz[var_x, :, var_z, 2], color=color, linewidth=0.5, zorder=1)
+
+    if show:
+        fig.show()
+    else:
+        return fig, ax
+
+
+def add_displacement_vector_field_2d(field, figsize=None, title=None, show=False):
+    ''' h, w = y, x; xy indexing, so prepare image of shape [w, h, (wh)] '''
+    if not len(plt.get_fignums()):
+        if figsize:
+            fig, ax = _add_figure_2d(figsize[0] / DPI, figsize[1] / DPI, figtype='image', title=title)
+        else:
+            fig, ax = _add_figure_2d(field.shape[1] / DPI, field.shape[0] / DPI, figtype='image', title=title)
+    else:
+        fig, ax = plt.gcf(), plt.gca()
+        if title:
+            ax.set_title(title, fontdict={'fontsize': FONTSIZE})
+
+    if not ax.yaxis_inverted():
+        ax.invert_yaxis()
+
+    x_max, y_max = field.shape[0], field.shape[1]
+    pixel_size = 2 / x_max, 2 / y_max
+    x = np.linspace(-1+pixel_size[0]/2, 1-pixel_size[0]/2, x_max)
+    y = np.linspace(-1+pixel_size[1]/2, 1-pixel_size[1]/2, y_max)
+    X, Y = np.meshgrid(x, y, indexing='ij')  # xy indexing is about original image; not here
+    # how to use `ax.quiver` (from documents):
+    #
+    # 'uv': The arrow axis aspect ratio is 1 so that if U == V the orientation of the arrow
+    #       on the plot is 45 degrees counter-clockwise from the horizontal axis (positive to the right).
+    #       Use this if the arrows symbolize a quantity that is not based on X, Y data coordinates.
+    #
+    # 'xy': Arrows point from (x,y) to (x+u, y+v). Use this for plotting a gradient field, for example.
+    #
+    # Note: inverting a data axis will correspondingly invert the arrows *only with* angles='xy'.
+    colors = np.linalg.norm(field, axis=-1)
+    ax.quiver(X, Y, field[:, :, 0], field[:, :, 1], colors, angles='xy', scale_units='xy', scale=1, width=0.002, zorder=1)
 
     if show:
         fig.show()
@@ -628,23 +768,31 @@ def add_displacement_vector_field_2d(field, indexing='xy', figsize=None, title=N
 
 
 def add_displacement_vector_field_3d(field, figsize=None, title=None, show=False):
+    ''' h, w, d = z, y, x; xyz indexing, so prepare image of shape [d, w, h, (dwh)] '''
     if not len(plt.get_fignums()):
         if figsize:
-            fig, ax = _add_figure_3d(figsize[0] / DPI, figsize[1] / DPI, figtype='image', title=title)
+            fig, ax = _add_figure_3d(figsize[0] / DPI, figsize[1] / DPI, figtype='figure', title=title)
         else:
-            fig, ax = _add_figure_3d(4, 4, figtype='image', title=title)
+            fig, ax = _add_figure_3d(1024 / DPI, 1024 / DPI, figtype='figure', title=title)
     else:
         fig, ax = plt.gcf(), plt.gca()
         if title:
             ax.set_title(title, fontdict={'fontsize': FONTSIZE})
 
-    z = np.linspace(-1, 1, field.shape[0])
-    y = np.linspace(-1, 1, field.shape[1])
-    x = np.linspace(-1, 1, field.shape[2])
+    if not ax.zaxis_inverted():
+        ax.invert_zaxis()
+    if not ax.xaxis_inverted():
+        ax.invert_xaxis()
 
-    X, Y, Z = np.meshgrid(x, y, z)
+    x_max, y_max, z_max = field.shape[0], field.shape[1], field.shape[2]
+    pixel_size = 2 / x_max, 2 / y_max, 2 / z_max
+    x = np.linspace(-1 + pixel_size[0] / 2, 1 - pixel_size[0] / 2, x_max)
+    y = np.linspace(-1 + pixel_size[1] / 2, 1 - pixel_size[1] / 2, y_max)
+    z = np.linspace(-1 + pixel_size[2] / 2, 1 - pixel_size[2] / 2, z_max)
+    X, Y, Z = np.meshgrid(x, y, z, indexing='ij')
 
-    ax.quiver(X, Y, Z, field[:, :, :, 0], field[:, :, :, 1], field[:, :, :, 2], color='r', length=0.1)
+    # colors = np.linalg.norm(field, axis=-1)
+    ax.quiver(X, Y, Z, field[:, :, :, 0], field[:, :, :, 1], field[:, :, :, 2], color='skyblue', arrow_length_ratio=0.5)
 
     if show:
         fig.show()
@@ -653,6 +801,7 @@ def add_displacement_vector_field_3d(field, figsize=None, title=None, show=False
 
 
 def add_displacement_vector_image_2d(field, alpha=0.5, figsize=None, title=None, show=False):
+    ''' ij indexing, same as image '''
     if not len(plt.get_fignums()):
         if figsize:
             fig, ax = _add_figure_2d(figsize[0] / DPI, figsize[1] / DPI, figtype='image', title=title)
@@ -677,6 +826,7 @@ def add_displacement_vector_image_2d(field, alpha=0.5, figsize=None, title=None,
 
 
 def add_displacement_vector_image_3d(field, alpha=0.5, figsize=None, title=None, show=False):
+    ''' ij indexing, same as image '''
     if not len(plt.get_fignums()):
         if figsize:
             fig, ax = _add_figure_2d(figsize[0] / DPI, figsize[1] / DPI, figtype='image', title=title)
@@ -698,6 +848,11 @@ def add_displacement_vector_image_3d(field, alpha=0.5, figsize=None, title=None,
         fig.show()
     else:
         return fig, ax
+
+
+# --------------------------------------------------
+# matplotlib latexing functions
+# --------------------------------------------------
 
 
 def add_text_matrix(s='276951438', num_h=3, padding=0.2, fontsize=FONTSIZE, show=False):

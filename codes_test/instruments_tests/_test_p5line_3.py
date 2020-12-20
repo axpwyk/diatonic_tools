@@ -18,5 +18,5 @@ chord_names.append('E4/C#4')
 
 # draw perfect 5th re-arranged chord notes
 p5line = P5Line(chords, chord_names)
-p5line.draw()
+p5line.plot()
 plt.savefig('p5line.svg', dpi=300, bbox_inches='tight')

@@ -126,7 +126,7 @@ class PathInteractor(object):
             if not self.showverts:
                 self._ind = None
 
-        self.canvas.draw()
+        self.canvas.plot()
 
     def motion_notify_callback(self, event):
         'on mouse movement'
