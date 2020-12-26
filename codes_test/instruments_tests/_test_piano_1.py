@@ -11,6 +11,6 @@ for ax, chord in zip(axs, chords):
     notes = Chord(chord).get_notes()
     if chord == 'FM7(9, #11, 13)':
         notes = [note.add_group(-1) for note in notes]
-    inst.Piano(notes).plot(note_range=(-7, 16), ax=ax, title=chord)
+    inst.PianoSpecial(notes).plot(note_range=(-7, 16), ax=ax, title=chord)
 
 inst.plt.savefig('test_piano_plot.svg', bbox_inches='tight', pad_inches=0.0)

@@ -56,7 +56,7 @@ NOTE_NAMES_STR_G = ''.join([NOTE_NAMES[k] for k in NAMED_NOTES_G])
 
 
 # find center
-DELTA_STEP_TO_DELTA_NOTE_CENTER_X2 = [0, 3, 7, 10, 14, 17, 21]
+DELTA_STEP_TO_DELTA_NNABS_CENTER_X2 = [0, 3, 7, 10, 14, 17, 21]
 
 
 # find offsets
@@ -243,6 +243,7 @@ CHORD_TYPE_TO_SCALE_TYPE = {
     '9': 'Mixolydian',
     '7': 'Mixolydian',
     '6': 'Lydian',  # -7
+    '5': 'Lydian',
     '': 'Lydian',
     'M7-5': 'Ionian(b5)',
     '7-5': 'Locrian(#3)',
@@ -278,6 +279,7 @@ CHORD_TYPE_TO_STEPS = {
     '9': [0, 2, 4, 6, 1],
     '7': [0, 2, 4, 6],
     '6': [0, 2, 4, 5],  # -7
+    '5': [0, 4],
     '': [0, 2, 4],
     'M7-5': [0, 2, 4, 6],
     '7-5': [0, 2, 4, 6],
@@ -300,6 +302,7 @@ CHORD_TYPE_TO_STEPS = {
     '-5sus2': [0, 1, 4],  # -5-3
 }
 
+# TODO: use calculation, not dict
 TENSION_NAME_TO_INTERVAL_NAME = {
     # Root
     'R': 'P1',
@@ -418,6 +421,103 @@ INTERVAL_NAME_TO_CHORD_TYPE = {
     'M6': '13',
     'A6': '#13'
 }
+
+
+''' -----------------------------------------------------------------------------------------'''
+''' ********************************* for `instruments.py` **********************************'''
+''' -----------------------------------------------------------------------------------------'''
+
+
+NOTE_COLORS = ['#f6b0f0', '#f6deb0']
+NOTE_TEXT_COLORS = ['#000000', '#000000']
+
+BR357T_COLORS = {
+    None: '#000000',
+    # Root
+    'R': '#ff0000',
+    # Bass
+    'B': '#00ff00',
+    # 9th
+    'b9': '#0000ff',
+    '9': '#0000ff',
+    '#9': '#0000ff',
+    '##9': '#0000ff',
+    # 3rd
+    'bb3': '#000000',
+    'b3': '#000000',
+    '3': '#000000',
+    '#3': '#000000',
+    # 11th
+    'bb11': '#0000ff',
+    'b11': '#0000ff',
+    '11': '#0000ff',
+    '#11': '#0000ff',
+    '##11': '#0000ff',
+    # 5th
+    'bb5': '#000000',
+    'b5': '#000000',
+    '5': '#000000',
+    '#5': '#000000',
+    '##5': '#000000',
+    # 13th
+    'bb13': '#0000ff',
+    'b13': '#0000ff',
+    '13': '#0000ff',
+    '#13': '#0000ff',
+    # 7th
+    'bbb7': '#000000',
+    'bb7': '#000000',
+    'b7': '#000000',
+    '7': '#000000'
+}
+BR357T_TEXT_COLORS = {
+    None: '#ffffff',
+    # Root
+    'R': '#ffffff',
+    # Bass
+    'B': '#000000',
+    # 9th
+    'b9': '#ffffff',
+    '9': '#ffffff',
+    '#9': '#ffffff',
+    '##9': '#ffffff',
+    # 3rd
+    'bb3': '#ffffff',
+    'b3': '#ffffff',
+    '3': '#ffffff',
+    '#3': '#ffffff',
+    # 11th
+    'bb11': '#ffffff',
+    'b11': '#ffffff',
+    '11': '#ffffff',
+    '#11': '#ffffff',
+    '##11': '#ffffff',
+    # 5th
+    'bb5': '#ffffff',
+    'b5': '#ffffff',
+    '5': '#ffffff',
+    '#5': '#ffffff',
+    '##5': '#ffffff',
+    # 13th
+    'bb13': '#ffffff',
+    'b13': '#ffffff',
+    '13': '#ffffff',
+    '#13': '#ffffff',
+    # 7th
+    'bbb7': '#ffffff',
+    'bb7': '#ffffff',
+    'b7': '#ffffff',
+    '7': '#ffffff'
+}
+
+DEGREE_COLORS = ['#ff0000', '#000000']
+DEGREE_TEXT_COLORS = ['#ffffff', '#ffffff']
+
+TDS_COLORS =  {'T': '#d5e8d4', 'D': '#f8cecc', 'S': '#fff2cc'}
+
+CSTYPE_COLORS = {'[CN]': 'limegreen', '[A1]': 'red', '[A0]': 'orange', '[A2]': 'gold', '[OK]': 'dodgerblue', '[TN]': 'slategrey', None: 'black'}
+
+VELOCITY_COLORS = [[0.94, 0.02, 0.55], [0.11, 0.78, 0.72]]
 
 
 ''' -----------------------------------------------------------------------------------------'''

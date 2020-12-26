@@ -1,6 +1,4 @@
-import matplotlib.pyplot as plt
-import colorsys as cs
-import copy
+from copy import copy, deepcopy
 from mido import MidiFile, MidiTrack
 from mido import Message, MetaMessage
 from mido import bpm2tempo, tempo2bpm, tick2second, second2tick
@@ -96,7 +94,7 @@ def track2msglist(track):
             msglist.append(cur_note)
         # other message and meta messages detection
         else:
-            msg = copy.copy(msg)
+            msg = copy(msg)
             msg['time'] = cur_tick
             msglist.append(msg)
 
@@ -123,7 +121,7 @@ def midi2sheet(filename):
 
 
 def msglist2track(msglist):
-    msglist = copy.deepcopy(msglist)
+    msglist = deepcopy(msglist)
     track = []
     # 'note' message splitting
     while len(msglist) > 0:

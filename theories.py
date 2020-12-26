@@ -6,8 +6,6 @@ from consts import *
 ''' ----------------------------------------------------------------------------------------- '''
 ''' ********************************** all kinds of parsers ********************************* '''
 ''' ----------------------------------------------------------------------------------------- '''
-''' TODO: more reasonable pattern strings                                                     '''
-''' ----------------------------------------------------------------------------------------- '''
 
 
 # for `Note`
@@ -69,6 +67,20 @@ def tension_type_parser(tension_type):
 
 
 ''' ----------------------------------------------------------------------------------------- '''
+''' *************************************** utilities *************************************** '''
+''' ----------------------------------------------------------------------------------------- '''
+
+
+def interval_to_r357t(interval):
+    delta_nnabs, delta_step = interval.get_vector()
+    delta_nnrel = delta_nnabs % N
+    delta_step_rel = delta_step % M
+    accidentals = delta_nnrel - NAMED_NOTES[delta_step_rel]
+    r357t = ('#' * accidentals if accidentals > 0 else 'b' * abs(accidentals)) + str(delta_step + 1)
+    return 'R' if r357t == '1' else r357t
+
+
+''' ----------------------------------------------------------------------------------------- '''
 ''' ******************************* fancy music theory classes ****************************** '''
 ''' ----------------------------------------------------------------------------------------- '''
 
@@ -87,7 +99,6 @@ class Note(object):
         self._accidental = accidental
 
         # get register number, integer in (-\infty, \infty)
-        # TODO: change terminology 'register' to 'register'
         if par['register_str']:
             self._register = int(par['register_str'])
         else:
@@ -119,20 +130,20 @@ class Note(object):
             nnrel = NAMED_NOTES[step % M]
             register = self._register + step // M
             accidental = abs(self) + delta_nnabs - nnrel - N * register
-            return Note().set_vector(nnrel, accidental, register).set_message_old(self.get_message_old())
+            return Note().set_vector(nnrel, accidental, register).set_message_dict(**self.get_message_dict())
         else:
             raise TypeError('ClassError: `Note` could only add an `Interval`!')
 
     def __abs__(self):
         # return absolute midi encoding number, integer in (-\infty, \infty), e.g.
-        # (in 12-tone equal temperament, diatonic) 'Bb2' = (11, -1, 2) = 11-1+2*12 = 34
+        # (in 12-TET, 7-tone diatonic scale) 'Bb2' = (11, -1, 2) = 11 + (-1) + 2 * 12 = 34
         return self._nnrel + self._accidental + self._register * N
 
     def set_vector(self, nnrel=None, accidental=None, register=None):
         # set note vector (nnrel, accidental, register) manually
         if nnrel:
             if nnrel not in NAMED_NOTES:
-                raise ValueError('Given `nnrel` is not a named note. Please consider to choose another one!')
+                raise ValueError('Given `nnrel` do not correspond to a named note. Please choose another one!')
             else:
                 self._nnrel = nnrel
         if accidental:
@@ -155,11 +166,10 @@ class Note(object):
             return NOTE_NAMES[self._nnrel] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b')
 
     def get_frequency(self):
-        nnabs = abs(self)
         # in 12-TET 7-tone diatonic scale:
         # A4 concerto pitch == nnabs57 == 440Hz
         # A3 cubase pitch == nnabs45 == 440Hz
-        return 440 * (T ** (nnabs - 45))
+        return 440 * (T ** (abs(self) - 45))
 
     def add_accidental(self, n=0):
         # a combination of `add_sharp` and `add_flat` methods
@@ -167,24 +177,34 @@ class Note(object):
         return self
 
     def add_register(self, n=0):
-        # a combination of `add_oct` and `sub_oct` methods
+        # a combination of `add_register` and `sub_register` methods
         self._register += n
         return self
 
-    def add_message(self, **kwargs):
+    def set_message(self, **kwargs):
         self._message = {**self._message, **kwargs}
         return self
 
     def get_message(self, key):
-        return self._message[key]
+        if key in self._message.keys():
+            return self._message[key]
+        else:
+            return None
+
+    def set_message_dict(self, **kwargs):
+        self._message = {**kwargs}
+        return self
+
+    def get_message_dict(self):
+        return self._message
 
     def get_enharmonic_note(self, direction='auto'):
         # change a note to its enharmonic note, e.g.
-        # (in 12-tone equal temperament, diatonic scale) [C, _, D, _, E, F, _, G, _, A, _, B]
+        # (in 12-TET, 7-tone diatonic scale) [C, _, D, _, E, F, _, G, _, A, _, B]
         # C#0 -> Db0; C##0 -> D0; D0 -> D0, etc.
-        # (in 12-tone equal temperament, diatonic pentatonic scale) [C, _, D, _, E, _, _, G, _, A, _, _]
+        # (in 12-TET, 5-tone diatonic scale) [C, _, D, _, E, _, _, G, _, A, _, _]
         # C#0 -> Db0; E#0 -> Gbb0; E##0 -> Gb0; E###0 -> G0; G0 -> G0, etc.
-        # (in 19-tone equal temperament, diatonic scale) [C, _, _, D, _, _, E, _, F, _, _, G, _, _, A, _, _, B, _]
+        # (in 19-TET, 7-tone diatonic scale) [C, _, _, D, _, _, E, _, F, _, _, G, _, _, A, _, _, B, _]
         # C#0 -> Dbb0; C##0 -> Db0; C###0 -> D0; D0 -> D0, etc.
         nnabs = abs(self)
 
@@ -206,18 +226,11 @@ class Note(object):
 
         return Note().set_vector(new_nnrel, new_accidental, new_register)
 
-    # deprecated
 
-    def set_message_old(self, message):
-        # `message` is a string
-        self._message = message
-        return self
-
-    def get_message_old(self):
-        return self._message
-
-
-# TODO: study of interval patterns in `N`-TET diatonic scale, design a new universal interval naming scheme
+# TODO:
+#  study of interval patterns in `N`-TET diatonic scale,
+#  design a new universal interval naming scheme,
+#  which hopefully will be compatible with conventional scheme
 class Interval(object):
     def __init__(self, interval_name='P1', vector=(0, 0)):
         if all([N==12, M==7]):
@@ -237,7 +250,7 @@ class Interval(object):
 
             # calculate interval vector (delta_nnabs, delta_step)
             octs = (delta_step % M - delta_step) // M
-            center = DELTA_STEP_TO_DELTA_NOTE_CENTER_X2[delta_step % M] - octs * 2 * N
+            center = DELTA_STEP_TO_DELTA_NNABS_CENTER_X2[delta_step % M] - octs * 2 * N
             interval_class = '0347' if delta_step % M in [0, 3, 4, 7] else '1256'
             delta_nnabs_x2 = center + sgn * interval_type_to_delta_nnabs_x2(interval_type, interval_class)
             self._delta_nnabs, self._delta_step = delta_nnabs_x2 // 2, delta_step
@@ -304,7 +317,7 @@ class Interval(object):
 
         sgn = 1 if self._delta_step >= 0 else -1
         octs = (self._delta_step % M - self._delta_step) // M
-        center = DELTA_STEP_TO_DELTA_NOTE_CENTER_X2[self._delta_step % M] - octs * 2 * N
+        center = DELTA_STEP_TO_DELTA_NNABS_CENTER_X2[self._delta_step % M] - octs * 2 * N
 
         delta_nnabs_x2 = sgn * (self._delta_nnabs * 2 - center)
         interval_class = '0347' if f'{self._delta_step % M}' in '0347' else '1256'
@@ -408,7 +421,7 @@ class DiatonicScale(object):
         # add octs and degrees
         for k, note in enumerate(notes):
             note.add_register(self._tonic_register)
-            note.set_message_old(f'deg-{k}')
+            note.set_message(degree=k)
 
         return notes
 
@@ -589,15 +602,16 @@ class Chord(object):
         # bass note
         if par['bass_name']:
             self._bass = [Note(par['bass_name']) - Interval('P8')]
-            self._bass[0].set_message_old('B')
+            self._bass[0].set_message(br357t='B')
 
         # r357 notes
         root = Note(par['root_name'])
         scale = AlteredDiatonicScale(par['root_name'] + ' ' + CHORD_TYPE_TO_SCALE_TYPE[par['chord_type']])
         scale_notes = scale.get_notes()
         steps = CHORD_TYPE_TO_STEPS[par['chord_type']]
-        self._body.extend([scale_notes[step].set_message_old(f'{step + 1}') for step in steps])
-        self._body[0].set_message_old('R')
+        self._body.extend([scale_notes[step] for step in steps])
+        for note in self._body:
+            note.set_message(br357t=interval_to_r357t(note-self._body[0]))
 
         # tension notes
         if par['tension_type']:
@@ -605,7 +619,7 @@ class Chord(object):
             tension_intervals = [TENSION_NAME_TO_INTERVAL_NAME[tension_name] for tension_name in tension_names]
             tensions = [root + Interval(interval) for interval in tension_intervals]
             self._tensions.extend(tensions)
-            _ = [tension.set_message_old(f'{tension_names[k]}') for k, tension in enumerate(self._tensions)]
+            _ = [tension.set_message(br357t=f'{tension_names[k]}') for k, tension in enumerate(self._tensions)]
 
     def __repr__(self):
         note_names = [note.get_name() for note in self.get_notes() if note is not None]
@@ -619,16 +633,16 @@ class Chord(object):
 
     def set_notes(self, bass=None, body=None, tensions=None):
         if bass:
-            self._bass = [bass.set_message_old('B')]
+            self._bass = [bass.set_message(br357t='B')]
         if body:
             self._body = body
             messages = ['R', '3', '5', '7']
             for i, note in enumerate(self._body):
-                note.set_message_old(messages[i])
+                note.set_message(br357t=messages[i])
         if tensions:
             self._tensions = tensions
             for note in self._tensions:
-                note.set_message_old(INTERVAL_NAME_TO_TENSION_NAME[str(note - self._body[0])])
+                note.set_message(br357t=INTERVAL_NAME_TO_TENSION_NAME[str(note - self._body[0])])
 
         return self
 
@@ -874,7 +888,7 @@ class ChordEx(object):
         return icds[[x[1]!=-1 for x in icds].index(True)]
 
 
-# TODO: make `ChordScale` class universal
+# TODO: make `ChordScale` class universal, write avoid type back to note
 class ChordScale(AlteredDiatonicScale):
     def __init__(self, scale_name):
         super().__init__(scale_name)

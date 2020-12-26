@@ -1,7 +1,8 @@
+from itertools import product
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 import colorsys as cs
-
 from theories import *
 from midi import *
 
@@ -13,24 +14,25 @@ from midi import *
 
 # assign a style
 plt.style.use('seaborn-pastel')
+plt.rc('figure', **{'dpi': 72})
 
 # assign a math font
 plt.rc('mathtext', **{'fontset': 'cm'})
 plt.rc('text', **{'usetex': False})
 
 # assign a chinese-supporting font
-plt.rc('font', **{'sans-serif': 'Consolas-with-Yahei', 'size': 12.0})
+plt.rc('font', **{'sans-serif': 'Consolas-with-Yahei', 'size': 16.0})
 plt.rc('axes', **{'unicode_minus': False})
 
 
-def get_figure(w, h, dpi):
+def get_figure(w, h, dpi=None):
     # figure settings
     fig = plt.figure(figsize=(w, h), dpi=dpi)
     fig.subplots_adjust(left=0.0, bottom=0.0, right=1.0, top=1.0, wspace=0.1, hspace=0.1)
-    ax = fig.gca()
+    ax = fig.gca(aspect='equal')
     ax.set_axis_off()
     ax.margins(x=0.0, y=0.0)
-    return ax
+    return fig, ax
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -38,57 +40,61 @@ def get_figure(w, h, dpi):
 ''' ----------------------------------------------------------------------------------------- '''
 
 
-def hex2oct(hex_string):
-    search_obj = re.search(r'(?<=#)(?P<red>[\dabcdef]{2})(?P<green>[\dabcdef]{2})(?P<blue>[\dabcdef]{2})', hex_string)
-    red = eval('0x'+search_obj['red'])
-    green = eval('0x'+search_obj['green'])
-    blue = eval('0x'+search_obj['blue'])
-    return red/255, green/255, blue/255
+def hex2float(hex_color_string):
+    search_obj = re.search(r'(?<=#)(?P<r>[\dabcdef]{2})(?P<g>[\dabcdef]{2})(?P<b>[\dabcdef]{2})', hex_color_string)
+    return [int(search_obj[s], 16) / 255 for s in ['r', 'g', 'b']]
 
 
-def oct2hex(oct_list):
-    red = oct_list[0] * 255
-    green = oct_list[1] * 255
-    blue = oct_list[2] * 255
-    print(red, green, blue)
-    digits = [str(k) for k in range(10)] + ['a', 'b', 'c', 'd', 'e', 'f']
-    return '#'+f'{digits[int((red-red%16)//16)]}{digits[int(red%16)]}'+\
-               f'{digits[int((green-green%16)//16)]}{digits[int(green%16)]}'+\
-               f'{digits[int((blue-blue%16)//16)]}{digits[int(blue%16)]}'
+def float2hex(dec_color_list):
+    return '#' + ''.join([hex(int(k * 255))[2:] for k in dec_color_list])
 
 
-def rgb_gradient(t, t_min=0, t_max=1, color1=(0.94, 0.02, 0.55), color2=(0.11, 0.78, 0.72)):
-    t = (t-t_min)/(t_max-t_min)
+def rgb_shader(t, t_min=0, t_max=1, color1=(0.94, 0.02, 0.55), color2=(0.11, 0.78, 0.72)):
+    """
+    Linear interpolation between 2 colors `color1` and `color2`
+    :param t: variable
+    :param t_min: lower bound of variable `t`
+    :param t_max: upper bound of variable `t`
+    :param color1: hex or float color in RGB
+    :param color2: hex or float color in RGB
+    :return: float color in RGB
+    """
+    # proportion of `t`
+    t = (t - t_min) / (t_max - t_min)
+    # if input colors are hex strings, convert them to float triples
+    if isinstance(color1, str):
+        color1 = hex2float(color1)
+    if isinstance(color2, str):
+        color2 = hex2float(color2)
+    # convert `color1` and `color2` to yiq space for better gradient visuals
     color1 = cs.rgb_to_yiq(*color1)
     color2 = cs.rgb_to_yiq(*color2)
+    # return color at `t` using linear interpolation
     return cs.yiq_to_rgb(*[t * c2 + (1.00-t) * c1 for (c1, c2) in zip(color1, color2)])
 
 
-def hsv_gradient(t, t_min=0, t_max=1, color1=(0.00, 0.80, 0.75), color2=(1.00, 0.80, 0.75)):
-    t = (t-t_min)/(t_max-t_min)
+def hsv_shader(t, t_min=0, t_max=1, color1=(0.00, 0.80, 0.75), color2=(1.00, 0.80, 0.75)):
+    # proportion of `t`
+    t = (t - t_min) / (t_max - t_min)
+    # return color at `t` using linear interpolation
     return cs.hsv_to_rgb(*[t * c2 + (1.00-t) * c1 for (c1, c2) in zip(color1, color2)])
 
 
-def cst_gradient(t, t_min=0, t_max=1, color=(1.00, 0.00, 0.00)):
+def cst_shader(t, t_min=0, t_max=1, color=(1.00, 0.00, 0.00)):
     return color
 
 
-def gradient1(t, color1, color2):
-    c1 = hex2oct(color1)
-    c2 = hex2oct(color2)
-    return [[(1-s/(t-1))*c1[k]+s/(t-1)*c2[k] for k in range(3)] for s in range(t)]
-
-
-def gradient2(t, color1, color2):
-    c1 = cs.rgb_to_yiq(*hex2oct(color1))
-    c2 = cs.rgb_to_yiq(*hex2oct(color2))
-    return [cs.yiq_to_rgb(*[(1-s/(t-1))*c1[k]+s/(t-1)*c2[k] for k in range(3)]) for s in range(t)]
-
-
-def gradient3(t, color1, color2):
-    c1 = color1
-    c2 = color2
-    return [[(1-s/(t-1))*c1[k]+s/(t-1)*c2[k] for k in range(3)] for s in range(t)]
+def rgb_gradient(n_colors, color1=(0.94, 0.02, 0.55), color2=(0.11, 0.78, 0.72)):
+    # if input colors are hex strings, convert them to float triples
+    if isinstance(color1, str):
+        c1 = hex2float(color1)
+    else:
+        c1 = color1
+    if isinstance(color2, str):
+        c2 = hex2float(color2)
+    else:
+        c2 = color2
+    return [[(1 - s / (n_colors - 1)) * c1[k] + s / (n_colors - 1) * c2[k] for k in range(3)] for s in range(n_colors)]
 
 
 # a handy length function
@@ -101,8 +107,8 @@ def middle(a, b):
     return (a + b) / 2
 
 
-# a handy if-in-range function
-def inrange(x, a, b):
+# a handy if x \in [a, b) function
+def within(x, a, b):
     return a <= x < b
 
 
@@ -112,296 +118,447 @@ def inrange(x, a, b):
 
 
 class Guitar(object):
-    def __init__(self, notes=None):
-        # multiple notes on single string
-        self._poly = True
+    def __init__(
+            self,
+            modulo_on=True,
+            max_fret=24,
+            open_string_notes=(Note('E1'), Note('A1'), Note('D2'), Note('G2'), Note('B2'), Note('E3')),
+            w_to_h_ratio=2.0,
+            short_fret_markers=(3, 5, 7, 9),
+            long_fret_markers=(0, ),
+    ):
+        # basic properties of this guitar instance
+        self._modulo_on = modulo_on  # ignore register of note
+        self._max_fret = max_fret  # number of frets
+        self._max_string = len(open_string_notes)  # number of strings
+        # open string nnabs and fretboard nnabs
+        self._open_string_notes = open_string_notes
+        self._open_string_nnabs = np.array([abs(note) for note in open_string_notes])  # 1-d `np.ndarray`
+        self._fretboard_nnabs = np.array([self._open_string_nnabs + i for i in range(0, max_fret + 1)])  # [frets, strings]
+        # w to h ratio of fretboard
+        self._w_to_h_ratio = w_to_h_ratio
+        # fret markers
+        self._short_fret_markers = short_fret_markers
+        self._long_fret_markers = long_fret_markers
         # default notes
-        if notes:
-            self._notes = notes
-        else:
-            self._notes = Chord('C').get_notes()
-        # open string notes
-        self._open_string_notes = np.array([16, 21, 26, 31, 35, 40])
-        self._max_string = self._open_string_notes.shape[0]
-        # fret notes
-        self._max_fret = 25
-        self._fretboard_notes = np.array([self._open_string_notes + i for i in range(0, self._max_fret)])
-        # get note information
-        self._get_note_information()
-        # press
-        self._press()
+        self._notes = []
 
-    def _get_note_information(self):
-        # fix note names and br357t on fretboard
-        self.fretboard_note_names = []
-        self.fretboard_note_br357ts = []
-        self.fretboard_note_degrees = []
-        for fret in self._fretboard_notes:
-            tmp_names = []
-            tmp_br357ts = []
-            tmp_degrees = []
-            for note in fret:
-                idx_bool = np.array([abs(x)%12 for x in self._notes])==note%12
-                if any(idx_bool):
-                    idx = np.where(np.array([abs(x)%12 for x in self._notes])==note%12)[0][0]
-                    tmp_names.append(self._notes[idx].get_name(show_group=False)+f'{note//12}')
-                    tmp_br357ts.append(self._notes[idx].get_message_old())
-                    tmp_degrees.append(idx)
-                else: tmp_names.append(''); tmp_br357ts.append(''); tmp_degrees.append(-1)
-            self.fretboard_note_names.append(tmp_names)
-            self.fretboard_note_br357ts.append(tmp_br357ts)
-            self.fretboard_note_degrees.append(tmp_degrees)
+    def _get_note_with_indices(self, selection, color_scheme):
+        """
+        get notes and their indices of fretboard matrix
 
-    def _press(self):
-        # pressed strings
-        self.pressed = np.zeros((self._max_fret, self._max_string), np.bool)
-        for note in self._notes:
-            self.pressed[self._fretboard_notes % 12 == abs(note) % 12] = True
+        :param selection: string, e.g. 'x32010'
+        :param color_scheme: string, choose from ['note', 'br357t', 'degree']
+        :return: note_list, indices_list, used_strings
+        """
+        note_list, indices_list, used_strings =  [], [], []
 
-        if not self._poly:
-            for k in range(self._max_string):
-                string_k = self.pressed[:, k]
-                idx = np.where(string_k)[0][0]+1
-                self.pressed[idx:, k] = False
-
-    def set_notes(self, notes):
-        self._notes = notes
-        self._get_note_information()
-        self._press()
-        return self
-
-    def set_poly_on(self, bool):
-        self._poly = bool
-        return self
-
-    def select(self, selection='x3201p'):
-        for string in range(len(selection)):
-            if selection[string] == 'p': pass
-            elif selection[string] == 'x':
-                self.pressed[:, string] = False
+        # check every note in `self._notes`
+        for i, note in enumerate(self._notes):
+            # gather all matching notes on fretboard
+            if self._modulo_on:
+                indices = np.stack(np.where(self._fretboard_nnabs%N == abs(note)%N), axis=-1)  # [?, 2]
             else:
-                self.pressed[:, string] = False
-                self.pressed[eval('0x'+selection[string]), string] = True
-        return self
+                indices = np.stack(np.where(self._fretboard_nnabs == abs(note)), axis=-1)  # [?, 2]
 
-    def plot1(self, fret_left=0, fret_right=4, ax=None, title=None):
-        rotation = 0
-        w_scale = 2
-        fontsize = 20
-        strings = np.arange(self._max_string)
-        fret = w_scale * np.arange(0, self._max_fret)
-        fingers = np.concatenate([[-1.0], fret[:-1]+fret[1:]]) / 2
-        fret_interval = [fret_left, fret_right]
+            # add these notes and their indices to list
+            for cur_indices in indices:
+                # only keep notes in selection
+                cur_fret, cur_string = cur_indices
+                if selection[cur_string] == 'p':  # all notes on this string
+                    pass
+                elif selection[cur_string] == 'x':  # no note on this string
+                    continue
+                else:  # selected note on this string
+                    if int(selection[cur_string], self._max_fret) == cur_fret:
+                        pass
+                    else:  # if selected note is not on this string, skip
+                        continue
 
-        # new figure
-        w = fret[fret_interval[1]] - fret[fret_interval[0]] + 4
-        h = strings[-1] - strings[0] + 2
-        scale = 0.75
-        if not ax:
-            fig = plt.figure(figsize=(w*scale, h*scale), dpi=72)
-            ax = plt.gca(aspect='equal')
+                cur_note = copy(note)
+
+                # change register of current note
+                if self._modulo_on:
+                    delta_register = (self._fretboard_nnabs[cur_fret, cur_string] - abs(note)) // N
+                    cur_note.add_register(delta_register)
+
+                # add colors to current note
+                if color_scheme == 'note':
+                    cur_note.set_message(dot_color=rgb_shader(i, 0, len(self._notes)-1, NOTE_COLORS[0], NOTE_COLORS[1]))
+                    cur_note.set_message(text_color=rgb_shader(i, 0, len(self._notes)-1, NOTE_TEXT_COLORS[0], NOTE_TEXT_COLORS[1]))
+                elif color_scheme == 'br357t':
+                    cur_note.set_message(dot_color=BR357T_COLORS[cur_note.get_message('br357t')])
+                    cur_note.set_message(text_color=BR357T_TEXT_COLORS[cur_note.get_message('br357t')])
+                elif color_scheme == 'degree':
+                    cur_note.set_message(dot_color=rgb_shader(cur_note.get_message('degree'), 0, len(self._notes)-1, DEGREE_COLORS[0], DEGREE_COLORS[1]))
+                    cur_note.set_message(text_color=rgb_shader(cur_note.get_message('degree'), 0, len(self._notes)-1, DEGREE_TEXT_COLORS[0], DEGREE_TEXT_COLORS[1]))
+                else:
+                    cur_note.set_message(dot_color='black')
+                    cur_note.set_message(text_color='white')
+
+                note_list.append(cur_note)
+                indices_list.append(cur_indices)
+                if cur_string not in used_strings:
+                    used_strings.append(cur_string)
+
+        return note_list, indices_list, used_strings
+
+    def auto_select(self, max_span=4, use_open_string=False, highest_bass_string=2, top_note=None, lowest_soprano_string=3):
+        """
+        select pressed notes automatically
+        :param max_span: maximal span of frets
+        :param use_open_string: will check open strings at first
+        :return: list of selections, e.g. ['x3201x', 'x32010', ...]
+        """
+
+        # find lowest note, B or R
+        br357t_to_nnrels = {note.get_message('br357t'): abs(note) % N for note in self._notes}
+
+        if 'B' in br357t_to_nnrels.keys():
+            nnrel_low = br357t_to_nnrels['B']
+        elif 'R' in br357t_to_nnrels.keys():
+            nnrel_low = br357t_to_nnrels['R']
         else:
-            fig = plt.gcf()
-            ax.set_aspect('equal')
-        ax.set_xticks([]); ax.set_yticks([])
-        ax.set_axis_off()
-        ax.margins(0.0)
+            raise ValueError('Given notes do not contain B or R!')
 
-        # add title
-        if title:
-            ax.text(0.5, 0.895, title, fontsize=fontsize*1.5, va='bottom', ha='center', transform=ax.transAxes)
+        # find highest note, if `top_note` is given
+        if top_note is not None:
+            if top_note in br357t_to_nnrels.keys():
+                nnrel_high = br357t_to_nnrels[top_note]
+            else:
+                raise ValueError('Given top note does not exist!')
+        else:
+            nnrel_high = None
 
-        # plot position blocks
-        for i in range(fret_interval[0]+1, fret_interval[1]+1):
-            if i in range(12, self._max_fret, 12):
-                rect = plt.Rectangle((fingers[i], strings[0]), fret[i]-fingers[i], strings[-1]-strings[0], color='gray', alpha=0.2)
-                ax.add_patch(rect)
-            elif i % 12 in [3, 5, 7, 9]:
-                mid = (strings[-1]-strings[0])/2
-                rect = plt.Rectangle((fingers[i], mid), fret[i]-fingers[i], mid, color='gray', alpha=0.2)
-                ax.add_patch(rect)
-            else: pass
+        # useful expressions
+        fretboard_nnrel = self._fretboard_nnabs[:N+max_span] % N
+        fret_positions_range = range(0, N)
+        n_strings = self._max_string
 
-        # plot frets
-        ax.set_xlim(fret[fret_interval[0]]-1, fret[fret_interval[1]]+3)
-        _ = [ax.plot((fret[i], fret[i]), (strings[0], strings[-1]), c='black', lw=2.0) for i in range(fret_interval[0], fret_interval[1]+1)]
-        _ = [ax.annotate(fret[i]//w_scale, (fret[i], -0.5), rotation=rotation, fontsize=fontsize, color='blue', va='center', ha='center') for i in range(fret_interval[0], fret_interval[1]+1)[1:2]]
+        # get all chord schemes
+        chord_schemes = []
+        fret_positions = []
+        for fret_position in fret_positions_range:
+            fretboard_bool = np.any([fretboard_nnrel == nnrel for _, nnrel in br357t_to_nnrels.items()], axis=0)
+            if use_open_string and fret_position > 0:
+                fretboard_bool[1:fret_position] = False
+                fretboard_bool[fret_position+max_span:] = False
+            else:
+                fretboard_bool[0:fret_position] = False
+                fretboard_bool[fret_position+max_span:] = False
 
-        # plot strings
-        ax.set_ylim(strings[0]-1, strings[-1]+1)
-        _ = [ax.plot((fret[fret_interval[0]], fret[fret_interval[1]]), (s, s), c='black', lw=1.0) for s in strings]
+            frets, strings = np.where(fretboard_bool)
+            s2f = {k: [] for k in strings}
+            for fret, string in zip(frets, strings):
+                s2f[string].append(fret)
 
-        # plot dots
-        radius = 0.3
-        colors = gradient1(len(self._notes), '#f6b0f0', '#f6deb0')
-        for string in strings:
+            for frets in product(*s2f.values()):
+                chord_scheme = np.zeros_like(fretboard_bool, np.bool)
+                for fret, string in zip(frets, s2f.keys()):
+                    chord_scheme[fret, string] = True
 
-            sp = self.pressed[:, string]
+                chord_schemes.append(chord_scheme)
+                fret_positions.append(fret_position)
 
-            if any(sp):  # if there exists note on current string
-                if self._poly:  # plot all notes
-                    circ0 = [plt.Circle((fingers[0]+fret[fret_interval[0]], string), radius, fc='white', ec='black') for _ in range(1) if sp[0]]
-                    circs = [plt.Circle((fingers[i+1], string), radius, fc='black', ec='black') for i, k in enumerate(sp[1:]) if k and fret_interval[0]<i+1<=fret_interval[1]]
-                    _ = [ax.add_patch(c) for c in circ0 + circs]
-                else:  # only plot top note
-                    top_idx, = np.where(sp)
-                    top_idx = top_idx[-1]
-                    if top_idx == 0:
-                        circ = plt.Circle((fingers[0]+fret[fret_interval[0]], string), radius, fc='white', ec='black')
-                        ax.add_patch(circ)
-                    elif fret_interval[0]<top_idx<=fret_interval[1]:
-                        circ = plt.Circle((fingers[top_idx], string), radius, fc='black', ec='black')
-                        ax.add_patch(circ)
-                    else: pass
+        print(f'All possible chord diagrams: {len(chord_schemes)}')
 
-            else:  # if there isn't any note on current string, add a cross mark on open string position
-                cross = [plt.Line2D((fingers[0]+fret[fret_interval[0]]-radius*np.sqrt(2)/2, fingers[0]+fret[fret_interval[0]]+radius*np.sqrt(2)/2),
-                                    (string-radius*np.sqrt(2)/2, string+radius*np.sqrt(2)/2), c='black'),
-                         plt.Line2D((fingers[0]+fret[fret_interval[0]]+radius*np.sqrt(2)/2, fingers[0]+fret[fret_interval[0]]-radius*np.sqrt(2)/2),
-                                    (string-radius*np.sqrt(2)/2, string+radius*np.sqrt(2)/2), c='black')]
-                ax.add_line(cross[0]); ax.add_line(cross[1])
+        # get real chord_schemes and fret_positions
+        chord_schemes_filt = []
+        fret_positions_filt = []
+        for chord_scheme, fret_position in zip(chord_schemes, fret_positions):
+            # filters
+            fretboard_nnrel_used = copy(fretboard_nnrel)
+            fretboard_nnrel_used[~chord_scheme] = -1
+            if use_open_string and fret_position > 0:
+                fretboard_nnrel_used_slice = np.concatenate(
+                    [
+                        fretboard_nnrel_used[0:1],
+                        fretboard_nnrel_used[fret_position:fret_position+max_span]
+                    ]
+                )
+            else:
+                fretboard_nnrel_used_slice = fretboard_nnrel_used[fret_position:fret_position+max_span]
+            fretboard_nnrel_used_low = fretboard_nnrel_used_slice[:, :highest_bass_string+1]
+            fretboard_nnrel_used_high = fretboard_nnrel_used_slice[:, lowest_soprano_string:]
 
-        # add string texts (top notes)
-        text_names = []
-        text_br357ts = []
-        text_degrees = []
-        for string in strings:
-
-            sp = self.pressed[:, string]
-
-            top_idx, = np.where(sp)
-            if sum(top_idx.shape)<=0:
-                text_names.append('')
-                text_br357ts.append('')
-                text_degrees.append('')
+            # 1. lowest strings contain B or R
+            if nnrel_low not in fretboard_nnrel_used_low:
                 continue
             else:
-                top_idx = top_idx[-1]
-                text_names.append(self.fretboard_note_names[top_idx][string])
-                text_br357ts.append(self.fretboard_note_br357ts[top_idx][string])
-                text_degrees.append(self.fretboard_note_degrees[top_idx][string])
+                string_low = np.where(fretboard_nnrel_used_low == nnrel_low)[1].min()
+                fretboard_nnrel_used_slice[:, :string_low] = -1
+                chord_scheme[:, :string_low] = False
 
-        _ = [ax.annotate(text.replace('b', r'$\flat$').replace('#', r'$\sharp$'), (fret[fret_interval[1]]+0.25, strings[i]), rotation=rotation,
-                         fontsize=fontsize, va='center', ha='left', bbox=dict(facecolor=colors[0], alpha=0.0)) for i, text in enumerate(text_names)]
-        _ = [ax.annotate(text.replace('b', r'$\flat$').replace('#', r'$\sharp$'), (fret[fret_interval[1]]+1.75, strings[i]), rotation=rotation,
-                         fontsize=fontsize, va='center', ha='left', bbox=dict(facecolor=colors[-1], alpha=0.2)) for i, text in enumerate(text_br357ts)]
+            # 2. highest strings contain top note
+            if top_note is not None:
+                if nnrel_high not in fretboard_nnrel_used_high:
+                    continue
+                else:
+                    string_high = lowest_soprano_string + np.where(fretboard_nnrel_used_high == nnrel_high)[1].max()
+                    fretboard_nnrel_used_slice[:, string_high+1:] = -1
+                    chord_scheme[:, string_high+1:] = False
 
-        # plt.savefig('三个和弦的键盘示意图.svg', bbox_inches='tight', pad_inches=0.0)
-        # plt.close()
+            # 3. contains all notes
+            if not all([k in fretboard_nnrel_used_slice for k in br357t_to_nnrels.values()]):
+                continue
 
-    def plot2(self, fret_left=0, fret_right=4, ax=None, title=None):
-        rotation = 0
-        w_scale = 2
-        fontsize = 12
-        strings = np.arange(self._max_string)
-        fret = w_scale * np.arange(0, self._max_fret)
-        fingers = np.concatenate([[-0.5], fret[:-1]+fret[1:]]) / 2
-        fret_interval = [fret_left, fret_right]
+            chord_schemes_filt.append(chord_scheme)
+            fret_positions_filt.append(fret_position)
 
-        # new figure
-        w = fret[fret_interval[1]] - fret[fret_interval[0]] + 2
-        h = strings[-1] - strings[0] + 2.4
-        scale = 0.75
-        if not ax:
-            fig = plt.figure(figsize=(w*scale, h*scale), dpi=72)
-            ax = plt.gca(aspect='equal')
-        else:
-            fig = plt.gcf()
-            ax.set_aspect('equal')
-        ax.set_xticks([]); ax.set_yticks([])
-        ax.set_axis_off()
-        ax.margins(0.0)
+        # convert chord schemes to str
+        chord_schemes_string = []
+        fret_positions_string = []
+        for cs, fp in zip(chord_schemes_filt, fret_positions_filt):
+            used_indices = np.stack(np.where(cs), axis=-1)
+            cs_str = ['x'] * n_strings
+            for fret, string in used_indices:
+                cs_str[string] = np.base_repr(fret, N+max_span)
+            cs_str = ''.join(cs_str).lower()
 
-        # add title
+            if cs_str not in chord_schemes_string:
+                chord_schemes_string.append(cs_str)
+                fret_positions_string.append(fp)
+            else:
+                idx = chord_schemes_string.index(cs_str)
+                chord_schemes_string.pop(idx)
+                fret_positions_string.pop(idx)
+                chord_schemes_string.append(cs_str)
+                fret_positions_string.append(fp)
+
+        return chord_schemes_string, fret_positions_string
+
+    def set_notes(self, notes):
+        self._notes = [note for note in notes if isinstance(note, Note)]
+        return self
+
+    def add_notes(self, notes):
+        self._notes = self._notes + [note for note in notes if isinstance(note, Note)]
+        return self
+
+    def del_notes(self):
+        self._notes = []
+        return self
+
+    def set_modulo_on(self, modulo_on=True):
+        self._modulo_on = modulo_on
+        return self
+
+    def plot(self, fret_left=0, fret_right=N, selection='pppppp', text_rotation=0, text_style='note', ax=None, title=None):
+        # gather instance attributes
+        w_to_h_ratio = self._w_to_h_ratio
+        max_string = self._max_string
+        max_fret = self._max_fret
+        short_fret_markers = self._short_fret_markers
+        long_fret_markers = self._long_fret_markers
+
+        # get coordinates
+        coord_strings = np.arange(max_string)
+        coord_frets = w_to_h_ratio * np.arange(0, max_fret)
+        coord_fingers = np.concatenate([np.array([-w_to_h_ratio / 2, ]), coord_frets[:-1] + coord_frets[1:]]) / 2
+
+        # new figure if axes is not provided
+        if ax is None:
+            w = coord_frets[fret_right] - coord_frets[fret_left] + 2 * w_to_h_ratio
+            h = coord_strings[-1] - coord_strings[0] + 2
+            scale = 0.75
+            fig, ax = get_figure(w * scale, h * scale)
+
+        # add title if provided
         if title:
-            ax.text(0.5, 0.895, title, fontsize=fontsize*1.5, va='bottom', ha='center', transform=ax.transAxes)
+            ax.text(x=0.5, y=0.895, s=title, va='bottom', ha='center', transform=ax.transAxes)
 
-        # plot position blocks
-        for i in range(fret_interval[0]+1, fret_interval[1]+1):
-            if i in range(12, self._max_fret, 12):
-                rect = plt.Rectangle((fingers[i], strings[0]), fret[i]-fingers[i], strings[-1]-strings[0], color='gray', alpha=0.2)
+        # plot fret markers
+        for i in range(fret_left+1, fret_right+1):
+            if i % N in long_fret_markers:
+                rect = plt.Rectangle(
+                    xy=(coord_fingers[i], coord_strings[0]),
+                    width=coord_frets[i]-coord_fingers[i],
+                    height=coord_strings[-1]-coord_strings[0],
+                    color='gray',
+                    alpha=0.2,
+                    zorder=0
+                )
                 ax.add_patch(rect)
-            elif i % 12 in [3, 5, 7, 9]:
-                mid = (strings[-1]-strings[0])/2
-                rect = plt.Rectangle((fingers[i], mid), fret[i]-fingers[i], mid, color='gray', alpha=0.2)
+            elif i % N in short_fret_markers:
+                rect = plt.Rectangle(
+                    xy=(coord_fingers[i], middle(coord_strings[0], coord_strings[-1])),
+                    width=coord_frets[i]-coord_fingers[i],
+                    height=middle(coord_strings[0], coord_strings[-1]),
+                    color='gray',
+                    alpha=0.2,
+                    zorder=0
+                )
                 ax.add_patch(rect)
-            else: pass
+            else:
+                pass
 
-        # plot frets
-        ax.set_xlim(fret[fret_interval[0]]-1, fret[fret_interval[1]]+1)
-        _ = [ax.plot((fret[i], fret[i]), (strings[0], strings[-1]), c='black', lw=2.0) for i in range(fret_interval[0], fret_interval[1]+1)]
-        _ = [ax.annotate(fret[i]//w_scale, (fret[i], -0.5), rotation=rotation, fontsize=fontsize, color='red', va='center', ha='center') for i in range(fret_interval[0], fret_interval[1]+1)]
+        # plot frets (vertical lines)
+        ax.set_xlim(coord_frets[fret_left]-w_to_h_ratio, coord_frets[fret_right]+w_to_h_ratio)
+        _ = [
+            ax.plot(
+                (coord_frets[i], coord_frets[i]),
+                (coord_strings[0], coord_strings[-1]),
+                c='black',
+                lw=2.0,
+                zorder=1
+            ) for i in range(fret_left, fret_right+1)
+        ]
+        _ = [
+            ax.annotate(
+                s=i,
+                xy=(coord_frets[i], -0.5),
+                rotation=text_rotation,
+                color='black',
+                va='center',
+                ha='center') for i in range(fret_left, fret_right+1)
+        ]
 
-        # plot strings
-        ax.set_ylim(strings[0]-1.2, strings[-1]+1.2)
-        _ = [ax.plot((fret[fret_interval[0]], fret[fret_interval[1]]), (s, s), c='black', lw=1.0) for s in strings]
+        # plot strings (horizontal lines)
+        ax.set_ylim(coord_strings[0]-1, coord_strings[-1]+1)
+        _ = [
+            ax.plot(
+                (coord_frets[fret_left], coord_frets[fret_right]),
+                (s, s),
+                c='black',
+                lw=1.0,
+                zorder=2
+            ) for s in coord_strings
+        ]
 
-        # plot texts
-        radius = 0.15
-        colors = gradient1(len(self._notes), '#f6b0f0', '#f6deb0')
-        for string in strings:
+        # plot dots and texts
+        radius = 0.15 * w_to_h_ratio
+        note_list, indices_list, used_strings = self._get_note_with_indices(selection, text_style)
 
-            sp = self.pressed[:, string]
+        circs = []
+        for note, indices in zip(note_list, indices_list):
+            # unpack indices
+            fret, string = indices
+            # text on dot
+            if text_style == 'note':
+                text = note.get_name().replace('b', r'$\flat$').replace('#', r'$\sharp$')
+            elif text_style == 'br357t':
+                text = note.get_message('br357t')
+            elif text_style == 'degree':
+                text = note.get_message('degree')
+            else:
+                text = ''
+            # open string dots
+            if fret == 0:
+                circs.append(
+                    plt.Circle(
+                        xy=(coord_fingers[0] + coord_frets[fret_left], coord_strings[string]),
+                        radius=radius,
+                        fc='white',
+                        ec=note.get_message('dot_color'),
+                        zorder=3
+                    )
+                )
+                ax.annotate(
+                    s=text,
+                    xy=(coord_fingers[0] + coord_frets[fret_left], coord_strings[string]),
+                    rotation=text_rotation,
+                    color='black',
+                    va='center',
+                    ha='center',
+                    zorder=4
+                )
+            # other fret dots
+            elif within(fret, fret_left+1, fret_right+1):
+                circs.append(
+                    plt.Circle(
+                        xy=(coord_fingers[fret], coord_strings[string]),
+                        radius=radius,
+                        fc=note.get_message('dot_color'),
+                        ec=note.get_message('dot_color'),
+                        zorder=3
+                    )
+                )
+                ax.annotate(
+                    s=text,
+                    xy=(coord_fingers[fret], coord_strings[string]),
+                    rotation=text_rotation,
+                    color=note.get_message('text_color'),
+                    va='center',
+                    ha='center',
+                    zorder=4
+                )
+            else:
+                continue
 
-            if any(sp):  # if there exists note on current string
-                if self._poly:  # plot all notes
-                    _ = [ax.annotate(f'({self.fretboard_note_names[0][string]}, {self.fretboard_note_br357ts[0][string]})'.replace('b', r'$\flat$').replace('#', r'$\sharp$'),
-                                     (fingers[0]+fret[fret_interval[0]], string), rotation=rotation, color='white', va='center', ha='center',
-                                     fontsize=fontsize, bbox=dict(facecolor='#ee5511')) for _ in range(1) if sp[0]]
-                    _ = [ax.annotate(f'({self.fretboard_note_names[i+1][string]}, {self.fretboard_note_br357ts[i+1][string]})'.replace('b', r'$\flat$').replace('#', r'$\sharp$'),
-                                     (fingers[i+1], string), rotation=rotation, color='black', va='center', ha='center',
-                                     fontsize=fontsize, bbox=dict(facecolor=colors[self.fretboard_note_degrees[i+1][string]])) for i, k in enumerate(sp[1:]) if k and fret_interval[0]<i+1<=fret_interval[1]]
-                else:  # only plot top note
-                    top_idx, = np.where(sp)
-                    top_idx = top_idx[-1]
-                    if top_idx == 0:
-                        ax.annotate(f'({self.fretboard_note_names[0][string]}, {self.fretboard_note_br357ts[0][string]})'.replace('b', r'$\flat$').replace('#', r'$\sharp$'),
-                                    (fingers[0]+fret[fret_interval[0]], string), rotation=rotation, va='center', ha='center',
-                                    fontsize=fontsize, bbox=dict(facecolor='#ee5511'))
-                    elif fret_interval[0]<top_idx<=fret_interval[1]:
-                        ax.annotate(f'({self.fretboard_note_names[top_idx][string]}, {self.fretboard_note_br357ts[top_idx][string]})'.replace('b', r'$\flat$').replace('#', r'$\sharp$'),
-                                    (fingers[top_idx], string), rotation=rotation, va='center', ha='center',
-                                    fontsize=fontsize, bbox=dict(facecolor=colors[self.fretboard_note_degrees[top_idx][string]]))
-                    else: pass
+        # plot crosses
+        crosses = []
+        for string in range(max_string):
+            if string not in used_strings:
+                crosses.extend(
+                    [
+                        plt.Line2D((coord_fingers[0] + coord_frets[fret_left] - radius * np.sqrt(2) / 2,
+                                    coord_fingers[0] + coord_frets[fret_left] + radius * np.sqrt(2) / 2),
+                                   (string - radius * np.sqrt(2) / 2, string + radius * np.sqrt(2) / 2), c='black'),
+                        plt.Line2D((coord_fingers[0] + coord_frets[fret_left] + radius * np.sqrt(2) / 2,
+                                    coord_fingers[0] + coord_frets[fret_left] - radius * np.sqrt(2) / 2),
+                                   (string - radius * np.sqrt(2) / 2, string + radius * np.sqrt(2) / 2), c='black')
+                    ]
+                )
+            else:
+                pass
 
-            else:  # if there isn't any note on current string, add a cross mark on open string position
-                cross = [plt.Line2D((fingers[0]+fret[fret_interval[0]]-radius*np.sqrt(2)/2, fingers[0]+fret[fret_interval[0]]+radius*np.sqrt(2)/2),
-                                    (string-radius*np.sqrt(2)/2, string+radius*np.sqrt(2)/2), c='black'),
-                         plt.Line2D((fingers[0]+fret[fret_interval[0]]+radius*np.sqrt(2)/2, fingers[0]+fret[fret_interval[0]]-radius*np.sqrt(2)/2),
-                                    (string-radius*np.sqrt(2)/2, string+radius*np.sqrt(2)/2), c='black')]
-                ax.add_line(cross[0]); ax.add_line(cross[1])
+        _ = [ax.add_patch(circ) for circ in circs]
+        _ = [ax.add_line(line) for line in crosses]
 
-        # fig.savefig('三个和弦的键盘示意图.svg', bbox_inches='tight', pad_inches=0.0)
-        # plt.close()
+    def plot_all_chords(self, max_span=4, use_open_string=False, highest_bass_string=2, top_note=None, lowest_soprano_string=3, text_rotation=0, text_style='note', title=''):
+        chord_schemes, fret_positions = self.auto_select(max_span=max_span, use_open_string=use_open_string, highest_bass_string=highest_bass_string, top_note=top_note, lowest_soprano_string=lowest_soprano_string)
+        n_schemes = len(chord_schemes)
+        n_w = int(np.sqrt(n_schemes))
+        n_h = n_schemes // n_w + 1
+
+        fig = plt.figure(figsize=(4 * n_w * (self._w_to_h_ratio * max_span) / len(self._open_string_nnabs), 4 * n_h), dpi=144)
+        suptitle = f'{title}\nTuning: {" ".join([note.get_name() for note in self._open_string_notes])}\n'
+        suptitle += f'use_open_string={use_open_string}\n'
+        suptitle += f'highest_bass_string={self._max_string-highest_bass_string}'
+        if top_note is not None:
+            suptitle += f' | lowest_soprano_string={self._max_string-lowest_soprano_string} | top_note={top_note}'
+        fig.suptitle(suptitle)
+        fig.subplots_adjust(0.0, 0.0, 1.0, 1.0-1/(2*n_h), 0.0, 0.0)
+        spec = gridspec.GridSpec(ncols=n_w, nrows=n_h, figure=fig)
+
+        for i, (chord_scheme, fret_position) in enumerate(zip(chord_schemes, fret_positions)):
+            ax = fig.add_subplot(spec[i//n_w, i%n_w])
+            ax.margins(0.0, 0.0)
+            ax.set_axis_off()
+            ax.set_aspect('equal')
+            left = fret_position - 1 if fret_position > 0 else 0
+            right = fret_position + max_span - 1 if fret_position > 0 else fret_position + max_span
+            self.plot(left, right, chord_scheme, text_rotation, text_style, ax, chord_scheme)
 
 
-class Piano(object):
-    def __init__(self, notes=None):
+# TODO: iroiro
+class PianoSpecial(object):
+    def __init__(self):
         # default notes
-        if notes:
-            self._notes = notes
-        else:
-            self._notes = Chord('C').get_notes()
-
-        # find range of notes
-        self._get_note_range()
+        self._notes = []
 
     def _get_note_range(self):
         notes = [abs(note) for note in self._notes]
         note_min = min(notes)
         note_max = max(notes)
-        self._note_range = (note_min, note_max)
-        return self._note_range
+        return note_min, note_max
 
     def set_notes(self, notes):
-        self._notes = notes
-        self._get_note_range()
+        self._notes = [note for note in notes if isinstance(note, Note)]
+        return self
+
+    def add_notes(self, notes):
+        self._notes = self._notes + [note for note in notes if isinstance(note, Note)]
+        return self
+
+    def del_notes(self):
+        self._notes = []
         return self
 
     def plot(self, note_range=None, ax=None, title=None):
         # get plot range
         if note_range is None:
-            note_range = list(self._note_range)
+            note_range = list(self._get_note_range())
         else:
             note_range = list(note_range)
 
@@ -460,56 +617,63 @@ class Piano(object):
             return x, y
 
         # constants
-        expand = 1
-        fontsize = 20
-        scale = 1
-        w = _note2pos_xy(note_range[1]+expand)[0] - _note2pos_xy(note_range[0]-expand)[0]
+        keys_expand = 1
+        w = _note2pos_xy(note_range[1] + keys_expand)[0] - _note2pos_xy(note_range[0] - keys_expand)[0]
         h = 6
-        margin = 0.2
 
         # new figure
         if not ax:
-            fig = plt.figure(figsize=(w * scale + 2 * margin, h * scale + 2 * margin), dpi=72)
-            ax = plt.gca(aspect='equal')
-        else:
-            fig = plt.gcf()
-            ax.set_aspect('equal')
-        ax.set_xticks([])
-        ax.set_yticks([])
-        ax.set_axis_off()
-        ax.margins(0.0)
-        ax.set_xlim(_note2pos_mark(note_range[0]-expand)[0]-margin, _note2pos_mark(note_range[1]+expand)[0]+margin)
-        ax.set_ylim(0-margin, h+margin)
+            scale = 0.75
+            fig, ax = get_figure(w * scale , h * scale)
+
+        # axes settings
+        ax.set_xlim(_note2pos_mark(note_range[0]-keys_expand)[0], _note2pos_mark(note_range[1]+keys_expand)[0])
+        ax.set_ylim(0, h)
 
         # add title
         if title:
-            ax.text(0.5, 0.895, title, fontsize=fontsize * 1.5, va='bottom', ha='center', transform=ax.transAxes)
-            ax.set_ylim(0-margin, h+0.75+margin)
+            ax.text(0.5, 0.895, title, va='bottom', ha='center', transform=ax.transAxes)
+            ax.set_ylim(0, h+0.75)
 
         # draw
-        rects = [plt.Rectangle(**_note2pos_rect(note)) for note in range(note_range[0]-1-expand, note_range[1]+2+expand)]
+        rects = [
+            plt.Rectangle(**_note2pos_rect(note))
+            for note in range(note_range[0]-1-keys_expand, note_range[1]+2+keys_expand)
+        ]
         _ = [ax.add_patch(rect) for rect in rects]
 
         # add annotation
-        c2s = ['red' if note.get_message_old() == '[A1]' else
-               'orange' if note.get_message_old() == '[A0]' else
-               'gold' if note.get_message_old() == '[A2]' else
-               'dodgerblue' if note.get_message_old() == '[OK]' else
-               'slategrey' if note.get_message_old() == '[TN]' else
-               'limegreen' for note in self._notes]
-        circs = [plt.Circle(_note2pos_mark(abs(note)), 0.4, ls='-', lw=1, ec=c, fc=c, zorder=3) for note, c in zip(self._notes, c2s)]
+        circs = [
+            plt.Circle(
+                xy=_note2pos_mark(abs(note)),
+                radius=0.4,
+                ls='-',
+                lw=1,
+                ec=CSTYPE_COLORS[note.get_message('cstype')],
+                fc=CSTYPE_COLORS[note.get_message('cstype')],
+                zorder=3
+            ) for note in self._notes
+        ]
         _ = [ax.add_patch(circ) for circ in circs]
-        _ = [ax.annotate(note.get_name(show_group=False), _note2pos_mark(abs(note)), color='white', fontsize=fontsize, ha='center', va='center', zorder=4) for note in self._notes]
+        _ = [
+            ax.annotate(
+                s=note.get_name(show_register=False),
+                xy=_note2pos_mark(abs(note)),
+                color='white',
+                ha='center',
+                va='center',
+                zorder=4
+            ) for note in self._notes
+        ]
 
-        # plt.show()
+
+# TODO: more general piano class (N-TET)
+class PianoGeneral(object):
+    pass
 
 
+# TODO: make `Pianoroll` work again
 class Pianoroll(object):
-    '''
-
-    Generate a pianoroll using matplotlib.
-
-    '''
     def __init__(self, sheet, ticks_per_beat):
         """ pianoroll initialization, extract messages of same kind from sheet """
         # [01] get data
@@ -589,7 +753,7 @@ class Pianoroll(object):
 
     def _set_track_colors(self):
         n_track = len(self._sheet)
-        self._track_colors = [hsv_gradient(t, 0, n_track+1) for t in range(n_track)]
+        self._track_colors = [hsv_shader(t, 0, n_track + 1) for t in range(n_track)]
 
     def _get_lyrics(self):
         self._lyrics = [[msg for msg in msglist if msg['type'] == 'lyrics'] for msglist in self._sheet]
@@ -689,7 +853,7 @@ class Pianoroll(object):
         # put all time_signatures into a list and append an end to the list
         tss0 = [[msg['time'], msg['numerator'], msg['denominator']] for msg in self._time_signatures]
         tss0.append([self._time_interval[1], tss0[-1][1], tss0[-1][2]])
-        tss = [ts for ts in tss0 if inrange(ts[0], *self._time_interval)]
+        tss = [ts for ts in tss0 if within(ts[0], *self._time_interval)]
         # get a list of ticks_per_beat corresponding to time_signatures (because tpb changes with ts denominator)
         tpbs0 = [4 * self._ticks_per_beat // ts[2] for ts in tss0]
         # calculate delta x of three types of vertical line: bar-line, beat-line and split-line
@@ -703,11 +867,11 @@ class Pianoroll(object):
         # x1s0 = [range(stt_0, stt_1, step1s[0]), range(stt_1, stt_2, step1s[1]), ..., range(stt_n, self.time_interval[1], step1s[n])]
         # x1s0[n][k] is x of the k-th bar-line after n-th time_signature
         x1s0 = [list(range(tss0[k][0], tss0[k+1][0], step1s[k])) for k in range(len(step1s)-1)]
-        x1s = [x1 for x1 in sum(x1s0, []) if inrange(x1, *self._time_interval)]
+        x1s = [x1 for x1 in sum(x1s0, []) if within(x1, *self._time_interval)]
         x2s0 = [list(range(tss0[k][0], tss0[k+1][0], step2s[k])) for k in range(len(step2s)-1)]
-        x2s = [x2 for x2 in sum(x2s0, []) if inrange(x2, *self._time_interval) and x2 not in x1s]
+        x2s = [x2 for x2 in sum(x2s0, []) if within(x2, *self._time_interval) and x2 not in x1s]
         x3s0 = [k * step3 for k in range(self._time_interval[0] // step3, self._time_interval[1] // step3 + 1)]
-        x3s = [x3 for x3 in x3s0 if inrange(x3, *self._time_interval) and x3 not in x1s + x2s]
+        x3s = [x3 for x3 in x3s0 if within(x3, *self._time_interval) and x3 not in x1s + x2s]
         # l1s0: bar labels with x coord | l2s0: beat labels with x coord
         l1s0 = list(enumerate(sum(x1s0, [])))
         l1s = [l1[0] for l1 in l1s0 if l1[1] in x1s]
@@ -796,7 +960,7 @@ class Pianoroll(object):
         # beat labels
         _ = [plt.annotate(l2, (x2, self._note_interval[1] + 2.5), fontsize=fontsize * 3 / 4, color='#555555', va='center', ha='center') for (x2, l2) in zip(x2s, l2s)]
 
-    def _draw_notes(self, track=0, shader=rgb_gradient, type='piano', alpha=1.0, lyric=None):
+    def _draw_notes(self, track=0, shader=rgb_shader, type='piano', alpha=1.0, lyric=None):
         """ draw notes """
 
         ''' pianoroll checking '''
@@ -807,9 +971,9 @@ class Pianoroll(object):
         ''' notes parsing '''
 
         # divide notes both in note_interval and time_interval into 3 parts: left, full and right
-        notes0 = [note for note in self._notes[track] if inrange(note['note'], *self._note_interval)]
-        notes = [note for note in notes0 if inrange(note['time1'], *self._time_interval) or inrange(note['time1'] + note['time2'], *self._time_interval)]
-        notes_full = [note for note in notes if inrange(note['time1'], *self._time_interval) and inrange(note['time1'] + note['time2'], *self._time_interval)]
+        notes0 = [note for note in self._notes[track] if within(note['note'], *self._note_interval)]
+        notes = [note for note in notes0 if within(note['time1'], *self._time_interval) or within(note['time1'] + note['time2'], *self._time_interval)]
+        notes_full = [note for note in notes if within(note['time1'], *self._time_interval) and within(note['time1'] + note['time2'], *self._time_interval)]
         notes_left = [note for note in notes if note['time1'] < self._time_interval[0] <= note['time1'] + note['time2']]
         notes_right = [note for note in notes if note['time1'] < self._time_interval[1] <= note['time1'] + note['time2']]
         notes_rearranged = notes_full + notes_left + notes_right
@@ -858,9 +1022,9 @@ class Pianoroll(object):
 
     def draw_notes(self, tracks=(0,), color_scheme='velocity', type='piano', alpha=1.0, lyric=None):
         if color_scheme == 'velocity':
-            _ = [self._draw_notes(t, rgb_gradient, type, alpha, lyric) for t in tracks]
+            _ = [self._draw_notes(t, rgb_shader, type, alpha, lyric) for t in tracks]
         elif color_scheme == 'track':
-            _ = [self._draw_notes(t, lambda x, x_min, x_max: cst_gradient(x, x_min, x_max, self._track_colors[t]), type, alpha, lyric) for t in tracks]
+            _ = [self._draw_notes(t, lambda x, x_min, x_max: cst_shader(x, x_min, x_max, self._track_colors[t]), type, alpha, lyric) for t in tracks]
 
     def draw_control_changes(self, track=0, controls=(64, ), plot_type='stair', alpha=1.0):
         """ draw control_changes """
@@ -894,7 +1058,7 @@ class Pianoroll(object):
 
             color1 = cs.rgb_to_hsv(*self._track_colors[track])
             color2 = [color1[0], color1[1]/10, color1[2]/10]
-            color = hsv_gradient(i, 0, len(controls), color1, color2)
+            color = hsv_shader(i, 0, len(controls), color1, color2)
             if plot_type == 'piecewise':
                 plot = plt.plot(ccs_stts[control], ccs_values[control], color=color, alpha=alpha,
                                 lw=0.75, ls='--', dash_capstyle='butt', dash_joinstyle='bevel', zorder=2.9+0.001*(track+0.1*control),
@@ -914,7 +1078,7 @@ class Pianoroll(object):
             else:
                 pass
 
-    def _draw_pitchwheels(self, track=0, shader=cst_gradient, plot_type='stair', alpha=1.0):
+    def _draw_pitchwheels(self, track=0, shader=cst_shader, plot_type='stair', alpha=1.0):
         """ draw pitchwheels """
 
         ''' pianoroll checking '''
@@ -951,7 +1115,7 @@ class Pianoroll(object):
         else: pass
 
     def draw_pitchwheels(self, tracks=(0,), plot_type='stair', alpha=1.0):
-        _ = [self._draw_pitchwheels(t, lambda x: cst_gradient(x, 0, 1, self._track_colors[t]), plot_type, alpha) for t in tracks]
+        _ = [self._draw_pitchwheels(t, lambda x: cst_shader(x, 0, 1, self._track_colors[t]), plot_type, alpha) for t in tracks]
 
     def show_legends(self):
         l = plt.legend(loc='lower right', fontsize=self._fontsize)
@@ -971,7 +1135,7 @@ class Pianoroll(object):
 
         ''' show chords '''
 
-        chords = [chord for chord in chords0 if inrange(chord[0], *self._time_interval)]
+        chords = [chord for chord in chords0 if within(chord[0], *self._time_interval)]
         _ = [plt.annotate(chord[1], (chord[0], self._note_interval[1] + 0.5), color='#555555', va='center', ha='center', fontsize=self._fontsize) for chord in chords]
 
     # ---------------------------------------------------------------------------------------------------- #
@@ -1010,7 +1174,7 @@ class Pianoroll(object):
 
     def get_note_range_sl(self, track):
         # get note range (single track, local)
-        notes = [note['note'] for note in self._notes[track] if inrange(note['time1'], *self._time_interval) or inrange(note['time1'] + note['time2'], *self._time_interval)]
+        notes = [note['note'] for note in self._notes[track] if within(note['time1'], *self._time_interval) or within(note['time1'] + note['time2'], *self._time_interval)]
         note_min = min(notes) - 1 if notes != [] else 48
         note_max = max(notes) + 2 if notes != [] else 72
         return note_min, note_max
@@ -1045,6 +1209,7 @@ class Pianoroll(object):
         return ons, offs, vels
 
 
+# TODO: custom `Clock` hand colors
 class Clock(object):
     def __init__(self, notes):
         self._notes = notes
@@ -1060,13 +1225,13 @@ class Clock(object):
                  'E', 'F', r'F$\sharp$/G$\flat$', 'G',
                  r'G$\sharp$/A$\flat$', 'A', r'A$\sharp$/B$\flat$', 'B']
         for note in self._notes:
-            texts[abs(note)%12] = note.get_name(show_group=False).replace('#', r'$\sharp$').replace('b', r'$\flat$') + f'({note.get_message_old()})'
+            texts[abs(note)%12] = note.get_name(show_register=False).replace('#', r'$\sharp$').replace('b', r'$\flat$') + note.get_message('br357t')
         text_colors = [cs.hls_to_rgb(h, 0.5, 0.75) for h in np.linspace(0, 1.0, 12, endpoint=False)]
         text_colors = [text_color if k in [abs(x)%12 for x in self._notes] else 'gray' for k, text_color in enumerate(text_colors)]
         text_positions = [(1.4*radius*np.real(omega**k*offset), 1.4*radius*np.imag(omega**k*offset)) for k in range(12)]
 
         hand_colors = [[0.5, 0.5, 0.5]] * 12
-        msgs = [note.get_message_old() for note in self._notes]
+        msgs = [note.get_message('br357t') for note in self._notes]
         if 'R' in msgs: root_pos = abs(self._notes[msgs.index('R')]) % 12
         else: root_pos = -1
         if 'B' in msgs: bass_pos = abs(self._notes[msgs.index('B')]) % 12
@@ -1141,7 +1306,7 @@ class ColorScheme(object):
 
         colors = np.zeros((n_colors, n_gradients, 3), 'float')
         for i in range(n_colors):
-            colors[i] = gradient3(n_gradients, cs.hls_to_rgb(h[hs[i]], l1, s1), cs.hls_to_rgb(h[hs[i]], l2, s2))
+            colors[i] = rgb_gradient(n_gradients, cs.hls_to_rgb(h[hs[i]], l1, s1), cs.hls_to_rgb(h[hs[i]], l2, s2))
 
 
         ax = plt.gca()
@@ -1158,7 +1323,7 @@ class ColorScheme(object):
             for j in range(n_gradients):
                 rect = plt.Rectangle(((w+x_margins)*j, (h+y_margins)*i), w, h, color=colors[n_colors-i-1, j])
                 ax.add_patch(rect)
-                ax.annotate(oct2hex(colors[n_colors-i-1, j]), ((x_margins+w)*j+w/2, (y_margins+h)*i-h_text/2), va='center', ha='center')
+                ax.annotate(float2hex(colors[n_colors - i - 1, j]), ((x_margins + w) * j + w / 2, (y_margins + h) * i - h_text / 2), va='center', ha='center')
         ax.annotate(f'{title} {[k*360//12 for k in hs]}',
                     (((x_margins+w)*n_gradients-x_margins)/2, (y_margins+h)*n_colors-y_margins+h_text/2), ha='center', va='center')
         if filename:
@@ -1252,16 +1417,16 @@ class Tonnetz(object):
                 cur_note = center_note + x * Interval('P5') + y * Interval('M3')
 
                 if abs(cur_note-center_note) % 3 == 0:
-                    cur_note.add_message(tds='T')
+                    cur_note.set_message(tds='T')
                 elif abs(cur_note-center_note) % 3 == 1:
-                    cur_note.add_message(tds='D')
+                    cur_note.set_message(tds='D')
                 else:
-                    cur_note.add_message(tds='S')
+                    cur_note.set_message(tds='S')
 
                 if abs(x+y) > 1:
-                    cur_note.add_message(alpha=0.25)
+                    cur_note.set_message(alpha=0.25)
                 else:
-                    cur_note.add_message(alpha=1.0)
+                    cur_note.set_message(alpha=1.0)
 
                 cur_xy = self._step_x * (x + y / 2), y * self._step_y
 

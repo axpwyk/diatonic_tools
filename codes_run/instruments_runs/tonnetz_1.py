@@ -13,15 +13,15 @@ chord_notes = [k%12 for k in abs(Chord(chord_name))]
 for ax0 in all_line:
     for note in ax0:
         if abs(note)%3==0:
-            note.add_message(function='T')
+            note.set_message(function='T')
         elif abs(note)%3==1:
-            note.add_message(function='D')
+            note.set_message(function='D')
         else:
-            note.add_message(function='S')
+            note.set_message(function='S')
         if abs(note)%12 in chord_notes:
-            note.add_message(chord_note='yes')
+            note.set_message(chord_note='yes')
         else:
-            note.add_message(chord_note='no')
+            note.set_message(chord_note='no')
 
 n_lines = len(all_line)
 color_mapping = {'T': '#D5E8D4', 'D': '#F8CECC', 'S': '#FFF2CC'}

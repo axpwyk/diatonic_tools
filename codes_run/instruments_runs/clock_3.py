@@ -34,5 +34,5 @@ for k, lydian in enumerate(all_lydians):
     # name.replace('#', '+').replace('b', '-')
     # plt.savefig(f'clocks/{k}_{name}.svg', bbox_inches='tight', pad_inches=0.1)
     # plt.close()
-plt.savefig(f'clocks/combined.svg', dpi=300, bbox_inches='tight', pad_inches=0.1)
+plt.savefig(f'outputs/test.svg', dpi=300, bbox_inches='tight', pad_inches=0.1)
 plt.close()

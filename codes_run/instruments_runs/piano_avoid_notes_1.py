@@ -1,4 +1,4 @@
-import os; os.chdir('..')
+import os; os.chdir('../..')
 import instruments as inst
 from theories import *
 
@@ -14,9 +14,9 @@ labels, _, _, _ = cs.get_info()
 # labels = ['[CN]', '[TN]', '[TN]', '[CN]', '[TN]', '[TN]', '[CN]']
 
 for i in range(len(notes)):
-    notes[i].set_message_old(labels[i])
+    notes[i].set_message(cstype=labels[i])
 
-piano = inst.Piano(notes)
+piano = inst.PianoSpecial(notes + [Note('C#3').set_message(cstype='[TN]')])
 piano.plot(title=scale)
 
 
@@ -26,4 +26,4 @@ piano.plot(title=scale)
 # notes = [Note('A1').set_message('B'), Note('C#2').set_message('B'), Note('G2').set_message('B'), Note('C3'), Note('E3')]
 # inst.Piano(notes).plot(title='$\mathrm{A}7(\sharp9)$')
 
-inst.plt.savefig(f'codes_run/{scale}.svg', bbox_inches='tight', pad_inches=0.0)
+inst.plt.savefig(f'outputs/{scale}.svg', bbox_inches='tight', pad_inches=0.0)
