@@ -2,7 +2,7 @@ import os; os.chdir('..')
 from theories import *
 
 notes = []
-for nnabs in NAMED_NOTES + [NAMED_NOTES[0]+N]:
+for nnabs in NAMED_LIN_NNREL + [NAMED_LIN_NNREL[0] + N]:
     notes.append(Note().set_vector(nnabs%N, 0, nnabs//N))
 
 intervals = [n2-n1 for n2, n1 in zip(notes[1:], notes[:-1])]
