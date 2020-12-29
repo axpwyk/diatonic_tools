@@ -26,8 +26,8 @@ T = 2 ** (1 / N)  # ratio of semi-tone frequencies
 C3 = 440 * (T ** (36 - 45))  # frequency of C3
 
 # define named notes (natural notes) in linear order
-NAMED_LIN_STR = 'CDEFGAB'                                                  # 12-TET 7-tone [N, G, S] = [12, 7, 5]
-# NAMED_LIN_STR = 'CDEGA'                                                  # 12-TET 5-tone [N, G, S] = [12, 5, 4]
+NAMED_LIN_STR = 'CDEFGAB'                                                  # [12, 7, 5] diatonic scale
+# NAMED_LIN_STR = 'CDEGA'                                                  # [12, 5, 4] diatonic scale
 # NAMED_LIN_STR = str().join([chr(ord('A')+j) for j in range(M)])          # 97-TET 26-tone
 # NAMED_LIN_STR = str().join([chr(int('03B1', 16)+j) for j in range(M)])   # `N`-TET `M`-tone
 if len(NAMED_LIN_STR) != M: raise ValueError('Number of symbols must equal to number of notes!')

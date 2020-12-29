@@ -1415,10 +1415,10 @@ class Tonnetz(object):
                 y = j - n_y // 2
 
                 cur_note = center_note + x * Interval('P5') + y * Interval('M3')
-
-                if abs(cur_note-center_note) % 3 == 0:
+                itv = cur_note - center_note
+                if itv.get_vector()[0] % 3 == 0:
                     cur_note.set_message(tds='T')
-                elif abs(cur_note-center_note) % 3 == 1:
+                elif itv.get_vector()[0] % 3 == 1:
                     cur_note.set_message(tds='D')
                 else:
                     cur_note.set_message(tds='S')
@@ -1436,8 +1436,8 @@ class Tonnetz(object):
     def plot(self):
         print(self._notes_bg_xy)
         fig, ax = plt.subplots()
-        fig.set_figwidth(8)
-        fig.set_figheight(8)
+        fig.set_figwidth(24)
+        fig.set_figheight(24)
         ax.margins(0.0)
         # ax.set_axis_off()
         ax.set_xticks([])
@@ -1465,5 +1465,3 @@ class Tonnetz(object):
 
         if self._title is not None:
             ax.set_title(self._title)
-
-        plt.show()
