@@ -1,4 +1,4 @@
-import os; os.chdir('..')
+import os; os.chdir('../../codes_run')
 from theories import *
 
 notes = []

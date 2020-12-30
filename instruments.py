@@ -1,5 +1,4 @@
 from itertools import product
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import colorsys as cs
@@ -133,7 +132,7 @@ class Guitar(object):
         self._max_string = len(open_string_notes)  # number of strings
         # open string nnabs and fretboard nnabs
         self._open_string_notes = open_string_notes
-        self._open_string_nnabs = np.array([abs(note) for note in open_string_notes])  # 1-d `np.ndarray`
+        self._open_string_nnabs = np.array([int(note) for note in open_string_notes])  # 1-d `np.ndarray`
         self._fretboard_nnabs = np.array([self._open_string_nnabs + i for i in range(0, max_fret + 1)])  # [frets, strings]
         # w to h ratio of fretboard
         self._w_to_h_ratio = w_to_h_ratio
@@ -157,9 +156,9 @@ class Guitar(object):
         for i, note in enumerate(self._notes):
             # gather all matching notes on fretboard
             if self._modulo_on:
-                indices = np.stack(np.where(self._fretboard_nnabs%N == abs(note)%N), axis=-1)  # [?, 2]
+                indices = np.stack(np.where(self._fretboard_nnabs%N == int(note)%N), axis=-1)  # [?, 2]
             else:
-                indices = np.stack(np.where(self._fretboard_nnabs == abs(note)), axis=-1)  # [?, 2]
+                indices = np.stack(np.where(self._fretboard_nnabs == int(note)), axis=-1)  # [?, 2]
 
             # add these notes and their indices to list
             for cur_indices in indices:
@@ -179,7 +178,7 @@ class Guitar(object):
 
                 # change register of current note
                 if self._modulo_on:
-                    delta_register = (self._fretboard_nnabs[cur_fret, cur_string] - abs(note)) // N
+                    delta_register = (self._fretboard_nnabs[cur_fret, cur_string] - int(note)) // N
                     cur_note.add_register(delta_register)
 
                 # add colors to current note
@@ -212,7 +211,7 @@ class Guitar(object):
         """
 
         # find lowest note, B or R
-        br357t_to_nnrels = {note.get_message('br357t'): abs(note) % N for note in self._notes}
+        br357t_to_nnrels = {note.get_message('br357t'): int(note) % N for note in self._notes}
 
         if 'B' in br357t_to_nnrels.keys():
             nnrel_low = br357t_to_nnrels['B']
@@ -538,7 +537,7 @@ class PianoSpecial(object):
         self._notes = []
 
     def _get_note_range(self):
-        notes = [abs(note) for note in self._notes]
+        notes = [int(note) for note in self._notes]
         note_min = min(notes)
         note_max = max(notes)
         return note_min, note_max
@@ -645,7 +644,7 @@ class PianoSpecial(object):
         # add annotation
         circs = [
             plt.Circle(
-                xy=_note2pos_mark(abs(note)),
+                xy=_note2pos_mark(int(note)),
                 radius=0.4,
                 ls='-',
                 lw=1,
@@ -658,7 +657,7 @@ class PianoSpecial(object):
         _ = [
             ax.annotate(
                 s=note.get_name(show_register=False),
-                xy=_note2pos_mark(abs(note)),
+                xy=_note2pos_mark(int(note)),
                 color='white',
                 ha='center',
                 va='center',
@@ -1225,16 +1224,16 @@ class Clock(object):
                  'E', 'F', r'F$\sharp$/G$\flat$', 'G',
                  r'G$\sharp$/A$\flat$', 'A', r'A$\sharp$/B$\flat$', 'B']
         for note in self._notes:
-            texts[abs(note)%12] = note.get_name(show_register=False).replace('#', r'$\sharp$').replace('b', r'$\flat$') + note.get_message('br357t')
+            texts[int(note)%12] = note.get_name(show_register=False).replace('#', r'$\sharp$').replace('b', r'$\flat$') + note.get_message('br357t')
         text_colors = [cs.hls_to_rgb(h, 0.5, 0.75) for h in np.linspace(0, 1.0, 12, endpoint=False)]
-        text_colors = [text_color if k in [abs(x)%12 for x in self._notes] else 'gray' for k, text_color in enumerate(text_colors)]
+        text_colors = [text_color if k in [int(x)%12 for x in self._notes] else 'gray' for k, text_color in enumerate(text_colors)]
         text_positions = [(1.4*radius*np.real(omega**k*offset), 1.4*radius*np.imag(omega**k*offset)) for k in range(12)]
 
         hand_colors = [[0.5, 0.5, 0.5]] * 12
         msgs = [note.get_message('br357t') for note in self._notes]
-        if 'R' in msgs: root_pos = abs(self._notes[msgs.index('R')]) % 12
+        if 'R' in msgs: root_pos = int(self._notes[msgs.index('R')]) % 12
         else: root_pos = -1
-        if 'B' in msgs: bass_pos = abs(self._notes[msgs.index('B')]) % 12
+        if 'B' in msgs: bass_pos = int(self._notes[msgs.index('B')]) % 12
         else: bass_pos = -1
         if tonic is not None: tonic_pos = tonic % 12
         else: tonic_pos = -1
@@ -1263,7 +1262,7 @@ class Clock(object):
         ''' plotting '''
 
 
-        ks1 = [abs(x) for x in self._notes]
+        ks1 = [int(x) for x in self._notes]
 
         circ = plt.Circle((0, 0), radius, fc='none', ec='black', lw=2.0)
         hands = [plt.Line2D((0, 0.8*radius*np.real(omega**k*offset)), (0, 0.8*radius*np.imag(omega**k*offset)),
@@ -1296,7 +1295,7 @@ class ColorScheme(object):
 
     def plot(self, title, filename=''):
         h = np.linspace(0, 1, 12, endpoint=False)
-        hs = [abs(t)%12 for t in self._notes]
+        hs = [int(t)%12 for t in self._notes]
         # save_name = ''
         l1 = 0.5; l2 = 0.25
         s1 = 0.95; s2 = 0.5
@@ -1393,7 +1392,7 @@ class Tonnetz(object):
     def __init__(self, notes, title=None, enharmonic=False, n_x=11, n_y=11, side_length=3, center_note=Note()):
         self._notes = notes
         if enharmonic:
-            self._vectors = [abs(note) % 12 for note in self._notes]
+            self._vectors = [int(note) % 12 for note in self._notes]
         else:
             self._vectors = [note.get_vector(return_register=False) for note in self._notes]
         self._title = title
@@ -1434,7 +1433,6 @@ class Tonnetz(object):
                 self._notes_bg_xy.append(cur_xy)
 
     def plot(self):
-        print(self._notes_bg_xy)
         fig, ax = plt.subplots()
         fig.set_figwidth(24)
         fig.set_figheight(24)
@@ -1450,7 +1448,7 @@ class Tonnetz(object):
             circ = plt.Circle(cur_xy, self._step_x / 3, facecolor=tds_color_map[cur_note.get_message('tds')], edgecolor='black', alpha=alpha)
             ax.add_patch(circ)
 
-            if_chosen = abs(cur_note)%12 in self._vectors if self._enharmonic else cur_note.get_vector(return_register=False) in self._vectors
+            if_chosen = int(cur_note)%12 in self._vectors if self._enharmonic else cur_note.get_vector(return_register=False) in self._vectors
             if if_chosen:
                 circ_ = plt.Circle(cur_xy, self._step_x / 4, facecolor='black', edgecolor='black')
                 ax.add_patch(circ_)

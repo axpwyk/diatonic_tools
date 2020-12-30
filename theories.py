@@ -1,5 +1,6 @@
 import re
 from copy import copy, deepcopy
+import numpy as np
 from consts import *
 
 
@@ -153,12 +154,12 @@ class Note(object):
         if isinstance(other, Note):
             step1 = NAMED_LIN_NNREL.index(self._nnrel) + self._register * M
             step2 = NAMED_LIN_NNREL.index(other._nnrel) + other._register * M
-            return Interval().set_vector(abs(self) - abs(other), step1 - step2)
+            return Interval().set_vector(int(self) - int(other), step1 - step2)
         # `Note` - `Interval` = `Note`
         if isinstance(other, Interval):
             return self + (-other)
         else:
-            raise TypeError('ClassError: `Note` can only subtract a `Note` or an `Interval`!')
+            raise TypeError('`Note` can only subtract a `Note` or an `Interval`!')
 
     def __add__(self, other):
         # `Note` + `Interval` = `Note`
@@ -167,12 +168,12 @@ class Note(object):
             new_step = NAMED_LIN_NNREL.index(self._nnrel) + delta_step
             new_nnrel = NAMED_LIN_NNREL[new_step % M]
             new_register = self._register + new_step // M
-            new_accidental = abs(self) + delta_nnabs - new_nnrel - N * new_register
+            new_accidental = int(self) + delta_nnabs - new_nnrel - N * new_register
             return Note().set_vector(new_nnrel, new_accidental, new_register).set_message_dict(**self.get_message_dict())
         else:
-            raise TypeError('ClassError: `Note` can only add an `Interval`!')
+            raise TypeError('`Note` can only add an `Interval`!')
 
-    def __abs__(self):
+    def __int__(self):
         """
         return absolute note number
         (in [12, 7, 5] diatonic scale) 'Bb2' = (11, -1, 2) = 11 + (-1) + 2 * 12 = 34
@@ -180,6 +181,69 @@ class Note(object):
         :return: absolute note number, integer in (-\infty, \infty)
         """
         return self._nnrel + self._accidental + self._register * N
+
+    def __lt__(self, other):
+        if isinstance(other, Note):
+            return int(self) < int(other)
+        elif isinstance(other, int) or isinstance(other, float):
+            return int(self) < other
+        else:
+            raise TypeError('`Note` can only compare with `Note`, `int` or `float`!')
+
+    def __le__(self, other):
+        if isinstance(other, Note):
+            return int(self) <= int(other)
+        elif isinstance(other, int) or isinstance(other, float):
+            return int(self) <= other
+        else:
+            raise TypeError('`Note` can only compare with `Note`, `int` or `float`!')
+
+    def __eq__(self, other):
+        if isinstance(other, Note):
+            return all(
+                [
+                    self._nnrel == other._nnrel,
+                    self._accidental == other._accidental,
+                    self._register == other._register
+                ]
+            )
+        elif isinstance(other, int) or isinstance(other, float):
+            return int(self) == other
+        else:
+            raise TypeError('`Note` can only compare with `Note`, `int` or `float`!')
+
+    def __ne__(self, other):
+        if isinstance(other, Note):
+            return any(
+                [
+                    self._nnrel != other._nnrel,
+                    self._accidental != other._accidental,
+                    self._register != other._register
+                ]
+            )
+        elif isinstance(other, int) or isinstance(other, float):
+            return int(self) != other
+        else:
+            raise TypeError('`Note` can only compare with `Note`, `int` or `float`!')
+
+    def __gt__(self, other):
+        if isinstance(other, Note):
+            return int(self) > int(other)
+        elif isinstance(other, int) or isinstance(other, float):
+            return int(self) > other
+        else:
+            raise TypeError('`Note` can only compare with `Note`, `int` or `float`!')
+
+    def __ge__(self, other):
+        if isinstance(other, Note):
+            return int(self) >= int(other)
+        elif isinstance(other, int) or isinstance(other, float):
+            return int(self) >= other
+        else:
+            raise TypeError('`Note` can only compare with `Note`, `int` or `float`!')
+
+    def int(self):
+        return int(self)
 
     def set_vector(self, nnrel=None, accidental=None, register=None):
         # set note vector (nnrel, accidental, register) manually
@@ -215,7 +279,7 @@ class Note(object):
 
         :return: frequency of current note (float type)
         """
-        return C3 * (T ** (abs(self) - N * 3))
+        return C3 * (T ** (int(self) - N * 3))
 
     def add_accidental(self, n=0):
         # a combination of `add_sharp` and `add_flat` methods
@@ -260,7 +324,7 @@ class Note(object):
         :param direction: direction of delta step
         :return: enharmonic note (Note type)
         """
-        nnabs = abs(self)
+        nnabs = int(self)
 
         if direction == 'up':
             offset = 1
@@ -297,26 +361,26 @@ class Interval(object):
         elif isinstance(other, Interval):
             return Interval().set_vector(self._delta_nnabs + other._delta_nnabs, self._delta_step + other._delta_step)
         else:
-            raise TypeError('ClassError: `Interval` can only add a `Note` or an `Interval`!')
+            raise TypeError('`Interval` can only add a `Note` or an `Interval`!')
 
     def __sub__(self, other):
         # `Interval` - `Interval` = `Interval`
         if isinstance(other, Interval):
             return Interval().set_vector(self._delta_nnabs - other._delta_nnabs, self._delta_step - other._delta_step)
         else:
-            raise TypeError('ClassError: `Interval` can only subtract an `Interval`!')
+            raise TypeError('`Interval` can only subtract an `Interval`!')
 
     def __mul__(self, other):
         if isinstance(other, int):
             return Interval().set_vector(self._delta_nnabs*other, self._delta_step*other)
         else:
-            raise TypeError('ClassError: `Interval` can only multiply an integer!')
+            raise TypeError('`Interval` can only multiply an integer!')
 
     def __rmul__(self, other):
         if isinstance(other, int):
             return Interval().set_vector(other*self._delta_nnabs, other*self._delta_step)
         else:
-            raise TypeError('ClassError: `Interval` can only multiply an integer!')
+            raise TypeError('`Interval` can only multiply an integer!')
 
     def __neg__(self):
         return Interval().set_vector(-self._delta_nnabs, -self._delta_step)
@@ -324,6 +388,60 @@ class Interval(object):
     def __abs__(self):
         sgn = sign(self._delta_step)
         return Interval().set_vector(sgn * self._delta_nnabs, sgn * self._delta_step)
+
+    def __int__(self):
+        return self._delta_nnabs
+
+    def __lt__(self, other):
+        if isinstance(other, Interval):
+            return self._delta_nnabs < other._delta_nnabs
+        elif isinstance(other, int) or isinstance(other, float):
+            return self._delta_nnabs < other
+        else:
+            raise TypeError('`Interval` can only compare with `Interval`, `int` or `float`!')
+
+    def __le__(self, other):
+        if isinstance(other, Interval):
+            return self._delta_nnabs <= other._delta_nnabs
+        elif isinstance(other, int) or isinstance(other, float):
+            return self._delta_nnabs <= other
+        else:
+            raise TypeError('`Interval` can only compare with `Interval`, `int` or `float`!')
+
+    def __eq__(self, other):
+        if isinstance(other, Interval):
+            return all([self._delta_nnabs == other._delta_nnabs, self._delta_step == other._delta_step])
+        elif isinstance(other, int) or isinstance(other, float):
+            return self._delta_nnabs == other
+        else:
+            raise TypeError('`Interval` can only compare with `Interval`, `int` or `float`!')
+
+    def __ne__(self, other):
+        if isinstance(other, Interval):
+            return all([self._delta_nnabs != other._delta_nnabs, self._delta_step != other._delta_step])
+        elif isinstance(other, int) or isinstance(other, float):
+            return self._delta_nnabs != other
+        else:
+            raise TypeError('`Interval` can only compare with `Interval`, `int` or `float`!')
+
+    def __gt__(self, other):
+        if isinstance(other, Interval):
+            return self._delta_nnabs > other._delta_nnabs
+        elif isinstance(other, int) or isinstance(other, float):
+            return self._delta_nnabs > other
+        else:
+            raise TypeError('`Interval` can only compare with `Interval`, `int` or `float`!')
+
+    def __ge__(self, other):
+        if isinstance(other, Interval):
+            return self._delta_nnabs >= other._delta_nnabs
+        elif isinstance(other, int) or isinstance(other, float):
+            return self._delta_nnabs >= other
+        else:
+            raise TypeError('`Interval` can only compare with `Interval`, `int` or `float`!')
+
+    def int(self):
+        return int(self)
 
     def set_vector(self, delta_nnabs=None, delta_step=None):
         # set interval vector (delta_nnabs, delta_step) manually
@@ -373,24 +491,24 @@ class Interval(object):
 
         if ns == 1:
             if delta_group > 0:
-                type = 'A' * delta_group
+                itv_type = 'A' * delta_group
             elif delta_group == 0:
-                type = 'P'
+                itv_type = 'P'
             else:
-                type = 'd' * abs(delta_group)
+                itv_type = 'd' * abs(delta_group)
         elif ns == 2:
             if delta_group > 0:
-                type = 'A' * delta_group
+                itv_type = 'A' * delta_group
             elif delta_group == 0:
-                type = 'M'
+                itv_type = 'M'
             elif delta_group == -1:
-                type = 'm'
+                itv_type = 'm'
             else:
-                type = 'd' * (abs(delta_group) - 1)
+                itv_type = 'd' * (abs(delta_group) - 1)
         else:
             raise ValueError('No such naming scheme! Choose `ns` from [1, 2]!')
 
-        return -sgn * '-' + type + f'{delta_step + 1}'
+        return -sgn * '-' + itv_type + f'{delta_step + 1}'
 
     def get_r357t(self):
         if not all([N==12, G==7, S==5]):
@@ -464,25 +582,38 @@ class DiatonicScale(object):
         a linear view of `self._meta_notes` (remember that `self._meta_notes` is of generative order)
         changes will affect `self._meta_notes`
         """
-        notes = sorted(self._meta_notes, key=lambda m: abs(m))
+        notes = sorted(self._meta_notes, key=lambda m: int(m))
 
         # find index of tonic note in `notes`
-        notes_nnabs = [abs(note) for note in notes]
-        st_step = notes_nnabs.index(abs(self._meta_notes[self._st_step_gen]))
+        notes_nnabs = [int(note) for note in notes]
+        st_step = notes_nnabs.index(int(self._meta_notes[self._st_step_gen]))
 
         # roll `notes`, make tonic note the 1st element
         notes = notes[st_step:] + notes[:st_step]
 
         return notes[item]
 
-    def __abs__(self):
-        # return a list of absolute note numbers `nnabs` of current scale
-        # e.g. (in [12, 7, 5] diatonic scale) [C0, D0, E0, F0, G0, A0, B0] = [0, 2, 4, 5, 7, 9, 11]
-        return [abs(note) for note in self]
+    def __lt__(self, other):
+        return [note < other for note in self]
+
+    def __le__(self, other):
+        return [note <= other for note in self]
+
+    def __eq__(self, other):
+        return [note == other for note in self]
+
+    def __ne__(self, other):
+        return [note != other for note in self]
+
+    def __gt__(self, other):
+        return [note > other for note in self]
+
+    def __ge__(self, other):
+        return [note >= other for note in self]
 
     def _refresh(self):
         # add registers
-        notes_nnabs = [abs(note) for note in self]
+        notes_nnabs = [int(note) for note in self]
         notes_nnabs_bool = [nnabs < notes_nnabs[0] for nnabs in notes_nnabs]
         if True in notes_nnabs_bool:
             st_step = notes_nnabs_bool.index(True)
@@ -492,6 +623,11 @@ class DiatonicScale(object):
         # add degree message for every note
         for k, note in enumerate(self):
             note.set_message(degree=k)
+
+    def int(self):
+        # return a list of absolute note numbers `nnabs` of current scale
+        # e.g. (in [12, 7, 5] diatonic scale) [C0, D0, E0, F0, G0, A0, B0] = [0, 2, 4, 5, 7, 9, 11]
+        return [int(note) for note in self]
 
     def set_tonic(self, scale_tonic_name):
         # the default scale tonic note is in inputting `scale_name`, e.g. `C Ionian` -> 'C'
@@ -524,11 +660,11 @@ class DiatonicScale(object):
     def get_intervals_seq(self):
         # example of interval vector: [C, D, E, F, G, A, B] -> [M2, M2, m2, M2, M2, M2, m2]
         notes = [*self, self[0] + Interval().set_vector(N, M)]
-        return [n2 - n1 for n1, n2 in zip(notes[:-1], notes[1:])]
+        return np.array([n2 - n1 for n1, n2 in zip(notes[:-1], notes[1:])])
 
     def get_intervals_cum(self):
         # example of interval vector: [C, D, E, F, G, A, B] -> [P1, M2, M3, P4, P5, M6, M7]
-        return [note - self[0] for note in self]
+        return np.array([note - self[0] for note in self])
 
     def add_accidental(self, n=0):
         r = (self._accidentals + (0 if n >= 0 else n), self._accidentals + (n if n >= 0 else 0))
@@ -549,7 +685,7 @@ class DiatonicScale(object):
             idx = root_degree + n_step_length * i
             notes.append(copy(self[idx % M]) if idx < M else copy(self[idx % M]).add_register(idx // M))
 
-        return notes
+        return np.array(notes)
 
 
 class AlteredDiatonicScale(DiatonicScale):
@@ -695,7 +831,7 @@ class Chord(object):
         return self.get_notes()[item]
 
     def __abs__(self):
-        return [abs(note) for note in self.get_notes()]
+        return [int(note) for note in self.get_notes()]
 
     def set_notes(self, bass=None, body=None, tensions=None):
         if bass:
@@ -819,7 +955,7 @@ class ChordEx(object):
         return self.get_notes()[item]
 
     def __abs__(self):
-        return [abs(note) for note in self.get_notes()]
+        return [int(note) for note in self.get_notes()]
 
     def set_notes(self, bass=None, notes=None):
         if bass:
@@ -1063,8 +1199,6 @@ class ChordScale(AlteredDiatonicScale):
 
 
 def circular_permutation_with_repetition(n, ns):
-    import numpy as np
-
     # gcd of n_1, n_2, ..., n_K
     p = ns[0]
     for k in range(len(ns)-1):
