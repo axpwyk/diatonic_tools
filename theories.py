@@ -187,16 +187,20 @@ class Note(object):
             return int(self) < int(other)
         elif isinstance(other, int) or isinstance(other, float):
             return int(self) < other
+        elif isinstance(other, str):
+            return int(self) < int(Note(other))
         else:
-            raise TypeError('`Note` can only compare with `Note`, `int` or `float`!')
+            raise TypeError('`Note` can only compare with `Note`, `int`, `float` or `str`!')
 
     def __le__(self, other):
         if isinstance(other, Note):
             return int(self) <= int(other)
         elif isinstance(other, int) or isinstance(other, float):
             return int(self) <= other
+        elif isinstance(other, str):
+            return int(self) <= int(Note(other))
         else:
-            raise TypeError('`Note` can only compare with `Note`, `int` or `float`!')
+            raise TypeError('`Note` can only compare with `Note`, `int`, `float` or `str`!')
 
     def __eq__(self, other):
         if isinstance(other, Note):
@@ -209,8 +213,17 @@ class Note(object):
             )
         elif isinstance(other, int) or isinstance(other, float):
             return int(self) == other
+        elif isinstance(other, str):
+            tmp = Note(other)
+            return all(
+                [
+                    self._nnrel == tmp._nnrel,
+                    self._accidental == tmp._accidental,
+                    self._register == tmp._register
+                ]
+            )
         else:
-            raise TypeError('`Note` can only compare with `Note`, `int` or `float`!')
+            raise TypeError('`Note` can only compare with `Note`, `int`, `float` or `str`!')
 
     def __ne__(self, other):
         if isinstance(other, Note):
@@ -223,24 +236,37 @@ class Note(object):
             )
         elif isinstance(other, int) or isinstance(other, float):
             return int(self) != other
+        elif isinstance(other, str):
+            tmp = Note(other)
+            return any(
+                [
+                    self._nnrel != tmp._nnrel,
+                    self._accidental != tmp._accidental,
+                    self._register != tmp._register
+                ]
+            )
         else:
-            raise TypeError('`Note` can only compare with `Note`, `int` or `float`!')
+            raise TypeError('`Note` can only compare with `Note`, `int`, `float` or `str`!')
 
     def __gt__(self, other):
         if isinstance(other, Note):
             return int(self) > int(other)
         elif isinstance(other, int) or isinstance(other, float):
             return int(self) > other
+        elif isinstance(other, str):
+            return int(self) > int(Note(other))
         else:
-            raise TypeError('`Note` can only compare with `Note`, `int` or `float`!')
+            raise TypeError('`Note` can only compare with `Note`, `int`, `float` or `str`!')
 
     def __ge__(self, other):
         if isinstance(other, Note):
             return int(self) >= int(other)
         elif isinstance(other, int) or isinstance(other, float):
             return int(self) >= other
+        elif isinstance(other, str):
+            return int(self) >= int(Note(other))
         else:
-            raise TypeError('`Note` can only compare with `Note`, `int` or `float`!')
+            raise TypeError('`Note` can only compare with `Note`, `int`, `float` or `str`!')
 
     def int(self):
         return int(self)
@@ -397,48 +423,62 @@ class Interval(object):
             return self._delta_nnabs < other._delta_nnabs
         elif isinstance(other, int) or isinstance(other, float):
             return self._delta_nnabs < other
+        elif isinstance(other, str):
+            return self._delta_nnabs < Interval(other).get_vector()[0]
         else:
-            raise TypeError('`Interval` can only compare with `Interval`, `int` or `float`!')
+            raise TypeError('`Interval` can only compare with `Interval`, `int`, `float` or `str`!')
 
     def __le__(self, other):
         if isinstance(other, Interval):
             return self._delta_nnabs <= other._delta_nnabs
         elif isinstance(other, int) or isinstance(other, float):
             return self._delta_nnabs <= other
+        elif isinstance(other, str):
+            return self._delta_nnabs <= Interval(other).get_vector()[0]
         else:
-            raise TypeError('`Interval` can only compare with `Interval`, `int` or `float`!')
+            raise TypeError('`Interval` can only compare with `Interval`, `int`, `float` or `str`!')
 
     def __eq__(self, other):
         if isinstance(other, Interval):
             return all([self._delta_nnabs == other._delta_nnabs, self._delta_step == other._delta_step])
         elif isinstance(other, int) or isinstance(other, float):
             return self._delta_nnabs == other
+        elif isinstance(other, str):
+            tmp_delta_nnabs, tmp_delta_step = Interval(other).get_vector()
+            return all([self._delta_nnabs == tmp_delta_nnabs, self._delta_step == tmp_delta_step])
         else:
-            raise TypeError('`Interval` can only compare with `Interval`, `int` or `float`!')
+            raise TypeError('`Interval` can only compare with `Interval`, `int`, `float` or `str`!')
 
     def __ne__(self, other):
         if isinstance(other, Interval):
             return all([self._delta_nnabs != other._delta_nnabs, self._delta_step != other._delta_step])
         elif isinstance(other, int) or isinstance(other, float):
             return self._delta_nnabs != other
+        elif isinstance(other, str):
+            tmp_delta_nnabs, tmp_delta_step = Interval(other).get_vector()
+            return any([self._delta_nnabs != tmp_delta_nnabs, self._delta_step != tmp_delta_step])
         else:
-            raise TypeError('`Interval` can only compare with `Interval`, `int` or `float`!')
+            raise TypeError('`Interval` can only compare with `Interval`, `int`, `float` or `str`!')
 
     def __gt__(self, other):
         if isinstance(other, Interval):
             return self._delta_nnabs > other._delta_nnabs
         elif isinstance(other, int) or isinstance(other, float):
             return self._delta_nnabs > other
+        elif isinstance(other, str):
+            return self._delta_nnabs > Interval(other).get_vector()[0]
         else:
-            raise TypeError('`Interval` can only compare with `Interval`, `int` or `float`!')
+            raise TypeError('`Interval` can only compare with `Interval`, `int`, `float` or `str`!')
 
     def __ge__(self, other):
         if isinstance(other, Interval):
             return self._delta_nnabs >= other._delta_nnabs
         elif isinstance(other, int) or isinstance(other, float):
             return self._delta_nnabs >= other
+        elif isinstance(other, str):
+            return self._delta_nnabs >= Interval(other).get_vector()[0]
         else:
-            raise TypeError('`Interval` can only compare with `Interval`, `int` or `float`!')
+            raise TypeError('`Interval` can only compare with `Interval`, `int`, `float` or `str`!')
 
     def int(self):
         return int(self)
@@ -511,12 +551,10 @@ class Interval(object):
         return -sgn * '-' + itv_type + f'{delta_step + 1}'
 
     def get_r357t(self):
-        if not all([N==12, G==7, S==5]):
-            raise ValueError('`Interval.get_r357t` method currently only works when [N, G, S] = [12, 7, 5]!')
         delta_nnabs, delta_step = self.get_vector()
         delta_nnrel = delta_nnabs % N
         delta_step_rel = delta_step % M
-        accidentals = delta_nnrel - NAMED_LIN_NNREL[delta_step_rel]  # based on Ionian mode
+        accidentals = delta_nnrel - NAMED_LIN_NNREL[delta_step_rel]  # based on `NAMED_LIN_NNREL` mode
         r357t = ('#' * accidentals if accidentals > 0 else 'b' * abs(accidentals)) + str(delta_step + 1)
         return 'R' if r357t == '1' else r357t
 
@@ -685,9 +723,14 @@ class DiatonicScale(object):
             idx = root_degree + n_step_length * i
             notes.append(copy(self[idx % M]) if idx < M else copy(self[idx % M]).add_register(idx // M))
 
+        for note in notes:
+            br357t = (note - notes[0]).get_r357t()
+            note.set_message(br357t=br357t)
+
         return np.array(notes)
 
 
+# TODO: study of `N`-TET altered diatonic scale; how to get its name?
 class AlteredDiatonicScale(DiatonicScale):
     def __init__(self, scale_name):
         par = scale_name_parser(scale_name)
@@ -711,8 +754,7 @@ class AlteredDiatonicScale(DiatonicScale):
             for a, d in zip(accidentals, altered_degrees):
                 self[d % M].add_accidental(a)
 
-    # TODO: study of `N`-TET altered diatonic scale; how to get its name?
-    def get_name(self, top_k=1, type_only=False, return_class_idx=False):
+    def get_name(self, top_k=1, type_only=False, return_class_idx=False, old_name=False):
         def _dist(l1, l2):
             return sum([abs(i-j) for i, j in zip(l1, l2)])
 
@@ -774,22 +816,25 @@ class AlteredDiatonicScale(DiatonicScale):
         else:
             names = [tonic_name + ' ' + top_k_scale for tonic_name, top_k_scale in zip(tonic_names, top_k_scales)]
 
+        if old_name:
+            if names[0] in ALTERED_SCALE_TYPE_NEW_TO_OLD.keys():
+                names = ALTERED_SCALE_TYPE_NEW_TO_OLD[names[0]]
+            else:
+                names = []
+
         if return_class_idx:
             return names, idx
         else:
             return names
 
-    def get_conventional_name(self):
-        name = self.get_name(type_only=True)[0]
-        if name in ALTERED_SCALE_TYPE_NEW_TO_OLD.keys():
-            return ALTERED_SCALE_TYPE_NEW_TO_OLD[name]
-        else:
-            return []
-
 
 ''' ----------------------------------------------------------------------------------------- '''
 ''' ******************** fancy music theory classes (special [12, 7, 5]) ******************** '''
 ''' ----------------------------------------------------------------------------------------- '''
+
+
+class ChordDev(object):
+    pass
 
 
 # TODO: rewrite `Chord` class
@@ -1096,6 +1141,9 @@ class ChordScale(AlteredDiatonicScale):
         super().__init__(scale_name)
         self._chord_notes = [0, 2, 4, 6]
         self._tension_notes = [k for k in range(7) if k not in self._chord_notes]
+
+    def _get_avoid(self):
+        pass
 
     def get_info(self):
         itvs = [n - self[0] for n in self]

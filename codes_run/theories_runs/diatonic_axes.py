@@ -37,14 +37,14 @@ ax.grid()
 left = t.min()
 right = t.max()
 mid = (right-left)//2
-ax.plot([left, right], [mid, mid], 'r', linewidth=1, zorder=2)
-ax.plot([mid, mid], [left, right], 'r', linewidth=1, zorder=2)
+ax.plot_old([left, right], [mid, mid], 'r', linewidth=1, zorder=2)
+ax.plot_old([mid, mid], [left, right], 'r', linewidth=1, zorder=2)
 
 # 等升降号线
-ax.plot([0, right], [right, 0], 'blue', linewidth=1, linestyle=':', alpha=0.5, zorder=3)
+ax.plot_old([0, right], [right, 0], 'blue', linewidth=1, linestyle=':', alpha=0.5, zorder=3)
 for k in range(1, right):
-    ax.plot([k, right], [right, k], 'blue', linewidth=1, linestyle=':', alpha=0.5, zorder=3)
-    ax.plot([0, right-k], [right-k, 0], 'blue', linewidth=1, linestyle=':', alpha=0.5, zorder=3)
+    ax.plot_old([k, right], [right, k], 'blue', linewidth=1, linestyle=':', alpha=0.5, zorder=3)
+    ax.plot_old([0, right - k], [right - k, 0], 'blue', linewidth=1, linestyle=':', alpha=0.5, zorder=3)
 
 # 升降号个数
 for k in t[1:-1]:

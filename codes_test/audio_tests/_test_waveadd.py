@@ -15,7 +15,7 @@ length = 16384
 # ax.plot(t[:length], w1[:length], 'r', lw=0.5, zorder=0)
 # ax.plot(t[:length], w2[:length], 'g', lw=0.5, zorder=1)
 # ax.plot(t[:length], (w1+w2)[:length], 'b', lw=1.0, zorder=2)
-ax.plot(t[:length], (w1+w2)[:length], 'r', linewidth=1.0, zorder=0)
-ax.plot(t[:length], (w1+w3)[:length], 'b', linewidth=1.0, zorder=1)
+ax.plot_old(t[:length], (w1 + w2)[:length], 'r', linewidth=1.0, zorder=0)
+ax.plot_old(t[:length], (w1 + w3)[:length], 'b', linewidth=1.0, zorder=1)
 
 fig.show()

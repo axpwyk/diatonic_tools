@@ -6,7 +6,7 @@ from audio import *
 t = np.linspace(0, np.pi, 65536)
 wt = np.clip(np.tan(t), -0.4, 0.4)
 # wt = read(r'..\wavetables\machine_learning_square_01.wav')[1]
-plt.plot(wt)
+plt.plot_old(wt)
 plt.title('wavetable')
 plt.show()
 

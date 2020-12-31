@@ -21,14 +21,14 @@ d_lydian_19_freqs = [pow(2, i/19) for i in d_lydian_19]
 
 fig, axs = plt.subplots(1, 2)
 
-axs[0].plot(c_lydian_12, c_lydian_12_freqs, 'r*', c_lydian_12, c_lydian_19_freqs, 'b--')
+axs[0].plot_old(c_lydian_12, c_lydian_12_freqs, 'r*', c_lydian_12, c_lydian_19_freqs, 'b--')
 axs[0].set_xticks(c_lydian_12)
 axs[0].set_xticklabels(['$C$', '$D$', '$E$', '$F\sharp$', '$G$', '$A$', '$B$'])
 axs[0].set_ylim([0.9, 2.2])
 axs[0].grid()
 axs[0].legend(['12-TET C Lydian frequencies', '19-TET C Lydian frequencies'])
 
-axs[1].plot(d_lydian_12, d_lydian_12_freqs, 'r*', d_lydian_12, d_lydian_19_freqs, 'b--')
+axs[1].plot_old(d_lydian_12, d_lydian_12_freqs, 'r*', d_lydian_12, d_lydian_19_freqs, 'b--')
 axs[1].set_xticks(d_lydian_12)
 axs[1].set_xticklabels(['$D$', '$E$', '$F\sharp$', '$G\sharp$', '$A$', '$B$', '$C\sharp$'])
 axs[1].set_ylim([0.9, 2.2])

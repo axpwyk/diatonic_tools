@@ -16,8 +16,8 @@ labels, _, _, _ = cs.get_info()
 for i in range(len(notes)):
     notes[i].set_message(cstype=labels[i])
 
-piano = inst.PianoSpecial(notes + [Note('C#3').set_message(cstype='[TN]')])
-piano.plot(title=scale)
+piano = inst.Piano(notes + [Note('C#3').set_message(cstype='[TN]')])
+piano.plot_old(title=scale)
 
 
 # notes = [Note('A1').set_message('B'), Note('C#2').set_message('B'), Note('G2').set_message('B'), Note('D3'), Note('F#3')]

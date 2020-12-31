@@ -16,11 +16,11 @@ ax.margins(0.0)
 
 # plot strings
 ax.set_ylim(strings[0]-1, strings[-1]+1)
-_ = [ax.plot((0, fret[4]), (s, s), c='black', lw=1.0) for s in strings]
+_ = [ax.plot_old((0, fret[4]), (s, s), c='black', lw=1.0) for s in strings]
 
 # plot frets
 ax.set_xlim(fret[0]-1, fret[4]+2.5)
-_ = [ax.plot((fret[i], fret[i]), (0, strings[-1]), c='black', lw=2.0) for i in range(5)]
+_ = [ax.plot_old((fret[i], fret[i]), (0, strings[-1]), c='black', lw=2.0) for i in range(5)]
 _ = [ax.annotate(fret[i]//w_scale, (fret[i], -0.3), color='blue', va='center', ha='center', bbox=dict(facecolor='blue', alpha=0.2)) for i in range(5)]
 
 # plot dots
