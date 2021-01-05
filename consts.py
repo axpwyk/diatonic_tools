@@ -1,16 +1,13 @@
-from ast import literal_eval
-
-
-def sign(x): return (x > 0) - (x < 0)
+def sign(x): return 1 if x > 0 else -1 if x < 0 else 0
 
 
 ''' ----------------------------------------------------------------------------------------- '''
 ''' *********************************** for `theories.py` *********************************** '''
 ''' ----------------------------------------------------------------------------------------- '''
-''' NN = note number                                                                          '''
-''' LIN = linear, GEN = generative, ABS = absolute, REL = relative, STR = string, LST = list  '''
+''' NN = note number, ABS = absolute, REL = relative, NNREL/NNABS = int type                  '''
+''' STR = str type, LIST = list type, LIN = linear, GEN = generative                          '''
 '''                                                                                           '''
-''' * we call [index of `NAMED_LIN_NNREL`] `step`                                             '''
+''' * we call [index of `NAMED_NNREL_LIN`] `step`                                             '''
 ''' * we call [index of a scale] or [number of notes contained in an interval] `degree`       '''
 '''                                                                                           '''
 ''' * WARNING: Changing `S` will lead to different interval naming scheme                     '''
@@ -18,39 +15,57 @@ def sign(x): return (x > 0) - (x < 0)
 ''' ----------------------------------------------------------------------------------------- '''
 
 
-# most basic constants (generate elements from starting point `S` using step length `G` modulo `N`)
-N = 12  # `N`-tone equal temperament (`N`-TET)
-G = 7 # generator (step length)
-S = 5  # starter (starting point)
+# most basic constants (generate named nnrels from starting point `S` using step length `G` modulo `N`)
+N = 19  # `N`-tone equal temperament (`N`-TET)
+G = 11  # generator (step length)
+S = 8   # starter (starting point)
 
 # most basic calculations
-M = pow(G, -1, N)  # number of tones in diatonic scale
-T = 2 ** (1 / N)  # ratio of semi-tone frequencies
-C3 = 440 * (T ** (36 - 45))  # frequency of C3
+M = pow(G, -1, N)                            # number of tones in diatonic scale
+T = 2 ** (1 / N)                             # ratio of semi-tone frequencies
+C3 = 440 * (T ** (36 - 45))                  # frequency of C3
+NGS = '.'.join([str(k) for k in [N, G, S]])  # NGS for dict indexing
+SPECIAL_NGS = ['12.7.5', '19.11.8']
+
+
+# a handy NGS checking function
+def NGSChecker():
+    # registered [N, G, S] for special functions
+    if NGS in SPECIAL_NGS:
+        return True
+    else:
+        return False
+
 
 # define named notes (natural notes) in linear order
-NAMED_LIN_STR = 'CDEFGAB'                                                # [12, 7, 5]
-# NAMED_LIN_STR = 'CDEGA'                                                  # [12, 5, 4]
-# NAMED_LIN_STR = 'ABCDEFGHIJ'                                             # [23, 7, 0]
-# NAMED_LIN_STR = str().join([chr(ord('A')+j) for j in range(M)])          # 97-TET 26-tone
-# NAMED_LIN_STR = str().join([chr(int('03B1', 16)+j) for j in range(M)])   # `N`-TET `M`-tone
-if len(NAMED_LIN_STR) != M: raise ValueError('Number of symbols must equal to number of notes!')
+NAMED_STR_LIN = [
+    'CDEFGAB',                                              # [12, 7, 5] and [19, 11, 8]
+    'CDEXGAB',                                              # [12, 7, 0] and [19, 11, 0] (X is F#)
+    'CDEGA',                                                # [12, 5, 4]
+    'ABCDEFGHIJ',                                           # [23, 7, 0]
+    str().join([chr(ord('A')+j) for j in range(M)]),        # 97-TET 26-tone
+    str().join([chr(int('03B1', 16)+j) for j in range(M)])  # `N`-TET `M`-tone
+][0]
+if len(NAMED_STR_LIN) != M: raise ValueError('Number of symbols must equal to number of notes!')
 
-# relative note numbers in generative order, e.g. [5, 0, 7, 2, 9, 4, 11]
-NAMED_GEN_NNREL = [(S + i * G) % N for i in range(M)]
+# relative note numbers (nnrels) in generative order, e.g. [5, 0, 7, 2, 9, 4, 11]
+NAMED_NNREL_GEN = [(S + i * G) % N for i in range(M)]
 
-# relative note numbers in linear order, e.g. [0, 2, 4, 5, 7, 9, 11]
-NAMED_LIN_NNREL = sorted(NAMED_GEN_NNREL)
+# relative note numbers (nnrels) in linear order, e.g. [0, 2, 4, 5, 7, 9, 11]
+NAMED_NNREL_LIN = sorted(NAMED_NNREL_GEN)
 
-# nnrel/note name convertors
-NNREL_TO_NAME_STR = {nnrel: NAMED_LIN_STR[i] for i, nnrel in enumerate(NAMED_LIN_NNREL)}
-NAME_STR_TO_NNREL = dict((v, k) for k, v in NNREL_TO_NAME_STR.items())
+# nnrel/str convertors
+NNREL_TO_STR = {nnrel: NAMED_STR_LIN[i] for i, nnrel in enumerate(NAMED_NNREL_LIN)}
+STR_TO_NNREL = dict((v, k) for k, v in NNREL_TO_STR.items())
 
-# change `NAMED_LIN_STR` into generative order, e.g. 'CDEFGAB' -> 'FCGDAEB'
-NAMED_GEN_STR = ''.join([NNREL_TO_NAME_STR[k] for k in NAMED_GEN_NNREL])
+# change `NAMED_STR_LIN` into generative order, e.g. 'CDEFGAB' -> 'FCGDAEB'
+NAMED_STR_GEN = ''.join([NNREL_TO_STR[k] for k in NAMED_NNREL_GEN])
 
-# a reasonable step length of stacked notes
-CHORD_STEP = [nnrel - NAMED_LIN_NNREL[0] for nnrel in NAMED_LIN_NNREL].index(G) // 2
+# step length of M2 interval in generative sequence
+M2_STEP_GEN = NAMED_NNREL_GEN.index(S + NAMED_NNREL_LIN[1])
+
+# a reasonable step length of stacked notes on linear sequence
+CHORD_STEP_LIN = [nnrel - NAMED_NNREL_LIN[0] for nnrel in NAMED_NNREL_LIN].index(G) // 2
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -58,7 +73,11 @@ CHORD_STEP = [nnrel - NAMED_LIN_NNREL[0] for nnrel in NAMED_LIN_NNREL].index(G) 
 ''' ----------------------------------------------------------------------------------------- '''
 
 
-DELTA_STEP_TO_NS_12_7_5 = [1, 2, 2, 1, 1, 2, 2]
+# convert delta step to naming scheme 1 or 2
+DELTA_STEP_TO_NS = {
+    '12.7.5': [1, 2, 2, 1, 1, 2, 2],
+    '19.11.8': [1, 2, 2, 1, 1, 2, 2]
+}
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -66,18 +85,19 @@ DELTA_STEP_TO_NS_12_7_5 = [1, 2, 2, 1, 1, 2, 2]
 ''' ----------------------------------------------------------------------------------------- '''
 
 
-# scale type converter, change old naming scheme to new naming scheme, e.g. Ionian -> C-mode
-SCALE_TYPE_OLD_TO_NEW = {
-    'Lydian': 'F-mode',
-    'Ionian': 'C-mode',
-    'Mixolydian': 'G-mode',
-    'Dorian': 'D-mode',
-    'Aeolian': 'A-mode',
-    'Phrygian': 'E-mode',
-    'Locrian': 'B-mode'
+# scale type converter, change new naming scheme to old naming scheme, e.g. 'C-mode' -> 'Ionian'
+SCALE_TYPE_NEW_TO_OLD = {
+    'F-mode': 'Lydian',
+    'C-mode': 'Ionian',
+    'G-mode': 'Mixolydian',
+    'D-mode': 'Dorian',
+    'A-mode': 'Aeolian',
+    'E-mode': 'Phrygian',
+    'B-mode': 'Locrian'
 }
 
-SCALE_TYPE_NEW_TO_OLD = dict((v, k) for k, v in SCALE_TYPE_OLD_TO_NEW.items())
+# scale type converter, change old naming scheme to new naming scheme, e.g. 'Ionian' -> 'C-mode'
+SCALE_TYPE_OLD_TO_NEW = dict((v, k) for k, v in SCALE_TYPE_NEW_TO_OLD.items())
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -85,93 +105,56 @@ SCALE_TYPE_NEW_TO_OLD = dict((v, k) for k, v in SCALE_TYPE_OLD_TO_NEW.items())
 ''' ----------------------------------------------------------------------------------------- '''
 
 
-# get interval vectors of all 66 classes (stacking 2nds)
-SCALE_INTERVAL_VECTOR_LIST = []
-with open('all_heptatonic_scale_intervals.txt', 'r') as f:
-    for line in f:
-        SCALE_INTERVAL_VECTOR_LIST.append(literal_eval(line))
-
-# get interval vectors of all 66 classes (stacking 3rds)
-CHORD_INTERVAL_VECTOR_LIST = []
-with open('all_heptatonic_chord_intervals.txt', 'r') as f:
-    for line in f:
-        CHORD_INTERVAL_VECTOR_LIST.append(literal_eval(line))
-
-# get names of all 66 classes
-CLASS_LIST = []
-with open('all_heptatonic_scale_classes.txt', 'r') as f:
-    for line in f:
-        CLASS_LIST.append(literal_eval(line))
-
-# alternative names
-ALTERED_SCALE_TYPE_OLD_TO_NEW = {
-    'Ukrainian Dorian': 'Dorian(#4)',
-    'Harmonic Minor': 'Aeolian(#7)',
-    'Phrygian Dominant': 'Phrygian(#3)',
-    'HMP5B': 'Phrygian(#3)',
-    'Altered': 'Locrian(b4)',
-    'Acoustic': 'Lydian(b7)',
-    'Lydian Dominant': 'Lydian(b7)',
-    'Melodic Minor': 'Dorian(#7)',
-    'Minor Major': 'Ionian(b3)',
-    'Melodic Major': 'Mixolydian(b6)',
-    'Major Minor': 'Aeolian(#3)',
-    'Half Diminished': 'Locrian(#2)',
-    'Minor Neapolitan': 'Phrygian(#7)',
-    'Harmonic Phrygian': 'Phrygian(#7)',
-    'Harmonic Major': 'Ionian(b6)',
-    'Harmonic Lydian': 'Lydian(b6)',
-    'Hungarian Minor': 'Aeolian(#4, #7)',
-    'Double Harmonic': 'Phrygian(#3, #7)',
-    'Major Neapolitan': 'Phrygian(#6, #7)',
-    'Melodic Phrygian': 'Phrygian(#6, #7)',
-    'Major': 'Ionian',  # keep these two at the end!!!
-    'Minor': 'Aeolian'  # keep these two at the end!!!
-}
-
-# conventional names
+# altered scale type converter, change new naming scheme to old naming scheme, e.g. 'E-mode(#3)' -> 'HmP5b'
 ALTERED_SCALE_TYPE_NEW_TO_OLD = {
     # Class 1
-    'Phrygian(#3)': ['Phrygian Dominant', 'HmP5b'],
-    'Aeolian(#7)': ['Harmonic Minor'],
-    'Dorian(#4)': ['Ukrainian Dorian'],
-    'Mixolydian(#1)': ['Ultra Locrian'],
+    'E-mode(#3)': ['Phrygian Dominant', 'HmP5b'],
+    'A-mode(#7)': ['Harmonic Minor'],
+    'D-mode(#4)': ['Ukrainian Dorian'],
+    'G-mode(#1)': ['Ultra Locrian'],
 
     # Class 3
-    'Mixolydian(#4)': ['Lydian Dominant', 'Acoustic'],
-    'Lydian(b7)': ['Lydian Dominant', 'Acoustic'],
+    'G-mode(#4)': ['Acoustic', 'Lydian Dominant'],
+    'F-mode(b7)': ['Lydian Dominant', 'Acoustic'],
 
-    'Aeolian(#3)': ['Aeolian Dominant', 'Melodic Major'],
-    'Mixolydian(b6)': ['Aeolian Dominant', 'Melodic Major'],
+    'A-mode(#3)': ['Aeolian Dominant', 'Melodic Major'],
+    'G-mode(b6)': ['Melodic Major', 'Aeolian Dominant'],
 
-    'Ionian(#1)': ['Super Locrian', 'Altered Dominant'],
-    'Locrian(b4)': ['Super Locrian', 'Altered Dominant'],
+    'C-mode(#1)': ['Altered Dominant', 'Super Locrian'],
+    'B-mode(b4)': ['Super Locrian', 'Altered Dominant'],
 
-    'Dorian(#7)': ['Melodic Minor'],
-    'Ionian(b3)': ['Melodic Minor'],
+    'D-mode(#7)': ['Melodic Minor'],
+    'C-mode(b3)': ['Melodic Minor'],
 
-    'Locrian(#2)': ['Half Diminished'],
-    'Aeolian(b5)': ['Half Diminished'],
+    'B-mode(#2)': ['Half Diminished'],
+    'A-mode(b5)': ['Half Diminished'],
 
     # Class 4
-    'Phrygian(#7)': ['Minor Neapolitan'],
+    'E-mode(#7)': ['Minor Neapolitan'],
 
     # Class 6
-    'Ionian(b6)': ['Harmonic Major'],
-    'Mixolydian(b2)': ['HMP5b'],
+    'C-mode(b6)': ['Harmonic Major'],
+    'G-mode(b2)': ['HMP5b'],
 
     # Class 9
-    'Phrygian(#3,#7)': ['Double Harmonic', 'Gypsy Major'],
-    'Ionian(b2,b6)': ['Double Harmonic', 'Gypsy Major'],
+    'E-mode(#3, #7)': ['Double Harmonic', 'Gypsy Major'],
+    'C-mode(b2, b6)': ['Gypsy Major', 'Double Harmonic'],
 
-    'Aeolian(#4,#7)': ['Hungarian Minor'],
-    'Lydian(b3,b6)': ['Hungarian Minor'],
+    'A-mode(#4, #7)': ['Hungarian Minor'],
+    'F-mode(b3, b6)': ['Hungarian Minor'],
 
     # Class 16
-    'Phrygian(#6,#7)': ['Major Neapolitan'],
-    'Dorian(#7,b2)': ['Major Neapolitan'],
-    'Ionian(b2,b3)': ['Major Neapolitan']
+    'E-mode(#6, #7)': ['Major Neapolitan'],
+    'D-mode(b2, #7)': ['Major Neapolitan'],
+    'C-mode(b2, b3)': ['Major Neapolitan'],
+
+    # Class 0
+    'C-mode': ['Major'],
+    'A-mode': ['Minor']
 }
+
+# altered scale type converter, change old naming scheme to new naming scheme, e.g. 'HmP5b' -> 'E-mode(#3)'
+ALTERED_SCALE_TYPE_OLD_TO_NEW = dict((v, k) for k, vs in ALTERED_SCALE_TYPE_NEW_TO_OLD.items() for v in vs)
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -457,7 +440,7 @@ if use_vocaloid:
 
 
 out_str_1 = f'{N}-TET | {M}-tone | step length: {G} | starting: {S}'
-out_str_2 = 'named notes: ' + str().join([f'{nnrel}={name} ' for nnrel, name in NNREL_TO_NAME_STR.items()])
+out_str_2 = 'named notes: ' + str().join([f'{nnrel}={name} ' for nnrel, name in NNREL_TO_STR.items()])
 n_hyphens = max(len(out_str_1), len(out_str_2))
 print('-' * n_hyphens)
 print(out_str_1)

@@ -15,7 +15,7 @@ scale = AlteredDiatonicScale('E Phrygian(#3)')
 print('E Phrygian(#3)', end='\t')
 for i in range(7):
     ch = Chord().set_notes(body=get_7th_chord(scale, i))
-    print(ch.get_name(), end='\t')
+    print(ch.get_name_old(), end='\t')
 
 print()
 
@@ -23,7 +23,7 @@ scale = AlteredDiatonicScale('E Aeolian(#6, #7)')
 print('E Aeolian(#6, #7)', end='\t')
 for i in range(7):
     ch = Chord().set_notes(body=get_7th_chord(scale, i))
-    print(ch.get_name(), end='\t')
+    print(ch.get_name_old(), end='\t')
 
 print()
 
@@ -31,7 +31,7 @@ scale = AlteredDiatonicScale('C Lydian(b6)')
 print('C Lydian(b6)', end='\t')
 for i in range(7):
     ch = Chord().set_notes(body=get_7th_chord(scale, i))
-    print(ch.get_name(), end='\t')
+    print(ch.get_name_old(), end='\t')
 
 print()
 
@@ -44,4 +44,4 @@ scale = AlteredDiatonicScale('C Ionian(#2)')
 print('C Ionian(#5)', end='\t')
 for i in range(7):
     ch = Chord().set_notes(body=get_7th_chord(scale, i))
-    print(ch.get_name(), end='\t')
+    print(ch.get_name_old(), end='\t')

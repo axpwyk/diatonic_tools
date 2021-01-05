@@ -55,7 +55,7 @@ for i, axis0 in enumerate(patches):
     for j, patch in enumerate(axis0):
         ax.add_patch(patch)
         bbox_props = dict(boxstyle='round', facecolor=additional_color_mapping[all_line[j][i].get_message('chord_note')], alpha=0.5)
-        ax.annotate(all_line[j][i].get_name(show_register=False), ((i+1/2)*width, (n_lines-1-j+1/2)*height),
+        ax.annotate(all_line[j][i].get_name_old(show_register=False), ((i + 1 / 2) * width, (n_lines - 1 - j + 1 / 2) * height),
                     ha='center', va='center', color='white', bbox=bbox_props)
 
 savefig(f'outputs/m3_P5_analysis_{chord_name}.svg')

@@ -1,4 +1,4 @@
-import os; os.chdir('..')
+import os; os.chdir('../..')
 from theories import *
 import numpy as np
 import matplotlib.pyplot as plt
@@ -38,10 +38,10 @@ with open('all_heptatonic_scale_classes.txt', 'r') as f:
 # calculate distance matrix
 distances = np.zeros((66, 66), np.int)
 for i in range(len(classes)):
-    notes_i = abs(AlteredDiatonicScale('C '+classes[i]))
+    notes_i = AlteredDiatonicScale('C '+classes[i]).get_nnabs_list()
     notes_i = [n%12 for n in notes_i]  # this algorithm do not support negative note number
     for j in range(len(classes)):
-        notes_j = abs(AlteredDiatonicScale('C '+classes[j]))
+        notes_j = AlteredDiatonicScale('C '+classes[j]).get_nnabs_list()
         notes_j = [n%12 for n in notes_j]  # this algorithm do not support negative note number
         distances[i, j] = d(notes_i, notes_j)[0]
         # if i in [0, 65] and j in [0, 65] and i != j:

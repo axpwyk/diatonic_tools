@@ -1,6 +1,7 @@
 # THIS DISTANCE ALGORITHM IS NOT RIGHT
 # [3] 1 2 [1] 2 1 2 (Lydian(#2, b7))
 # [2] 1 2 [2] 2 1 2 (Dorian)
+import os; os.chdir('../..')
 from theories import *
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,7 +29,7 @@ def d(notes_1, notes_2):
     return min(ds)
 
 
-with open('../all_heptatonic_scale_classes.txt', 'r') as f:
+with open('all_heptatonic_scale_classes.txt', 'r') as f:
     classes = []
     for line in f:
         classes.append(eval(line)[0])
@@ -37,9 +38,9 @@ with open('../all_heptatonic_scale_classes.txt', 'r') as f:
 # calculate distance matrix
 distances = np.zeros((66, 66), np.int)
 for i in range(len(classes)):
-    notes_i = abs(AlteredDiatonicScale('C '+classes[i]))
+    notes_i = AlteredDiatonicScale('C '+classes[i]).get_nnabs_list()
     for j in range(len(classes)):
-        notes_j = abs(AlteredDiatonicScale('C '+classes[j]))
+        notes_j = AlteredDiatonicScale('C '+classes[j]).get_nnabs_list()
         distances[i, j] = d(notes_i, notes_j)
 
 print(np.any(distances.transpose()!=distances))

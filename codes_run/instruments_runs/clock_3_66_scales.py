@@ -29,7 +29,7 @@ for k, lydian in enumerate(all_lydians):
     j = k % 6
 
     c = Clock(scale)
-    name = scale.get_name()[0]
+    name = scale.get_name_old()[0]
     c.plot(name, abs(scale[0])%12, subtitle=f'Class {k} / Order {order}', ax=axs[i, j])
     # name.replace('#', '+').replace('b', '-')
     # plt.savefig(f'clocks/{k}_{name}.svg', bbox_inches='tight', pad_inches=0.1)

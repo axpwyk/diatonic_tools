@@ -90,11 +90,11 @@ class DiatonicScales(Scene):
             # generate text mobjects
             def _scale_text(scale):
                 scale_text = (
-                    scale[0].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$')+' ',
-                    scale.get_name(type_only=True).replace('b', r'$\flat$').replace('#', r'$\sharp$'),
+                    scale[0].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$') + ' ',
+                    scale.get_name_old(type_only=True).replace('b', r'$\flat$').replace('#', r'$\sharp$'),
                     ' | ',
-                    *[scale[k].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$')+'\t' for k in range(7)],
-                    '({})'.format(scale[0].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
+                    *[scale[k].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$') + '\t' for k in range(7)],
+                    '({})'.format(scale[0].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
                 )
                 print(scale_text)
                 scale_text = TextMobject(*scale_text).scale(0.8)
@@ -426,8 +426,8 @@ class LydianS2(Scene):
                     tonic_name.replace('b', r'$\flat$').replace('#', r'$\sharp$')+' ',
                     scale_type_alt.replace('b', r'$\flat$').replace('#', r'$\sharp$'),
                     ' | ',
-                    *[scale[k].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$')+'\t' for k in range(7)],
-                    '({})'.format(scale[0].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
+                    *[scale[k].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$') + '\t' for k in range(7)],
+                    '({})'.format(scale[0].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
                 )
                 print(scale_text)
                 scale_text = TextMobject(*scale_text).scale(0.8)
@@ -597,8 +597,8 @@ class LydianS5(Scene):
                     tonic_name.replace('b', r'$\flat$').replace('#', r'$\sharp$')+' ',
                     scale_type_alt.replace('b', r'$\flat$').replace('#', r'$\sharp$'),
                     ' | ',
-                    *[scale[k].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$')+'\t' for k in range(7)],
-                    '({})'.format(scale[0].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
+                    *[scale[k].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$') + '\t' for k in range(7)],
+                    '({})'.format(scale[0].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
                 )
                 print(scale_text)
                 scale_text = TextMobject(*scale_text).scale(0.8)
@@ -772,8 +772,8 @@ class LydianS6(Scene):
                     tonic_name.replace('b', r'$\flat$').replace('#', r'$\sharp$')+' ',
                     scale_type_alt.replace('b', r'$\flat$').replace('#', r'$\sharp$'),
                     ' | ',
-                    *[scale[k].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$')+'\t' for k in range(7)],
-                    '({})'.format(scale[0].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
+                    *[scale[k].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$') + '\t' for k in range(7)],
+                    '({})'.format(scale[0].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
                 )
                 print(scale_text)
                 scale_text = TextMobject(*scale_text).scale(0.8)
@@ -943,8 +943,8 @@ class LydianF3(Scene):
                     tonic_name.replace('b', r'$\flat$').replace('#', r'$\sharp$')+' ',
                     scale_type_alt.replace('b', r'$\flat$').replace('#', r'$\sharp$'),
                     ' | ',
-                    *[scale[k].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$')+'\t' for k in range(7)],
-                    '({})'.format(scale[0].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
+                    *[scale[k].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$') + '\t' for k in range(7)],
+                    '({})'.format(scale[0].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
                 )
                 print(scale_text)
                 scale_text = TextMobject(*scale_text).scale(0.8)
@@ -1106,8 +1106,8 @@ class LydianF6(Scene):
                     tonic_name.replace('b', r'$\flat$').replace('#', r'$\sharp$')+' ',
                     scale_type_alt.replace('b', r'$\flat$').replace('#', r'$\sharp$'),
                     ' | ',
-                    *[scale[k].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$')+'\t' for k in range(7)],
-                    '({})'.format(scale[0].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
+                    *[scale[k].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$') + '\t' for k in range(7)],
+                    '({})'.format(scale[0].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
                 )
                 print(scale_text)
                 scale_text = TextMobject(*scale_text).scale(0.8)
@@ -1299,8 +1299,8 @@ class LydianS2S6(Scene):
                     tonic_name.replace('b', r'$\flat$').replace('#', r'$\sharp$')+' ',
                     scale_type_alt.replace('b', r'$\flat$').replace('#', r'$\sharp$').replace(r'u$\flat$l', 'ubl'),
                     ' | ',
-                    *[scale[k].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$')+'\t' for k in range(7)],
-                    '({})'.format(scale[0].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
+                    *[scale[k].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$') + '\t' for k in range(7)],
+                    '({})'.format(scale[0].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
                 )
                 print(scale_text)
                 scale_text = TextMobject(*scale_text).scale(0.8)
@@ -1482,8 +1482,8 @@ class LydianS5S6(Scene):
                     tonic_name.replace('b', r'$\flat$').replace('#', r'$\sharp$')+' ',
                     scale_type_alt.replace('b', r'$\flat$').replace('#', r'$\sharp$'),
                     ' | ',
-                    *[scale[k].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$')+'\t' for k in range(7)],
-                    '({})'.format(scale[0].get_name(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
+                    *[scale[k].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$') + '\t' for k in range(7)],
+                    '({})'.format(scale[0].get_name_old(show_group=False).replace('b', r'$\flat$').replace('#', r'$\sharp$'))
                 )
                 print(scale_text)
                 scale_text = TextMobject(*scale_text).scale(0.8)

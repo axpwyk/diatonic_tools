@@ -8,8 +8,8 @@ def avoid_note(class_num):
     ads = AlteredDiatonicScale('F' + ' ' + class_name)
     for k, tonic in zip([4, 1, 5, 2, 6, 3, 7], ['F', 'C', 'G', 'D', 'A', 'E', 'B']):
         # get type of current mode
-        ads.set_tonic(tonic)
-        name = ads.get_name(2)[0]
+        ads.set_scale_tonic_str(tonic)
+        name = ads.get_name_old(2)[0]
         tonic = 'Cb' if name.find('#1')>0 else 'C#' if name.find('b1')>0 else 'C'
         par = scale_name_parser(name)
         type = par['scale_type']+par['altered_note'] if par['altered_note'] else par['scale_type']
@@ -27,7 +27,7 @@ def avoid_note(class_num):
             print(cn, '\t', end='')
 
         # print Base Chord
-        print(cs.get_7th_chord().get_name(type_only=True), '\t', end='')
+        print(cs.get_7th_chord().get_name_old(type_only=True), '\t', end='')
 
         # print fake dom7, fake m7, info
         _, info, fake_dom7, fake_m7 = cs.get_info()

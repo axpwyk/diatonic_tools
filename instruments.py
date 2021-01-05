@@ -97,7 +97,7 @@ def note_colors(i, n_notes, mode='face'):
     return rgb_shader(i * n_notes / (n_notes - 1), 0, n_notes, color1=colors_lr[0], color2=colors_lr[1])
 
 
-def br357t_colors(br357t, step_length=CHORD_STEP, mode='face'):
+def br357t_colors(br357t, step_length=CHORD_STEP_LIN, mode='face'):
     if mode == 'face':
         colors = BR357T_FACE_COLORS
     elif mode == 'edge':
@@ -236,9 +236,9 @@ class _NoteList(object):
                 note.set_message(text_color=note_colors(i, len(self._notes), 'text'))
         elif color_style == 'br357t':
             for note in self._notes:
-                note.set_message(face_color=br357t_colors(note.get_message('br357t'), CHORD_STEP, 'face'))
-                note.set_message(edge_color=br357t_colors(note.get_message('br357t'), CHORD_STEP, 'edge'))
-                note.set_message(text_color=br357t_colors(note.get_message('br357t'), CHORD_STEP, 'text'))
+                note.set_message(face_color=br357t_colors(note.get_message('br357t'), CHORD_STEP_LIN, 'face'))
+                note.set_message(edge_color=br357t_colors(note.get_message('br357t'), CHORD_STEP_LIN, 'edge'))
+                note.set_message(text_color=br357t_colors(note.get_message('br357t'), CHORD_STEP_LIN, 'text'))
         elif color_style == 'degree':
             for i, note in enumerate(self._notes):
                 note.set_message(face_color=degree_colors(note.get_message('degree'), len(self._notes), 'face'))
@@ -256,7 +256,7 @@ class _NoteList(object):
 class Guitar(_NoteList):
     def __init__(self, modulo_on=True, max_fret=24,
                  open_string_notes=(Note('E1'), Note('A1'), Note('D2'), Note('G2'), Note('B2'), Note('E3')),
-                 w_to_h_ratio=2.0, short_fret_markers=(3, 5, 7, 9), long_fret_markers=(0,)):
+                 w_to_h_ratio=2.0, short_fret_markers=(3, 5, 7, 9), long_fret_markers=(0, )):
         # set `self._notes`
         super().__init__()
         # basic properties of this guitar instance
@@ -264,7 +264,7 @@ class Guitar(_NoteList):
         self._max_fret = max_fret  # number of frets
         self._max_string = len(open_string_notes)  # number of strings
         # open string nnabs and fretboard nnabs
-        self._open_string_notes = open_string_notes
+        self._open_string_notes = list(open_string_notes)
         self._open_string_nnabs = np.array([int(note) for note in open_string_notes])  # 1-d `np.ndarray`
         self._fretboard_nnabs = np.array([self._open_string_nnabs + i for i in range(0, max_fret + 1)])  # [frets, strings]
         # w to h ratio of fretboard
@@ -317,6 +317,10 @@ class Guitar(_NoteList):
                     used_strings.append(cur_string)
 
         return note_list, indices_list, used_strings
+
+    def set_modulo_on(self, modulo_on=True):
+        self._modulo_on = modulo_on
+        return self
 
     def auto_select(self, max_span=4, use_open_string=False, highest_bass_string=2, top_note=None, lowest_soprano_string=3):
         """
@@ -441,10 +445,6 @@ class Guitar(_NoteList):
                 fret_positions_string.append(fp)
 
         return chord_schemes_string, fret_positions_string
-
-    def set_modulo_on(self, modulo_on=True):
-        self._modulo_on = modulo_on
-        return self
 
     def plot(self, fret_left=0, fret_right=N, selection='pppppp', text_rotation=0, color_style='note', ax=None, title=None):
         # get note colors
@@ -803,7 +803,7 @@ class Piano(_NoteList):
                 width=1,
                 height=height,
                 edgecolor='gray',
-                facecolor='white' if x % N in NAMED_LIN_NNREL else 'black'
+                facecolor='white' if x % N in NAMED_NNREL_LIN else 'black'
             ) for x in range(note_range[0], note_range[1] + 1)
         ]
         _ = [ax.add_patch(key_rect) for key_rect in key_rects]
@@ -1016,8 +1016,8 @@ class Tonnetz(_NoteList):
             fig, ax = get_figure(24, 24, 72)
 
         # get background notes
-        itv_gen = (Note(NAMED_GEN_STR[1]) - Note(NAMED_GEN_STR[0])).normalize()
-        itv_maj = (Note(NAMED_LIN_STR[CHORD_STEP]) - Note(NAMED_LIN_STR[0])).normalize()
+        itv_gen = (Note(NAMED_STR_GEN[1]) - Note(NAMED_STR_GEN[0])).normalize()
+        itv_maj = (Note(NAMED_STR_LIN[CHORD_STEP_LIN]) - Note(NAMED_STR_LIN[0])).normalize()
         itv_min = itv_gen - itv_maj
 
         if upside_down:

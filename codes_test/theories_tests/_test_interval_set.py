@@ -8,7 +8,7 @@ notes1 = Chord('C')
 notes2 = Chord('C7(#9)')
 
 itvs1 = [a - b for a in notes1 for b in notes1]
-itvs1 = [itv.normalize().get_name() for itv in itvs1]
+itvs1 = [itv.normalize().get_name_old() for itv in itvs1]
 itvs1 = set(itvs1)
 
 itvs2 = [a - b for a in notes2 for b in notes2]

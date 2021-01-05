@@ -1,7 +1,7 @@
 import os; os.chdir('../..')
 from theories import *
 
-print(ChordEx().set_notes(bass=[Note('F')], notes=[Note('C'), Note('E'), Note('G'), Note('B')]).get_name())
+print(ChordEx().set_notes(bass=[Note('F')], notes=[Note('C'), Note('E'), Note('G'), Note('B')]).get_name_old())
 print()
 
 itv_1 = Interval('m3') + Interval('m3') + Interval('m3') + Interval('m3')
