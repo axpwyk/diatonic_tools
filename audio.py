@@ -7,16 +7,35 @@ wt_sine = np.sin(np.linspace(0, 2*np.pi, 65536))
 wt_sawtooth = ss.sawtooth(np.linspace(0, 1, 65536), 1)
 
 
-def note_to_wav_mono(wt, note, tl, amp):
+class AudioNote(Note):
+    def __init__(self, note_name=f'{NAMED_STR_LIN[0]}0'):
+        super().__init__(note_name=note_name)
+
+        self._starting_tick = 0
+        self._lasting_tick = 0
+        self.xxx = 0
+
+    def get_frequency(self):
+        """
+        (in [12, 7, 5] diatonic scale)
+        A4 concerto pitch == nnabs57 == 440Hz
+        A3 cubase pitch == nnabs45 == 440Hz
+
+        :return: frequency of current note (float type)
+        """
+        return C3 * (T ** (int(self) - N * 3))
+
+
+def note_to_wav_mono(wt, audio_note, tl, amp):
     """
-        generate a ndarray from `note`
+        generate a ndarray from `audio_note`
         `wt`:   wavetable, 1 period
         `tl`:   lasting time, positive float, seconds
         `amp`:  amplitude, float in (0.0, 1.0)
     """
     # constants
     wt_length = len(wt)
-    freq = note.get_frequency()
+    freq = audio_note.get_frequency()
 
     # linear interpolation
     n_samples = int(SF * tl)

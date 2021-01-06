@@ -1,6 +1,23 @@
 def sign(x): return 1 if x > 0 else -1 if x < 0 else 0
 
 
+def unique(lst):
+    out = []
+    for element in lst:
+        if element in out:
+            continue
+        else:
+            out.append(element)
+    return out
+
+
+def nnrel_pair_to_accidental(nnrel_1, nnrel_2):
+    # convert nnrel pair to accidental, e.g. (11, 1) -> 2, (0, 11) -> -1, etc.
+    sgn_1 = -1 if abs(nnrel_2 - nnrel_1) > N / 2 else 1
+    sgn_2 = sign(nnrel_2 - nnrel_1)
+    return sgn_1 * sgn_2 * (N - abs(2 * abs(nnrel_1 - nnrel_2) - N)) // 2
+
+
 ''' ----------------------------------------------------------------------------------------- '''
 ''' *********************************** for `theories.py` *********************************** '''
 ''' ----------------------------------------------------------------------------------------- '''
@@ -16,26 +33,15 @@ def sign(x): return 1 if x > 0 else -1 if x < 0 else 0
 
 
 # most basic constants (generate named nnrels from starting point `S` using step length `G` modulo `N`)
-N = 19  # `N`-tone equal temperament (`N`-TET)
-G = 11  # generator (step length)
-S = 8   # starter (starting point)
+N = 12  # `N`-tone equal temperament (`N`-TET)
+G = 7   # generator (step length)
+S = 5   # starter (starting point)
 
 # most basic calculations
 M = pow(G, -1, N)                            # number of tones in diatonic scale
 T = 2 ** (1 / N)                             # ratio of semi-tone frequencies
 C3 = 440 * (T ** (36 - 45))                  # frequency of C3
 NGS = '.'.join([str(k) for k in [N, G, S]])  # NGS for dict indexing
-SPECIAL_NGS = ['12.7.5', '19.11.8']
-
-
-# a handy NGS checking function
-def NGSChecker():
-    # registered [N, G, S] for special functions
-    if NGS in SPECIAL_NGS:
-        return True
-    else:
-        return False
-
 
 # define named notes (natural notes) in linear order
 NAMED_STR_LIN = [
@@ -67,6 +73,18 @@ M2_STEP_GEN = NAMED_NNREL_GEN.index(S + NAMED_NNREL_LIN[1])
 # a reasonable step length of stacked notes on linear sequence
 CHORD_STEP_LIN = [nnrel - NAMED_NNREL_LIN[0] for nnrel in NAMED_NNREL_LIN].index(G) // 2
 
+# special [N, G, S] for special functions
+SPECIAL_NGS = ['12.7.5', '19.11.8']
+
+
+# a handy NGS checking function
+def NGSChecker():
+    # registered [N, G, S] for special functions
+    if NGS in SPECIAL_NGS:
+        return True
+    else:
+        return False
+
 
 ''' ----------------------------------------------------------------------------------------- '''
 ''' ********************************** for `Interval` Class ********************************* '''
@@ -82,11 +100,13 @@ DELTA_STEP_TO_NS = {
 
 ''' ----------------------------------------------------------------------------------------- '''
 ''' ******************************* for `DiatonicScale` Class ******************************* '''
+''' naming scheme 0 (NS0): C-mode, D-mode, ...                                                '''
+''' naming scheme 1 (NS1): Ionian, Dorian, ...                                                '''
 ''' ----------------------------------------------------------------------------------------- '''
 
 
-# scale type converter, change new naming scheme to old naming scheme, e.g. 'C-mode' -> 'Ionian'
-SCALE_TYPE_NEW_TO_OLD = {
+# scale type converter, change naming scheme 0 to naming scheme 1, e.g. 'C-mode' -> 'Ionian'
+SCALE_TYPE_NS0_TO_NS1 = {
     'F-mode': 'Lydian',
     'C-mode': 'Ionian',
     'G-mode': 'Mixolydian',
@@ -96,17 +116,21 @@ SCALE_TYPE_NEW_TO_OLD = {
     'B-mode': 'Locrian'
 }
 
-# scale type converter, change old naming scheme to new naming scheme, e.g. 'Ionian' -> 'C-mode'
-SCALE_TYPE_OLD_TO_NEW = dict((v, k) for k, v in SCALE_TYPE_NEW_TO_OLD.items())
+# scale type converter, change naming scheme 1 to naming scheme 0, e.g. 'Ionian' -> 'C-mode'
+SCALE_TYPE_NS1_TO_NS0 = dict((v, k) for k, v in SCALE_TYPE_NS0_TO_NS1.items())
 
 
 ''' ----------------------------------------------------------------------------------------- '''
 ''' **************************** for `AlteredDiatonicScale` Class *************************** '''
 ''' ----------------------------------------------------------------------------------------- '''
+''' naming scheme 0 (NS0): E-mode(#3), F-mode(b7), ...                                        '''
+''' naming scheme 1 (NS1): Phrygian(#3), Lydian(b7), ...                                      '''
+''' naming scheme 2 (NS2): Phrygian Dominant, Lydian Dominant, ...                            '''
+''' ----------------------------------------------------------------------------------------- '''
 
 
-# altered scale type converter, change new naming scheme to old naming scheme, e.g. 'E-mode(#3)' -> 'HmP5b'
-ALTERED_SCALE_TYPE_NEW_TO_OLD = {
+# altered scale type converter, change naming scheme 0 to naming scheme 2, e.g. 'E-mode(#3)' -> 'HmP5b'
+ALTERED_SCALE_TYPE_NS0_TO_NS2 = {
     # Class 1
     'E-mode(#3)': ['Phrygian Dominant', 'HmP5b'],
     'A-mode(#7)': ['Harmonic Minor'],
@@ -153,201 +177,95 @@ ALTERED_SCALE_TYPE_NEW_TO_OLD = {
     'A-mode': ['Minor']
 }
 
-# altered scale type converter, change old naming scheme to new naming scheme, e.g. 'HmP5b' -> 'E-mode(#3)'
-ALTERED_SCALE_TYPE_OLD_TO_NEW = dict((v, k) for k, vs in ALTERED_SCALE_TYPE_NEW_TO_OLD.items() for v in vs)
+# altered scale type converter, change naming scheme 2 to naming scheme 0, e.g. 'HmP5b' -> 'E-mode(#3)'
+ALTERED_SCALE_TYPE_NS2_TO_NS0 = dict((v, k) for k, vs in ALTERED_SCALE_TYPE_NS0_TO_NS2.items() for v in vs)
 
 
 ''' ----------------------------------------------------------------------------------------- '''
 ''' *********************************** for `Chord` Class *********************************** '''
+''' naming scheme 0 (NS0): 1.3.5.7, 1.b3.5.b7, ...                                            '''
+''' naming scheme 1 (NS1): M7, m7, ...                                                        '''
 ''' ----------------------------------------------------------------------------------------- '''
 
 
-CHORD_TYPE_TO_SCALE_TYPE = {
-    # 5**
-    'M7+5sus4': 'Ionian(#5)',  # M7+5+3
-    'M7sus4': 'Ionian',  # M7+3
-    'sus4': 'Ionian',  # +3
-    # 4**
-    'augM7': 'Ionian(#5)',  # M7+5
-    'aug7': 'Mixolydian(#5)',  # 7+5
-    'aug': 'Ionian(#5)',  # +5
-    'M7': 'Lydian',
-    '9': 'Mixolydian',
-    '7': 'Mixolydian',
-    '6': 'Lydian',  # -7
-    '5': 'Lydian',
-    '': 'Lydian',
-    'M7-5': 'Ionian(b5)',
-    '7-5': 'Locrian(#3)',
-    '-5': 'Ionian(b5)',
-    # 3**
-    'm7+5': 'Dorian(#5)',
-    'mM7': 'Aeolian(#7)',
-    'm7': 'Aeolian',
-    'm6': 'Dorian',  # m-7
-    'm': 'Aeolian',
-    'mM7-5': 'Locrian(#7)',
-    'm7-5': 'Locrian',
-    'dim7': 'Locrian(b7)',  # m-7-5
-    'dim': 'Locrian',  # m-5
-    # 2**
-    '7sus2': 'Mixolydian',  # 7-3
-    '7-5sus2': 'Mixolydian(b5)',  # 7-5-3
-    '6-5sus2': 'Mixolydian(b5)',  # -7-5-3
-    'sus2': 'Mixolydian',  # -3
-    '-5sus2': 'Mixolydian(b5)',  # -5-3
+# chord type converter, change naming scheme 0 to naming scheme 1, e.g. '.3.5.b7' -> '7'
+CHORD_TYPE_NS0_TO_NS1 = {
+    '12.7.5': {
+        # 5**
+        '1.4.#5.7': ['M7+5sus4', 'augM7sus4'],
+        '1.4.5.7': ['M7sus4'],
+        '1.4.5': ['sus4'],
+        # 4**
+        '1.3.#5.7': ['M7+5', 'augM7'],
+        '1.3.#5.b7': ['7+5', 'aug7'],
+        '1.3.#5': ['+5', 'aug'],
+        '1.3.5.7': ['M7'],
+        '1.3.5.7.9': ['M9'],
+        '1.3.5.b7.9': ['9'],
+        '1.3.5.b7': ['7'],
+        '1.3.5.6': ['6'],
+        '1.5': ['5'],
+        '1.3.5': ['', 'M'],
+        '1.3.b5.7': ['M7-5'],
+        '1.3.b5.b7': ['7-5'],
+        '1.3.b5': ['-5'],
+        # 3**
+        '1.b3.#5.b7': ['m7+5'],
+        '1.b3.5.7': ['mM7'],
+        '1.b3.5.b7': ['m7'],
+        '1.b3.5.6': ['m6'],
+        '1.b3.5': ['m'],
+        '1.b3.b5.7': ['mM7-5'],
+        '1.b3.b5.b7': ['m7-5'],
+        '1.b3.b5.bb7': ['dim7'],
+        '1.b3.b5': ['dim'],
+        # 2**
+        '1.2.5.b7': ['7sus2'],
+        '1.2.b5.b7': ['7-5sus2'],
+        '1.2.b5.6': ['6-5sus2'],
+        '1.2.5': ['sus2'],
+        '1.2.b5': ['-5sus2']
+    },
+    '19.11.8': {
+        # 5**
+        '1.4.#5.7': ['M7+5sus4', 'augM7sus4'],
+        '1.4.5.7': ['M7sus4'],
+        '1.4.5': ['sus4'],
+        # 4**
+        '1.3.#5.7': ['M7+5', 'augM7'],
+        '1.3.#5.b7': ['7+5', 'aug7'],
+        '1.3.#5': ['+5', 'aug'],
+        '1.3.5.7': ['M7'],
+        '1.3.5.7.9': ['M9'],
+        '1.3.5.b7.9': ['9'],
+        '1.3.5.b7': ['7'],
+        '1.3.5.6': ['6'],
+        '1.5': ['5'],
+        '1.3.5': ['', 'M'],
+        '1.3.b5.7': ['M7-5'],
+        '1.3.b5.b7': ['7-5'],
+        '1.3.b5': ['-5'],
+        # 3**
+        '1.b3.#5.b7': ['m7+5'],
+        '1.b3.5.7': ['mM7'],
+        '1.b3.5.b7': ['m7'],
+        '1.b3.5.6': ['m6'],
+        '1.b3.5': ['m'],
+        '1.b3.b5.7': ['mM7-5'],
+        '1.b3.b5.b7': ['m7-5'],
+        '1.b3.b5.bb7': ['dim7'],
+        '1.b3.b5': ['dim'],
+        # 2**
+        '1.2.5.b7': ['7sus2'],
+        '1.2.b5.b7': ['7-5sus2'],
+        '1.2.b5.6': ['6-5sus2'],
+        '1.2.5': ['sus2'],
+        '1.2.b5': ['-5sus2']
+    }
 }
 
-CHORD_TYPE_TO_STEPS = {
-# 5**
-    'M7+5sus4': [0, 3, 4, 6],  # M7+5+3
-    'M7sus4': [0, 3, 4, 6],  # M7+3
-    'sus4': [0, 3, 4],  # +3
-    # 4**
-    'augM7': [0, 2, 4, 6],  # M7+5
-    'aug7': [0, 2, 4, 6],  # 7+5
-    'aug': [0, 2, 4],  # +5
-    'M7': [0, 2, 4, 6],
-    '9': [0, 2, 4, 6, 1],
-    '7': [0, 2, 4, 6],
-    '6': [0, 2, 4, 5],  # -7
-    '5': [0, 4],
-    '': [0, 2, 4],
-    'M7-5': [0, 2, 4, 6],
-    '7-5': [0, 2, 4, 6],
-    '-5': [0, 2, 4],
-    # 3**
-    'm7+5': [0, 2, 4, 6],
-    'mM7': [0, 2, 4, 6],
-    'm7': [0, 2, 4, 6],
-    'm6': [0, 2, 4, 5],  # m-7
-    'm': [0, 2, 4],
-    'mM7-5': [0, 2, 4, 6],
-    'm7-5': [0, 2, 4, 6],
-    'dim7': [0, 2, 4, 6],  # m-7-5
-    'dim': [0, 2, 4],  # m-5
-    # 2**
-    '7sus2': [0, 1, 4, 6],  # 7-3
-    '7-5sus2': [0, 1, 4, 6],  # 7-5-3
-    '6-5sus2': [0, 1, 4, 5],  # -7-5-3
-    'sus2': [0, 1, 4],  # -3
-    '-5sus2': [0, 1, 4],  # -5-3
-}
-
-# TODO: use calculation, not dict
-TENSION_NAME_TO_INTERVAL_NAME = {
-    # Root
-    'R': 'P1',
-    # 9th
-    'b9': 'm2',
-    '9': 'M2',
-    '#9': 'A2',
-    '##9': 'AA2',
-    # 3rd
-    'bb3': 'd3',
-    'b3': 'm3',
-    '3': 'M3',
-    '#3': 'A3',
-    # 11th
-    'bb11': 'dd4',
-    'b11': 'd4',
-    '11': 'P4',
-    '#11': 'A4',
-    '##11': 'AA4',
-    # 5th
-    'bb5': 'dd5',
-    'b5': 'd5',
-    '5': 'P5',
-    '#5': 'A5',
-    '##5': 'AA5',
-    # 13th
-    'bb13': 'd6',
-    'b13': 'm6',
-    '13': 'M6',
-    '#13': 'A6',
-    # 7th
-    'bbb7': 'dd7',
-    'bb7': 'd7',
-    'b7': 'm7',
-    '7': 'M7'
-}
-
-INTERVAL_NAME_TO_TENSION_NAME = dict((v, k) for k, v in TENSION_NAME_TO_INTERVAL_NAME.items())
-
-# recognize chord type from intervals
-INTERVAL_VECTOR_TO_CHORD_TYPE = {
-    # 5**
-    '533': 'M7+5sus4',  # M7+5+3
-    '524': 'M7sus4',  # M7+3
-    '52': 'sus4',  # +3
-    # 4**
-    '443': 'augM7',  # M7+5
-    '442': 'aug7',  # 7+5
-    '44': 'aug',  # +5
-    '434': 'M7',
-    '4334': '9',
-    '433': '7',
-    '432': '6',  # -7
-    '43': '',
-    '425': 'M7-5',
-    '424': '7-5',
-    '42': '-5',
-    # 3**
-    '352': 'm7+5',
-    '344': 'mM7',
-    '343': 'm7',
-    '342': 'm6',  # m-7
-    '34': 'm',
-    '335': 'mM7-5',
-    '334': 'm7-5',
-    '333': 'dim7',  # m-7-5
-    '33': 'dim',  # m-5
-    # 2**
-    '253': '7sus2',  # 7-3
-    '244': '7-5sus2',  # 7-5-3
-    '243': '6-5sus2',  # -7-5-3
-    '25': 'sus2',  # -3
-    '24': '-5sus2',  # -5-3
-}
-
-
-''' ----------------------------------------------------------------------------------------- '''
-''' ********************************** for `ChordEx` Class ********************************** '''
-''' ----------------------------------------------------------------------------------------- '''
-
-
-# for `ChordEx.get_name_ex` method
-INTERVAL_NAME_TO_CHORD_TYPE = {
-    # 3rd
-    'd3': '-3',
-    'm3': 'm',
-    'M3': '',
-    'A3': '+3',
-    # 5th
-    'dd5': '--5',
-    'd5': '-5',
-    'P5': '',
-    'A5': '+5',
-    'AA5': '++5',
-    # 7th
-    'dd7': '--7',
-    'd7': '-7',
-    'm7': '7',
-    'M7': 'M7',
-    # 9th
-    'm2': 'b9',
-    'M2': '9',
-    'A2': '#9',
-    # 11th
-    'd4': 'b11',
-    'P4': '11',
-    'A4': '#11',
-    # 13th
-    'd6': 'bb13',
-    'm6': 'b13',
-    'M6': '13',
-    'A6': '#13'
-}
+# chord type converter, change naming scheme 1 to naming scheme 0, e.g. '7' -> '.3.5.b7'
+CHORD_TYPE_NS1_TO_NS0 = dict((ngs, dict((v, k) for k, vs in d.items() for v in vs)) for ngs, d in CHORD_TYPE_NS0_TO_NS1.items())
 
 
 ''' -----------------------------------------------------------------------------------------'''
@@ -417,7 +335,7 @@ ADD2_NOTE_NAMES = [
 ]
 
 # TODO: AGTC MIDI mapping
-AGTC_NOTE_NAMES = [0]*128
+AGTC_NOTE_NAMES = [0] * 128
 
 # CC name list
 CC_NAMES = [f'cc {cc}' for cc in range(128)]

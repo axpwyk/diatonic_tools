@@ -205,6 +205,7 @@ def within(x, a, b):
 ''' ----------------------------------------------------------------------------------------- '''
 
 
+# TODO: review `instruments.py`
 class _NoteList(object):
     def __init__(self):
         self._notes = []

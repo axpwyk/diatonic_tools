@@ -18,24 +18,24 @@ def prints(ads):
     print()
 
 
-# ads = AlteredDiatonicScale('F Lydian(#5,#6)').set_printoptions(use_conventional_name=True)
-# prints(ads)
-#
-# ads.set_scale_tonic_str('G')
-# prints(ads)
-#
-# ads.set_scale_tonic_deg(1)
-# prints(ads)
-#
-# ads.add_accidentals_for_all(1)
-# prints(ads)
-#
-# ads.add_accidental(-2)
-# prints(ads)
+ads = AlteredDiatonicScale('F Lydian(#5,#6)').set_printoptions(use_conventional_name=True)
+prints(ads)
 
-ads = AlteredDiatonicScale('F Lydian(b7)').set_printoptions(use_old_name=True)
-print(ads.get_name())
+ads.set_scale_tonic_str('G')
+prints(ads)
 
-for _ in range(6):
-    ads.set_scale_tonic_deg(1)
-    print(ads.get_name())
+ads.set_scale_tonic_deg(1)
+prints(ads)
+
+ads.add_accidentals_for_all(1)
+prints(ads)
+
+ads.add_accidental(-2)
+prints(ads)
+
+# ads = AlteredDiatonicScale('F Lydian(b7)').set_printoptions(use_old_name=True)
+# print(ads.get_name())
+#
+# for _ in range(6):
+#     ads.set_scale_tonic_deg(1)
+#     print(ads.get_name())

@@ -12,31 +12,13 @@ from consts import *
 # for `Note`
 def note_name_parser(note_name):
     # `note_name` is a string, examples: 'C#3', 'Bb1', 'Fbb3', etc.
-    pattern = r'(?P<named_str>[' + NAMED_STR_LIN + r'])(?P<accidental_str>[b#]*)(?P<register_str>-?\d*)'
+    pattern_1 = r'(?P<named_str>[' + NAMED_STR_LIN + r'])'
+    pattern_2 = r'(?P<accidental_str>[b#]*)(?P<register_str>-?\d*)'
+
+    pattern = pattern_1 + pattern_2
+
     search_obj = re.search(pattern, note_name)
     return search_obj.groupdict()
-
-
-def note_name_to_note_vector(note_name):
-    par = note_name_parser(note_name)
-
-    named_str = par['named_str']
-    accidental_str = par['accidental_str']
-    register_str = par['register_str']
-
-    # get named nnrel, integer in `NAMED_NNREL_LIN`
-    named_nnrel = STR_TO_NNREL[named_str]
-
-    # get number of accidentals, integer in (-\infty, \infty)
-    accidental = 0 + accidental_str.count('#') - accidental_str.count('b')
-
-    # get register number, integer in (-\infty, \infty)
-    if register_str:
-        register = int(register_str)
-    else:
-        register = 0
-
-    return named_nnrel, accidental, register
 
 
 # for `Interval`
@@ -46,77 +28,36 @@ def interval_name_parser(interval_name):
     return search_obj.groupdict()
 
 
-def interval_name_to_interval_vector(interval_name):
-    """
-    when [N, G, S] == [12, 7, 5], will choose naming scheme according to `DELTA_STEP_TO_NS`
-    when [N, G, S] != [12, 7, 5], will use naming scheme 2
-
-    :param interval_name: interval name, e.g. 'P1', 'M2', etc.
-    """
-    par = interval_name_parser(interval_name)
-
-    # negative or positive (will add this at the end)
-    sgn = -1 if par['negative_str'] else 1
-
-    # get interval type .., 'dd', 'd', 'm', 'P', 'M', 'A', 'AA', ...
-    interval_type = par['interval_type']
-
-    # get interval degree, positive integer
-    degree = int(par['degree_str'])
-
-    # get `abs(delta_step)`
-    delta_step = degree - 1
-
-    # get naming scheme
-    if NGSChecker():
-        ns = DELTA_STEP_TO_NS[NGS][delta_step % M]
-    else:
-        ns = 2
-
-    # calculate `delta_group`
-    if ns == 1:
-        delta_group = interval_type.count('A') - interval_type.count('d')
-    elif ns == 2:
-        ds = interval_type.count('d')
-        if ds > 0:
-            delta_group = interval_type.count('A') - interval_type.count('m') - interval_type.count('d') + 1
-        else:
-            delta_group = interval_type.count('A') - interval_type.count('m')
-    else:
-        raise ValueError('No such naming scheme! Choose `ns` from [1, 2]!')
-
-    # calculate `delta_nnabs`
-    delta_step_rel = delta_step % M
-    delta_register = delta_step // M
-
-    named_nnrel = NAMED_NNREL_LIN[delta_step_rel]
-    delta_nnabs = delta_group + named_nnrel + N * delta_register
-
-    return sgn * delta_nnabs, sgn * delta_step
-
-
 # for `DiatonicScale`
 def scale_name_parser(scale_name):
-    # `scale_name` is a string, examples: 'C C-mode', 'D C-mode(#5)', 'E A-mode(#3, #7)', etc.
+    # `scale_name` is a string, examples: 'C C-mode', 'D C-mode(b6)', 'E Phrygian(#3, #7)', etc.
+
+    # basic patterns
+    pattern_1 = r'(?P<scale_tonic_name>[' + NAMED_STR_LIN + r'][#b]*-{0,1}\d*) '
+    pattern_2 = r'(?P<scale_type>[\w#b+-]*)'
+    pattern_3 = r'(?P<altered_note>(\([^ac-z]*\)){0,1})'
+
     # first we should make sure that `scale_name` is written in new naming scheme
-    pattern = '[' + NAMED_STR_LIN + '][b#]*-{0,1}\d* +'
-    scale_type = re.sub(pattern, '', scale_name)
-    if scale_type in SCALE_TYPE_OLD_TO_NEW.keys():
-        scale_type = SCALE_TYPE_OLD_TO_NEW[scale_type]
-    elif scale_type in ALTERED_SCALE_TYPE_OLD_TO_NEW.keys():
-        scale_type = ALTERED_SCALE_TYPE_OLD_TO_NEW[scale_type]
+    scale_type = re.sub(pattern_1, '', scale_name)
+
+    if scale_type in SCALE_TYPE_NS1_TO_NS0.keys():
+        scale_type = SCALE_TYPE_NS1_TO_NS0[scale_type]
+    elif scale_type in ALTERED_SCALE_TYPE_NS2_TO_NS0.keys():
+        scale_type = ALTERED_SCALE_TYPE_NS2_TO_NS0[scale_type]
     else:
         pass
-    scale_name = re.findall(pattern, scale_name)[0] + scale_type
 
-    pattern = r'(?P<scale_tonic_name>[' + NAMED_STR_LIN + r'][b#]*-{0,1}\d*) ?(?P<scale_type>[\w-]+) ?(?P<altered_note>(\([^ac-z]*\)){0,1})'
+    scale_name = re.match(pattern_1, scale_name).group() + scale_type
+
+    # parse `scale_name`
+    pattern = pattern_1 + pattern_2 + pattern_3
     search_obj = re.search(pattern, scale_name)
+
     return search_obj.groupdict()
 
 
 def scale_type_parser(scale_type):
     # `scale_type` is a string, examples: 'D-mode', 'E-mode', 'α-mode', etc.
-    # in [12, 7, 5] diatonic scale, D-mode is Dorian, E-mode is Phrygian, etc.
     pattern = '(?P<mode_tonic_name>[' + NAMED_STR_LIN + '])(?=(-mode))'
     search_obj = re.search(pattern, scale_type)
     return search_obj.groupdict()
@@ -131,12 +72,25 @@ def altered_note_parser(altered_note):
 # for `Chord`
 def chord_name_parser(chord_name):
     # `chord_name` is a string, examples: 'CM7', 'Dm7(9, 11, 13)', 'Bm7-5/F', etc.
-    pattern = r'(?P<root_name>[' + \
-              NAMED_STR_LIN + \
-              '][b#]*)(?P<chord_type>\w*[-+]?\d?\w*)(?P<tension_type>(\([^ac-z]*\)){0,1})/?(?P<bass_name>([' + \
-              NAMED_STR_LIN + '][b#]*){0,1})'
+
+    # basic patterns
+    pattern_1 = r'(?P<root_name>[' + NAMED_STR_LIN + r'][#b]*-{0,1}\d*) ?'
+    pattern_2 = r'(?P<chord_type>[\w.#b+-]*)'
+    pattern_3 = r'(?P<tension_type>(\([^ac-z]*\)){0,1})'
+    pattern_4 = '/?(?P<bass_name>([' + NAMED_STR_LIN + r'][#b]*-{0,1}\d*){0,1})'
+
+    # parse `scale_name`
+    pattern = pattern_1 + pattern_2 + pattern_3 + pattern_4
     search_obj = re.search(pattern, chord_name)
-    return search_obj.groupdict()
+
+    results = search_obj.groupdict()
+
+    # make sure that `chord_type` is written in new naming scheme
+    if NGSChecker():
+        if results['chord_type'] in CHORD_TYPE_NS1_TO_NS0[NGS].keys():
+            results['chord_type'] = CHORD_TYPE_NS1_TO_NS0[NGS][results['chord_type']]
+
+    return results
 
 
 def tension_type_parser(tension_type):
@@ -150,9 +104,31 @@ def tension_type_parser(tension_type):
 
 
 class Note(object):
+    @staticmethod
+    def note_name_to_note_vector(note_name):
+        par = note_name_parser(note_name)
+
+        named_str = par['named_str']
+        accidental_str = par['accidental_str']
+        register_str = par['register_str']
+
+        # get named nnrel, integer in `NAMED_NNREL_LIN`
+        named_nnrel = STR_TO_NNREL[named_str]
+
+        # get number of accidentals, integer in (-\infty, \infty)
+        accidental = 0 + accidental_str.count('#') - accidental_str.count('b')
+
+        # get register number, integer in (-\infty, \infty)
+        if register_str:
+            register = int(register_str)
+        else:
+            register = 0
+
+        return named_nnrel, accidental, register
+
     def __init__(self, note_name=f'{NAMED_STR_LIN[0]}0'):
         # get note vector
-        self._named_nnrel, self._accidental, self._register = note_name_to_note_vector(note_name)
+        self._named_nnrel, self._accidental, self._register = self.note_name_to_note_vector(note_name)
 
         # additional message dict
         self._message = dict()
@@ -323,15 +299,9 @@ class Note(object):
         else:
             return NNREL_TO_STR[self._named_nnrel] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b')
 
-    def get_frequency(self):
-        """
-        (in [12, 7, 5] diatonic scale)
-        A4 concerto pitch == nnabs57 == 440Hz
-        A3 cubase pitch == nnabs45 == 440Hz
-
-        :return: frequency of current note (float type)
-        """
-        return C3 * (T ** (int(self) - N * 3))
+    def from_name(self, note_name):
+        self._named_nnrel, self._accidental, self._register = self.note_name_to_note_vector(note_name)
+        return self
 
     def add_accidental(self, n=0):
         # a combination of `add_sharp` and `add_flat` methods
@@ -398,9 +368,117 @@ class Note(object):
 
 
 class Interval(object):
-    def __init__(self, interval_name='P1'):
+    @staticmethod
+    def interval_name_to_interval_vector(interval_name, ns=0):
+        """
+        when [N, G, S] == [12, 7, 5], will choose naming scheme according to `DELTA_STEP_TO_NS`
+        when [N, G, S] != [12, 7, 5], will use naming scheme 2
+
+        :param interval_name: interval name, e.g. 'P1', 'M2', etc.
+        :param ns: interval naming scheme, 0 = auto, 1 = dPA, 2 = dmMA
+        """
+        par = interval_name_parser(interval_name)
+
+        # negative or positive (will add this at the end)
+        sgn = -1 if par['negative_str'] else 1
+
+        # get interval type .., 'dd', 'd', 'm', 'P', 'M', 'A', 'AA', ...
+        interval_type = par['interval_type']
+
+        # get interval degree, positive integer
+        degree = int(par['degree_str'])
+
+        # get `abs(delta_step)`
+        delta_step = degree - 1
+
+        # get naming scheme
+        if ns == 0:
+            if NGSChecker():
+                ns = DELTA_STEP_TO_NS[NGS][delta_step % M]
+            else:
+                ns = 2
+        else:
+            pass
+
+        # calculate `delta_group`
+        if ns == 1:
+            delta_group = interval_type.count('A') - interval_type.count('d')
+        elif ns == 2:
+            if 'd' in interval_type:
+                delta_group = interval_type.count('A') - interval_type.count('m') - interval_type.count('d') - 1
+            else:
+                delta_group = interval_type.count('A') - interval_type.count('m')
+        else:
+            raise ValueError('No such naming scheme! Choose `ns` from [1, 2]!')
+
+        # calculate `delta_nnabs`
+        delta_step_rel = delta_step % M
+        delta_register = delta_step // M
+
+        named_nnrel = NAMED_NNREL_LIN[delta_step_rel]
+        delta_nnabs = delta_group + named_nnrel + N * delta_register
+
         # get interval vector
-        self._delta_nnabs, self._delta_step = interval_name_to_interval_vector(interval_name)
+        return sgn * delta_nnabs, sgn * delta_step
+
+    @staticmethod
+    def interval_vector_to_interval_name(delta_nnabs, delta_step, ns=0):
+        """
+        it only exists 2 types of intervals that contain same number of named notes in diatonic scale
+
+        we call the larger interval P (Perfect), and the smaller interval d (diminished):
+        ... < ddd < dd < d < P < A < AA < AAA < ... (naming scheme 1, `ns`=1)
+
+        we can also call the larger interval M (major), and the smaller interval m (minor):
+        ... < dd < d < m < M < A < AA < AAA < ... (naming scheme 2, `ns`=2)
+
+        * notice: '-M2' and 'M-2' are different, we will use the former one when `delta_step` < 0
+
+        :return: interval name (type: str)
+        """
+        sgn = sign(delta_step)
+
+        if sgn < 0:
+            delta_nnabs, delta_step = -delta_nnabs, -delta_step
+
+        delta_step_rel = delta_step % M
+        delta_register = delta_step // M
+
+        named_nnrel = NAMED_NNREL_LIN[delta_step_rel]
+        delta_group = delta_nnabs - N * delta_register - named_nnrel
+
+        # get naming scheme
+        if ns == 0:
+            if NGSChecker():
+                ns = DELTA_STEP_TO_NS[NGS][delta_step % M]
+            else:
+                ns = 2
+        else:
+            pass
+
+        if ns == 1:
+            if delta_group > 0:
+                itv_type = 'A' * delta_group
+            elif delta_group == 0:
+                itv_type = 'P'
+            else:
+                itv_type = 'd' * abs(delta_group)
+        elif ns == 2:
+            if delta_group > 0:
+                itv_type = 'A' * delta_group
+            elif delta_group == 0:
+                itv_type = 'M'
+            elif delta_group == -1:
+                itv_type = 'm'
+            else:
+                itv_type = 'd' * (abs(delta_group) - 1)
+        else:
+            raise ValueError('No such naming scheme! Choose `ns` from [1, 2]!')
+
+        return -sgn * '-' + itv_type + f'{delta_step + 1}'
+
+    def __init__(self, interval_name='P1'):
+        self._delta_nnabs, self._delta_step = self.interval_name_to_interval_vector(interval_name)
 
     def __str__(self):
         return self.get_name()
@@ -527,68 +605,30 @@ class Interval(object):
         return self._delta_step
 
     def get_name(self):
-        """
-        it only exists 2 types of intervals that contain same number of named notes in diatonic scale
+        return self.interval_vector_to_interval_name(self._delta_nnabs, self._delta_step)
 
-        we call the larger interval P (Perfect), and the smaller interval d (diminished):
-        ... < ddd < dd < d < P < A < AA < AAA < ... (naming scheme 1, `ns`=1)
-
-        we can also call the larger interval M (major), and the smaller interval m (minor):
-        ... < dd < d < m < M < A < AA < AAA < ... (naming scheme 2, `ns`=2)
-
-        * notice: '-M2' and 'M-2' are different, we will use the former one when `delta_step` < 0
-
-        :return: interval name (type: str)
-        """
-        sgn = sign(self._delta_step)
-
-        if sgn < 0:
-            delta_nnabs = -self._delta_nnabs
-            delta_step = -self._delta_step
-        else:
-            delta_nnabs = self._delta_nnabs
-            delta_step = self._delta_step
-
-        delta_step_rel = delta_step % M
-        delta_register = delta_step // M
-
-        named_nnrel = NAMED_NNREL_LIN[delta_step_rel]
-        delta_group = delta_nnabs - N * delta_register - named_nnrel
-
-        # get naming scheme
-        if NGSChecker():
-            ns = DELTA_STEP_TO_NS[NGS][delta_step % M]
-        else:
-            ns = 2
-
-        if ns == 1:
-            if delta_group > 0:
-                itv_type = 'A' * delta_group
-            elif delta_group == 0:
-                itv_type = 'P'
-            else:
-                itv_type = 'd' * abs(delta_group)
-        elif ns == 2:
-            if delta_group > 0:
-                itv_type = 'A' * delta_group
-            elif delta_group == 0:
-                itv_type = 'M'
-            elif delta_group == -1:
-                itv_type = 'm'
-            else:
-                itv_type = 'd' * (abs(delta_group) - 1)
-        else:
-            raise ValueError('No such naming scheme! Choose `ns` from [1, 2]!')
-
-        return -sgn * '-' + itv_type + f'{delta_step + 1}'
+    def from_name(self, interval_name):
+        self._delta_nnabs, self._delta_step = self.interval_name_to_interval_vector(interval_name)
+        return self
 
     def get_r357t(self):
-        delta_nnabs, delta_step = self.get_vector()
-        delta_nnrel = delta_nnabs % N
-        delta_step_rel = delta_step % M
-        accidentals = delta_nnrel - NAMED_NNREL_LIN[delta_step_rel]  # based on `NAMED_LIN_NNREL` mode
-        r357t = ('#' * accidentals if accidentals > 0 else 'b' * abs(accidentals)) + str(delta_step_rel + 1)
-        return 'R' if r357t == '1' else r357t
+        # (when `NGS` == '12.7.5') P2 -> 2, d2 -> b2, A2 -> #2, etc.
+        r357t = self.interval_vector_to_interval_name(self._delta_nnabs, self._delta_step, ns=1)
+        r357t = r357t.replace('P', '').replace('d', 'b').replace('A', '#')
+        r357t = 'R' if r357t == '1' else r357t
+
+        return r357t
+
+    def from_r357t(self, r357t):
+        # this is similar to interval naming scheme 1, 'P' -> '', 'd' -> 'b', 'A' -> '#'
+        if r357t in ['', 'R']:
+            self._delta_nnabs, self._delta_step = 0, 0
+            return self
+        else:
+            interval_name = 'P' + r357t.replace('b', 'd').replace('#', 'A')
+            self._delta_nnabs, self._delta_step = self.interval_name_to_interval_vector(interval_name, ns=1)
+
+        return self
 
     def normalize(self):
         delta_group = self._delta_step // M
@@ -611,13 +651,13 @@ class DiatonicScale(object):
         scale_type = par1['scale_type']
 
         # parse `scale_tonic_name`
-        st_named_nnrel, st_accidental, st_register = note_name_to_note_vector(scale_tonic_name)
+        st_named_nnrel, st_accidental, st_register = Note.note_name_to_note_vector(scale_tonic_name)
 
         # parse `scale_type`, and get `mode_tonic_name`
         mode_tonic_name = scale_type_parser(scale_type)['mode_tonic_name']
 
         # parse `mode_tonic_name`
-        mt_named_nnrel, mt_accidental, mt_register = note_name_to_note_vector(mode_tonic_name)
+        mt_named_nnrel, mt_accidental, mt_register = Note.note_name_to_note_vector(mode_tonic_name)
 
         # [!] get scale tonic index in `NAMED_GEN_NNREL` and number of accidentals
         st_step_gen = NAMED_NNREL_GEN.index(st_named_nnrel)
@@ -640,7 +680,7 @@ class DiatonicScale(object):
         self._refresh_messages()
 
         # print options initialization
-        self._printoptions = dict(use_old_name=False, use_conventional_name=False, show_register=False)
+        self._printoptions = dict(ns=0, show_register=False)
 
     def __getitem__(self, item):
         """
@@ -692,28 +732,26 @@ class DiatonicScale(object):
     def get_register_list(self):
         return [note.get_register() for note in self]
 
-    def set_printoptions(self, use_old_name=False, use_conventional_name=False, show_register=False):
-        if use_old_name:
-            if NGSChecker():
-                self._printoptions['use_old_name'] = True
+    def set_printoptions(self, ns=None, show_register=None):
+        if ns is not None:
+            if ns == 0:
+                self._printoptions['ns'] = 0
+            elif ns in [1, 2]:
+                if NGSChecker():
+                    self._printoptions['ns'] = ns
+                else:
+                    print(f'Naming scheme {ns} works properly only when NGS in {SPECIAL_NGS}!')
             else:
-                raise Warning(f'`use_old_name` option works properly only when NGS in {SPECIAL_NGS}!')
+                raise ValueError(f'No naming scheme {ns}! Please choose from [0, 1, 2]!')
 
-        if use_conventional_name:
-            # this option is for `AlteredDiatonicScale` class
-            if NGSChecker():
-                self._printoptions['use_conventional_name'] = True
-            else:
-                raise Warning(f'`use_conventional_name` option works properly only when NGS in {SPECIAL_NGS}!')
-
-        if show_register:
-            self._printoptions['show_register'] = True
+        if show_register is not None:
+            self._printoptions['show_register'] = show_register
 
         return self
 
     def set_scale_tonic_str(self, scale_tonic_name):
         # the default scale tonic note is in inputting `scale_name`, e.g. `C# Ionian` -> 'C#'
-        st_named_nnrel, _, st_register = note_name_to_note_vector(scale_tonic_name)
+        st_named_nnrel, _, st_register = Note.note_name_to_note_vector(scale_tonic_name)
         self._st_step_gen = NAMED_NNREL_GEN.index(st_named_nnrel)
 
         self._refresh_register(st_register)
@@ -739,15 +777,15 @@ class DiatonicScale(object):
         else:
             scale_tonic_name = self[0].get_name(show_register=False)
 
-        st_named_nnrel, st_accidental, st_register = note_name_to_note_vector(scale_tonic_name)
+        st_named_nnrel, st_accidental, st_register = Note.note_name_to_note_vector(scale_tonic_name)
 
         st_step_gen = NAMED_NNREL_GEN.index(st_named_nnrel)
         mt_step_gen = st_step_gen + M * st_accidental - self._accidentals
 
         scale_type = NAMED_STR_GEN[mt_step_gen] + '-mode'
 
-        if self._printoptions['use_old_name']:
-            scale_type = SCALE_TYPE_NEW_TO_OLD[scale_type]
+        if self._printoptions['ns'] == 1:
+            scale_type = SCALE_TYPE_NS0_TO_NS1[scale_type]
 
         if type_only:
             return scale_type
@@ -895,11 +933,6 @@ class AlteredDiatonicScale(DiatonicScale):
         scale_name                 -> C E-mode(b1)
         """
 
-        def nnrel_pair_to_accidental(nnrel_1, nnrel_2):
-            sgn_1 = -1 if abs(nnrel_2 - nnrel_1) > N / 2 else 1
-            sgn_2 = sign(nnrel_2 - nnrel_1)
-            return sgn_1 * sgn_2 * (N - abs(2 * abs(nnrel_1 - nnrel_2) - N)) // 2
-
         ds = DiatonicScale()
         order, offsets = self.distance(ds, return_offsets=True)
 
@@ -939,8 +972,8 @@ class AlteredDiatonicScale(DiatonicScale):
                 scale_tonic_name = scale_tonic.get_name(show_register=False)
 
             # add scale name to list
-            if self._printoptions['use_old_name']:
-                scale_names.append(SCALE_TYPE_NEW_TO_OLD[f'{mode_tonic_name}-mode'])
+            if self._printoptions['ns'] == 1:
+                scale_names.append(SCALE_TYPE_NS0_TO_NS1[f'{mode_tonic_name}-mode'])
             else:
                 scale_names.append(f'{mode_tonic_name}-mode')
 
@@ -953,333 +986,166 @@ class AlteredDiatonicScale(DiatonicScale):
                 scale_names[-1] += '(' + ', '.join(altered_notes_str) + ')'
 
             # if `self._use_conventional_name`
-            if not self._printoptions['use_old_name'] and self._printoptions['use_conventional_name']:
-                if scale_names[-1] in ALTERED_SCALE_TYPE_NEW_TO_OLD.keys():
-                    scale_names[-1] = ALTERED_SCALE_TYPE_NEW_TO_OLD[scale_names[-1]][0]
+            if self._printoptions['ns'] == 2:
+                if scale_names[-1] in ALTERED_SCALE_TYPE_NS0_TO_NS2.keys():
+                    scale_names[-1] = ALTERED_SCALE_TYPE_NS0_TO_NS2[scale_names[-1]][0]
 
             # if `type_only`
             if not type_only:
                 scale_names[-1] = scale_tonic_name + ' ' + scale_names[-1]
 
-        return list(set(scale_names))
+        return unique(scale_names)
 
 
-''' ----------------------------------------------------------------------------------------- '''
-''' ******************** fancy music theory classes (special [12, 7, 5]) ******************** '''
-''' ----------------------------------------------------------------------------------------- '''
-
-
-class ChordDev(object):
-    pass
-
-
-# TODO: rewrite `Chord` class
 class Chord(object):
-    def __init__(self, chord_name='C'):
-        self._bass = []
-        self._body = []
-        self._tensions = []
+    @staticmethod
+    def chord_name_to_notes(chord_name):
+        bass = []
+        body = []
+        tension = []
 
-        par = chord_name_parser(chord_name)
+        par1 = chord_name_parser(chord_name)
+        bass_name = par1['bass_name']
+        root_name = par1['root_name']
+        chord_type = par1['chord_type']
+        tension_type = par1['tension_type']
 
         # bass note
-        if par['bass_name']:
-            self._bass = [Note(par['bass_name']) - Interval('P8')]
-            self._bass[0].set_message(br357t='B')
+        if bass_name:
+            bass.append(Note(bass_name) - Interval().set_vector(N, M))
+            bass[0].set_message(br357t='B')
 
         # r357 notes
-        root = Note(par['root_name'])
-        scale = AlteredDiatonicScale(par['root_name'] + ' ' + CHORD_TYPE_TO_SCALE_TYPE[par['chord_type']])
-        steps = CHORD_TYPE_TO_STEPS[par['chord_type']]
-        self._body.extend([scale[step] for step in steps])
-        for note in self._body:
-            itv = note - self._body[0]
-            note.set_message(br357t=itv.get_r357t())
+        root = Note(root_name)
+        intervals = [Interval().from_r357t(r357) for r357 in chord_type.split('.')]
+        body.extend([root + interval for interval in intervals])
+        for note, interval in zip(body, intervals):
+            note.set_message(br357t=interval.get_r357t())
 
         # tension notes
-        if par['tension_type']:
-            tension_names = tension_type_parser(par['tension_type'])
-            tension_intervals = [TENSION_NAME_TO_INTERVAL_NAME[tension_name] for tension_name in tension_names]
-            tensions = [root + Interval(interval) for interval in tension_intervals]
-            self._tensions.extend(tensions)
-            _ = [tension.set_message(br357t=f'{tension_names[k]}') for k, tension in enumerate(self._tensions)]
+        if tension_type:
+            ts = tension_type_parser(tension_type)
+            intervals = [Interval().from_r357t(t) for t in ts]
+            tension.extend([root + interval for interval in intervals])
+            for note, interval in zip(tension, intervals):
+                note.set_message(br357t=interval.get_r357t())
 
-    def __repr__(self):
-        note_names = [note.get_name() for note in self.get_notes() if note is not None]
-        return '[' + ', '.join(note_names) + ']'
+        return bass, body, tension
 
-    def __getitem__(self, item):
-        return self.get_notes()[item]
-
-    def __abs__(self):
-        return [int(note) for note in self.get_notes()]
-
-    def set_notes(self, bass=None, body=None, tensions=None):
-        if bass:
-            self._bass = [bass.set_message(br357t='B')]
-        if body:
-            self._body = body
-            messages = ['R', '3', '5', '7']
-            for i, note in enumerate(self._body):
-                note.set_message(br357t=messages[i])
-        if tensions:
-            self._tensions = tensions
-            for note in self._tensions:
-                note.set_message(br357t=INTERVAL_NAME_TO_TENSION_NAME[str(note - self._body[0])])
-
-        return self
-
-    def get_notes(self, bass_on=True):
-        if bass_on:
-            return self._bass + self._body + self._tensions
-        else:
-            return self._body + self._tensions
-
-    def get_name(self, type_only=False):
+    @staticmethod
+    def notes_to_chord_type(bass, body, tension):
         # get bass type
-        if self._bass:
-            bass_type = '/' + self._bass[0].get_name(show_register=False)
+        if bass:
+            bass_type = '/' + bass[0].get_name(show_register=False)
         else:
             bass_type = ''
 
         # get body type
-        intervals = [note2-note1 for note1, note2 in zip(self._body[:-1], self._body[1:])]
-        interval_vector = ''.join([str(int(interval)) for interval in intervals])
-        body_type = INTERVAL_VECTOR_TO_CHORD_TYPE[interval_vector]
+        intervals = [note - body[0] for note in body]
+        r357s = [interval.get_r357t() for interval in intervals]
+        body_type = '.'.join(r357s)
 
         # get tension type
-        tension_to_root_intervals = [t-self._body[0] for t in self._tensions]
-        tension_names = [INTERVAL_NAME_TO_TENSION_NAME[str(interval)] for interval in tension_to_root_intervals]
-        if self._tensions:
-            tension_type = '(' + ', '.join(tension_names) + ')'
+        if tension:
+            intervals = [note - body[0] for note in tension]
+            ts = [interval.get_r357t() for interval in intervals]
+            tension_type = '(' + ', '.join(ts) + ')'
         else:
             tension_type = ''
 
+        return body_type, tension_type, bass_type
+
+    def __init__(self, chord_name=f'{NAMED_STR_LIN[0]}0'):
+        self._bass, self._body, self._tension = self.chord_name_to_notes(chord_name)
+
+        # print options initialization
+        self._printoptions = dict(ns=0, show_register=False)
+
+    def __str__(self):
+        bass_names = [note.get_name() for note in self._bass]
+        body_names = [note.get_name() for note in self._body]
+        tension_names = [note.get_name() for note in self._tension]
+
+        str_1 = 'bass: [' + ', '.join(bass_names) + ']'
+        str_2 = 'body: [' + ', '.join(body_names) + ']'
+        str_3 = 'tension: [' + ', '.join(tension_names) + ']'
+
+        return '\n'.join([str_1, str_2, str_3])
+
+    def __repr__(self):
+        return f"Chord('{self.get_name()}')"
+
+    def __getitem__(self, item):
+        return (self._bass + self._body + self._tension)[item]
+
+    def __abs__(self):
+        return [int(note) for note in self._bass + self._body + self._tension]
+
+    def set_notes(self, bass=None, body=None, tension=None):
+        if bass is not None:
+            self._bass = [note.set_message(br357t='B') for note in bass if isinstance(note, Note)]
+
+        if body is not None:
+            self._body = [note for note in body if isinstance(note, Note)]
+            for note in self._body:
+                interval = note - self._body[0]
+                note.set_message(br357t=interval.get_r357t())
+
+        if tension is not None:
+            self._tension = [note for note in tension if isinstance(note, Note)]
+            for note in self._tension:
+                interval = note - self._tension[0]
+                note.set_message(br357t=interval.get_r357t())
+
+        return self
+
+    def get_notes(self, return_bass=True, tension_only=False):
+        if tension_only:
+            return self._tension
+
+        if return_bass:
+            return self._bass + self._body + self._tension
+        else:
+            return self._body + self._tension
+
+    def set_printoptions(self, ns=None, show_register=None):
+        if ns is not None:
+            if ns == 0:
+                self._printoptions['ns'] = 0
+            elif ns in [1, ]:
+                if NGSChecker():
+                    self._printoptions['ns'] = ns
+                else:
+                    raise ValueError(f'Naming scheme {ns} works properly only when NGS in {SPECIAL_NGS}!')
+            else:
+                raise ValueError(f'No naming scheme {ns}! Please choose from [0, 1]!')
+
+        if show_register is not None:
+            self._printoptions['show_register'] = show_register
+
+        return self
+
+    def get_name(self, type_only=False):
+        body_type, tension_type, bass_type = self.notes_to_chord_type(self._bass, self._body, self._tension)
+
+        if self._printoptions['ns'] == 1:
+            if body_type in CHORD_TYPE_NS0_TO_NS1[NGS].keys():
+                body_type = CHORD_TYPE_NS0_TO_NS1[NGS][body_type][0]
+
         chord_type = body_type + tension_type + bass_type
+
         if type_only:
             return chord_type
         else:
-            return f'{self._body[0].get_name(show_register=False)}{chord_type}'
-
-    def get_scale(self, top_k=1, return_class_idx=False):
-        """ get least-order scale of current chord """
-        def _dist(l1, l2):
-            return sum([abs(i-j) for i, j in zip(l1, l2)])
-
-        def _lshift(lst, k):
-            return lst[k:] + lst[:k]
-
-        def _is_equal(list_1, list_2):
-            if len(list_1) != len(list_2):
-                return False
-            if _dist(list_1, list_2) < 1e-5:
-                return True
+            if self._printoptions['ns'] == 1:
+                whitespace = ''
             else:
-                return False
+                whitespace = ' '
+            return f"{self._body[0].get_name(show_register=self._printoptions['show_register'])}{whitespace}{chord_type}"
 
-        chord_notes = self.get_notes(bass_on=False)
-        root_name = chord_notes[0].get_name(show_register=False)
-        itv_list = [int(n2-n1) for n1, n2 in zip(chord_notes[:-1], chord_notes[1:])]
-
-        # find all root positions in 66 classes of current chord
-        all_steps = [[(k*2)%7 for k in range(7) if _is_equal(_lshift(interval_vector, k)[:len(itv_list)], itv_list)] for interval_vector in CHORD_INTERVAL_VECTOR_LIST]
-
-        all_scales = []
-        all_indices = []
-        num_class = 0
-        for k, indices in enumerate(all_steps):
-            if num_class >= top_k:
-                break
-            if indices:
-                class_k = CLASS_LIST[k]
-                step = len(class_k) // 7
-                # from the least accidentals to the most accidentals, return top k nearest scales
-                class_k_reshuffle = sum([[class_k[s+step*j] for j in range(7)] for s in range(step)], [])
-                for idx in indices:
-                    cur_scale_type = class_k_reshuffle[(idx*2)%7]
-                    sharps_on_tonics = cur_scale_type.count('#1')
-                    flats_on_tonics = cur_scale_type.count('b1')
-                    new_root_name = root_name + '#'*flats_on_tonics + 'b'*sharps_on_tonics
-                    cur_scale = AlteredDiatonicScale(new_root_name + ' ' + cur_scale_type)
-                    all_scales.append(cur_scale)
-                    all_indices.append(k)
-                num_class += 1
-
-        if return_class_idx:
-            return all_scales, all_indices
-        else:
-            return all_scales
-
+    # TODO: finish this
     def get_scale(self, enharmonic=False):
         pass
-
-    def get_icd(self, note_name):
-        """ get in-chord degree of a note """
-        scales = self.get_scale(66)
-        icds = []
-        for scale in scales:
-            scale_nvs = [note.get_vector(return_register=False) for note in scale]  # nvs = note vectors
-            note = Note(note_name)
-            note_nv = note.get_vector(return_register=False)
-            if note_nv not in scale_nvs:
-                icds.append((scale.get_name_old()[0], -1))
-            else:
-                icds.append((scale.get_name_old()[0], scale_nvs.index(note_nv) + 1))
-        return icds[[x[1]!=-1 for x in icds].index(True)]
-
-
-# TODO: combine `ChordEx` class into `Chord` class
-class ChordEx(object):
-    def __init__(self):
-        self._bass = None
-        self._notes = []
-        self._steps = []
-
-    def __repr__(self):
-        note_names = [note.get_name() for note in self.get_notes() if note is not None]
-        return '[' + ', '.join(note_names) + ']'
-
-    def __getitem__(self, item):
-        return self.get_notes()[item]
-
-    def __abs__(self):
-        return [int(note) for note in self.get_notes()]
-
-    def set_notes(self, bass=None, notes=None):
-        if bass:
-            self._bass = bass
-        if notes:
-            self._notes = notes
-            intervals = [note - notes[0] for note in notes]
-            delta_steps = [interval.get_delta_step() for interval in intervals]
-            for note, ds in zip(notes, delta_steps):
-                self._steps.append(ds % 7 + 1)
-        return self
-
-    def get_notes(self, bass_on=True):
-        if bass_on and self._bass is not None:
-            return self._bass + self._notes
-        else:
-            return self._notes
-
-    def get_name(self, type_only=False):
-        intervals = [note - self._notes[0] for note in self._notes]
-        intervals = [interval.normalize().get_name() for interval in intervals]
-
-        # get bass type
-        if self._bass:
-            bass_type = '/' + self._bass[0].get_name(show_register=False)
-        else:
-            bass_type = ''
-
-        # get body type
-        if 3 in self._steps:
-            third_idx = self._steps.index(3)
-            third_type = INTERVAL_NAME_TO_CHORD_TYPE[intervals[third_idx]]
-            if third_type not in ['m', 'M']:
-                third_type_post, third_type = third_type, ''
-            else:
-                third_type_post = ''
-        else:
-            third_type, third_type_post = '', ''
-
-        if 5 in self._steps:
-            fifth_idx = self._steps.index(5)
-            fifth_type = INTERVAL_NAME_TO_CHORD_TYPE[intervals[fifth_idx]]
-            if fifth_type not in ['']:
-                fifth_type_post, fifth_type = fifth_type, ''
-            else:
-                fifth_type_post = ''
-        else:
-            fifth_type, fifth_type_post = '', ''
-
-        if 7 in self._steps:
-            seventh_idx = self._steps.index(7)
-            seventh_type = INTERVAL_NAME_TO_CHORD_TYPE[intervals[seventh_idx]]
-        else:
-            seventh_type = ''
-
-        # get tension type
-        tension_types = []
-        for k in [2, 4, 6]:
-            if k in self._steps:
-                idx = self._steps.index(k)
-                tension_types.append(INTERVAL_NAME_TO_CHORD_TYPE[intervals[idx]])
-
-        # generate chord type
-        body_type = third_type + fifth_type + seventh_type + fifth_type_post + third_type_post
-        if tension_types:
-            tension_type = '(' + ', '.join(tension_types) + ')'
-        else:
-            tension_type = ''
-        chord_type = body_type + tension_type + bass_type
-        if type_only:
-            return chord_type
-        else:
-            return f'{self._notes[0].get_name(show_register=False)}{chord_type}'
-
-    def get_scale(self, top_k=1, return_class_idx=False):
-        """ get least-order scale of current chord """
-        def _dist(l1, l2):
-            return sum([abs(i-j) for i, j in zip(l1, l2)])
-
-        def _lshift(lst, k):
-            return lst[k:] + lst[:k]
-
-        def _is_equal(list_1, list_2):
-            if len(list_1) != len(list_2):
-                return False
-            if _dist(list_1, list_2) < 1e-5:
-                return True
-            else:
-                return False
-
-        chord_notes = self.get_notes(bass_on=False)
-        root_name = chord_notes[0].get_name_old(show_register=False)
-        itv_list = [int(n2-n1) for n1, n2 in zip(chord_notes[:-1], chord_notes[1:])]
-
-        # find all root positions in 66 classes of current chord
-        all_steps = [[(k*2)%7 for k in range(7) if _is_equal(_lshift(interval_vector, k)[:len(itv_list)], itv_list)] for interval_vector in CHORD_INTERVAL_VECTOR_LIST]
-
-        all_scales = []
-        all_indices = []
-        num_class = 0
-        for k, indices in enumerate(all_steps):
-            if num_class >= top_k:
-                break
-            if indices:
-                class_k = CLASS_LIST[k]
-                step = len(class_k) // 7
-                # from the least accidentals to the most accidentals, return top k nearest scales
-                class_k_reshuffle = sum([[class_k[s+step*j] for j in range(7)] for s in range(step)], [])
-                for idx in indices:
-                    cur_scale_type = class_k_reshuffle[(idx*2)%7]
-                    sharps_on_tonics = cur_scale_type.count('#1')
-                    flats_on_tonics = cur_scale_type.count('b1')
-                    new_root_name = root_name + '#'*flats_on_tonics + 'b'*sharps_on_tonics
-                    cur_scale = AlteredDiatonicScale(new_root_name + ' ' + cur_scale_type)
-                    all_scales.append(cur_scale)
-                    all_indices.append(k)
-                num_class += 1
-
-        if return_class_idx:
-            return all_scales, all_indices
-        else:
-            return all_scales
-
-    def get_icd(self, note_name):
-        """ get in-chord degree of a note """
-        scales = self.get_scale(66)
-        icds = []
-        for scale in scales:
-            scale_nvs = [note.get_vector(return_register=False) for note in scale]  # nvs = note vectors
-            note = Note(note_name)
-            note_nv = note.get_vector(return_register=False)
-            if note_nv not in scale_nvs:
-                icds.append((scale.get_name()[0], -1))
-            else:
-                icds.append((scale.get_name()[0], scale_nvs.index(note_nv) + 1))
-        return icds[[x[1]!=-1 for x in icds].index(True)]
 
 
 # TODO: write avoid type back to note
@@ -1296,7 +1162,7 @@ class ChordScale(AlteredDiatonicScale):
         itvs = [n - self[0] for n in self]
         itvs_abs = [int(i) for i in itvs]
         itvs_abs_mod = [i % 12 for i in itvs_abs]
-        degs = [INTERVAL_NAME_TO_TENSION_NAME[str(i)] for i in itvs]
+        degs = [i.get_r357t() for i in itvs]
         labels = [''] * len(degs)
         fake_dom7 = False
         fake_m7 = False
