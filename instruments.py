@@ -4,7 +4,7 @@ import matplotlib.gridspec as gridspec
 import colorsys as cs
 
 from theories import *
-from midi import *
+# from midi import *
 
 
 ''' ----------------------------------------------------------------------------------------- '''

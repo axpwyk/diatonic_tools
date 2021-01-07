@@ -1,14 +1,26 @@
-def sign(x): return 1 if x > 0 else -1 if x < 0 else 0
+def sign(x):
+    return 1 if x > 0 else -1 if x < 0 else 0
 
 
 def unique(lst):
     out = []
-    for element in lst:
-        if element in out:
+    for e in lst:
+        if e in out:
             continue
         else:
-            out.append(element)
+            out.append(e)
     return out
+
+
+def circular_sorted(lst, idx, key=lambda x: x):
+    # return a sorted list, with `idx`-th element of original list at the beginning
+    _out = sorted([(e, i) for i, e in enumerate(lst)], key=lambda x: key(x[0]))
+    indices = sorted([(i, j) for j, (_, i) in enumerate(_out)], key=lambda x: x[0])
+
+    out = [x[0] for x in _out]
+    idx = indices[idx][1]
+
+    return out[idx:] + out[:idx]
 
 
 def nnrel_pair_to_accidental(nnrel_1, nnrel_2):
@@ -126,6 +138,10 @@ SCALE_TYPE_NS1_TO_NS0 = dict((v, k) for k, v in SCALE_TYPE_NS0_TO_NS1.items())
 ''' naming scheme 0 (NS0): E-mode(#3), F-mode(b7), ...                                        '''
 ''' naming scheme 1 (NS1): Phrygian(#3), Lydian(b7), ...                                      '''
 ''' naming scheme 2 (NS2): Phrygian Dominant, Lydian Dominant, ...                            '''
+'''                                                                                           '''
+''' Class xx: starting from Lydian, add sharp to every degree then flat iteratively           '''
+'''           e.g. Lydian - [x]Lydian(#1) - Lydian(#2) - ... - [x]Lydian(#7) - [x]Lydian(b1)  '''
+'''                Lydian(b2) - ... [x]Lydian(#1, #1) - Lydian(#1, #2) - ...                  '''
 ''' ----------------------------------------------------------------------------------------- '''
 
 
@@ -135,7 +151,7 @@ ALTERED_SCALE_TYPE_NS0_TO_NS2 = {
     'E-mode(#3)': ['Phrygian Dominant', 'HmP5b'],
     'A-mode(#7)': ['Harmonic Minor'],
     'D-mode(#4)': ['Ukrainian Dorian'],
-    'G-mode(#1)': ['Ultra Locrian'],
+    'Gb-mode(#1)': ['Ultra Locrian'],
 
     # Class 3
     'G-mode(#4)': ['Acoustic', 'Lydian Dominant'],
@@ -144,7 +160,7 @@ ALTERED_SCALE_TYPE_NS0_TO_NS2 = {
     'A-mode(#3)': ['Aeolian Dominant', 'Melodic Major'],
     'G-mode(b6)': ['Melodic Major', 'Aeolian Dominant'],
 
-    'C-mode(#1)': ['Altered Dominant', 'Super Locrian'],
+    'Cb-mode(#1)': ['Altered Dominant', 'Super Locrian'],
     'B-mode(b4)': ['Super Locrian', 'Altered Dominant'],
 
     'D-mode(#7)': ['Melodic Minor'],
@@ -172,6 +188,11 @@ ALTERED_SCALE_TYPE_NS0_TO_NS2 = {
     'D-mode(b2, #7)': ['Major Neapolitan'],
     'C-mode(b2, b3)': ['Major Neapolitan'],
 
+    # Class 33
+    'F-mode(b2, #5, #6)': ['Enigmatic'],
+    'E#-mode(b1, b2, #6)': ['Enigmatic'],
+    'D#-mode(b1, bb2)': ['Enigmatic'],
+
     # Class 0
     'C-mode': ['Major'],
     'A-mode': ['Minor']
@@ -192,75 +213,75 @@ ALTERED_SCALE_TYPE_NS2_TO_NS0 = dict((v, k) for k, vs in ALTERED_SCALE_TYPE_NS0_
 CHORD_TYPE_NS0_TO_NS1 = {
     '12.7.5': {
         # 5**
-        '1.4.#5.7': ['M7+5sus4', 'augM7sus4'],
-        '1.4.5.7': ['M7sus4'],
-        '1.4.5': ['sus4'],
+        'R.4.#5.7': ['M7+5sus4', 'augM7sus4'],
+        'R.4.5.7': ['M7sus4'],
+        'R.4.5': ['sus4'],
         # 4**
-        '1.3.#5.7': ['M7+5', 'augM7'],
-        '1.3.#5.b7': ['7+5', 'aug7'],
-        '1.3.#5': ['+5', 'aug'],
-        '1.3.5.7': ['M7'],
-        '1.3.5.7.9': ['M9'],
-        '1.3.5.b7.9': ['9'],
-        '1.3.5.b7': ['7'],
-        '1.3.5.6': ['6'],
-        '1.5': ['5'],
-        '1.3.5': ['', 'M'],
-        '1.3.b5.7': ['M7-5'],
-        '1.3.b5.b7': ['7-5'],
-        '1.3.b5': ['-5'],
+        'R.3.#5.7': ['M7+5', 'augM7'],
+        'R.3.#5.b7': ['7+5', 'aug7'],
+        'R.3.#5': ['+5', 'aug'],
+        'R.3.5.7': ['M7'],
+        'R.3.5.7.9': ['M9'],
+        'R.3.5.b7.9': ['9'],
+        'R.3.5.b7': ['7'],
+        'R.3.5.6': ['6'],
+        'R.5': ['5'],
+        'R.3.5': ['', 'M'],
+        'R.3.b5.7': ['M7-5'],
+        'R.3.b5.b7': ['7-5'],
+        'R.3.b5': ['-5'],
         # 3**
-        '1.b3.#5.b7': ['m7+5'],
-        '1.b3.5.7': ['mM7'],
-        '1.b3.5.b7': ['m7'],
-        '1.b3.5.6': ['m6'],
-        '1.b3.5': ['m'],
-        '1.b3.b5.7': ['mM7-5'],
-        '1.b3.b5.b7': ['m7-5'],
-        '1.b3.b5.bb7': ['dim7'],
-        '1.b3.b5': ['dim'],
+        'R.b3.#5.b7': ['m7+5'],
+        'R.b3.5.7': ['mM7'],
+        'R.b3.5.b7': ['m7'],
+        'R.b3.5.6': ['m6'],
+        'R.b3.5': ['m'],
+        'R.b3.b5.7': ['mM7-5'],
+        'R.b3.b5.b7': ['m7-5'],
+        'R.b3.b5.bb7': ['dim7'],
+        'R.b3.b5': ['dim'],
         # 2**
-        '1.2.5.b7': ['7sus2'],
-        '1.2.b5.b7': ['7-5sus2'],
-        '1.2.b5.6': ['6-5sus2'],
-        '1.2.5': ['sus2'],
-        '1.2.b5': ['-5sus2']
+        'R.2.5.b7': ['7sus2'],
+        'R.2.b5.b7': ['7-5sus2'],
+        'R.2.b5.6': ['6-5sus2'],
+        'R.2.5': ['sus2'],
+        'R.2.b5': ['-5sus2']
     },
     '19.11.8': {
         # 5**
-        '1.4.#5.7': ['M7+5sus4', 'augM7sus4'],
-        '1.4.5.7': ['M7sus4'],
-        '1.4.5': ['sus4'],
+        'R.4.#5.7': ['M7+5sus4', 'augM7sus4'],
+        'R.4.5.7': ['M7sus4'],
+        'R.4.5': ['sus4'],
         # 4**
-        '1.3.#5.7': ['M7+5', 'augM7'],
-        '1.3.#5.b7': ['7+5', 'aug7'],
-        '1.3.#5': ['+5', 'aug'],
-        '1.3.5.7': ['M7'],
-        '1.3.5.7.9': ['M9'],
-        '1.3.5.b7.9': ['9'],
-        '1.3.5.b7': ['7'],
-        '1.3.5.6': ['6'],
-        '1.5': ['5'],
-        '1.3.5': ['', 'M'],
-        '1.3.b5.7': ['M7-5'],
-        '1.3.b5.b7': ['7-5'],
-        '1.3.b5': ['-5'],
+        'R.3.#5.7': ['M7+5', 'augM7'],
+        'R.3.#5.b7': ['7+5', 'aug7'],
+        'R.3.#5': ['+5', 'aug'],
+        'R.3.5.7': ['M7'],
+        'R.3.5.7.9': ['M9'],
+        'R.3.5.b7.9': ['9'],
+        'R.3.5.b7': ['7'],
+        'R.3.5.6': ['6'],
+        'R.5': ['5'],
+        'R.3.5': ['', 'M'],
+        'R.3.b5.7': ['M7-5'],
+        'R.3.b5.b7': ['7-5'],
+        'R.3.b5': ['-5'],
         # 3**
-        '1.b3.#5.b7': ['m7+5'],
-        '1.b3.5.7': ['mM7'],
-        '1.b3.5.b7': ['m7'],
-        '1.b3.5.6': ['m6'],
-        '1.b3.5': ['m'],
-        '1.b3.b5.7': ['mM7-5'],
-        '1.b3.b5.b7': ['m7-5'],
-        '1.b3.b5.bb7': ['dim7'],
-        '1.b3.b5': ['dim'],
+        'R.b3.#5.b7': ['m7+5'],
+        'R.b3.5.7': ['mM7'],
+        'R.b3.5.b7': ['m7'],
+        'R.b3.5.6': ['m6'],
+        'R.b3.5': ['m'],
+        'R.b3.b5.7': ['mM7-5'],
+        'R.b3.b5.b7': ['m7-5'],
+        'R.b3.b5.bb7': ['dim7'],
+        'R.b3.b5': ['dim'],
         # 2**
-        '1.2.5.b7': ['7sus2'],
-        '1.2.b5.b7': ['7-5sus2'],
-        '1.2.b5.6': ['6-5sus2'],
-        '1.2.5': ['sus2'],
-        '1.2.b5': ['-5sus2']
+        'R.2.5.b7': ['7sus2'],
+        'R.2.b5.b7': ['7-5sus2'],
+        'R.2.b5.6': ['6-5sus2'],
+        'R.2.5': ['sus2'],
+        'R.2.b5': ['-5sus2']
     }
 }
 

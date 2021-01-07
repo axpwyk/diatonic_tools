@@ -2,6 +2,7 @@ import re
 from copy import copy
 import numpy as np
 from consts import *
+from itertools import product
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -58,7 +59,7 @@ def scale_name_parser(scale_name):
 
 def scale_type_parser(scale_type):
     # `scale_type` is a string, examples: 'D-mode', 'E-mode', 'α-mode', etc.
-    pattern = '(?P<mode_tonic_name>[' + NAMED_STR_LIN + '])(?=(-mode))'
+    pattern = '(?P<mode_tonic_name>[' + NAMED_STR_LIN + r'][#b]*-{0,1}\d*)(?=(-mode))'
     search_obj = re.search(pattern, scale_type)
     return search_obj.groupdict()
 
@@ -662,7 +663,7 @@ class DiatonicScale(object):
         # [!] get scale tonic index in `NAMED_GEN_NNREL` and number of accidentals
         st_step_gen = NAMED_NNREL_GEN.index(st_named_nnrel)
         mt_step_gen = NAMED_NNREL_GEN.index(mt_named_nnrel)
-        accidentals = st_step_gen + M * st_accidental - mt_step_gen
+        accidentals = st_step_gen - mt_step_gen + M * (st_accidental + mt_accidental)
         self._st_step_gen = st_step_gen
         self._accidentals = accidentals
 
@@ -690,7 +691,7 @@ class DiatonicScale(object):
         return [self._meta_notes[(self._st_step_gen + M2_STEP_GEN * k) % M] for k in range(M)][item]
 
     def __str__(self):
-        note_names = [note.get_name() for note in self]
+        note_names = [note.get_name(self._printoptions['show_register']) for note in self]
         return '[' + ', '.join(note_names) + ']'
 
     def __repr__(self):
@@ -956,43 +957,58 @@ class AlteredDiatonicScale(DiatonicScale):
                 if nnrel_1 - nnrel_2 != 0:
                     altered_notes[(i + mode_tonic_offset) % M + 1] = nnrel_pair_to_accidental(nnrel_2, nnrel_1)
 
-            # filter
+            # filter out modes like 'Ionian(#4, b7)', because it's not in simplest form 'Lydian(b7)'
             if len(altered_notes) > order:
                 continue
 
-            # get scale tonic
+            # get scale type
             if 1 in altered_notes.keys():
-                scale_tonic = copy(self[0]).add_accidental(-altered_notes[1])
+                mode_tonic_name += '#' * -altered_notes[1] + 'b' * altered_notes[1]
+            scale_type = f'{mode_tonic_name}-mode'
+
+            # get altered notes
+            if altered_notes.items():
+                altered_notes = {k: altered_notes[k] for k in sorted(altered_notes)}
+                altered_notes_str = []
+                for i, (degree, accidental) in enumerate(altered_notes.items()):
+                    altered_notes_str.append('#' * accidental + 'b' * -accidental + f'{degree}')
+                altered_notes_str = '(' + ', '.join(altered_notes_str) + ')'
             else:
-                scale_tonic = copy(self[0])
+                altered_notes_str = ''
+
+            if scale_type in SCALE_TYPE_NS0_TO_NS1.keys():
+                scale_type_ns1 = SCALE_TYPE_NS0_TO_NS1[scale_type] + altered_notes_str
+            else:
+                scale_type_ns1 = scale_type + altered_notes_str
+
+            if scale_type + altered_notes_str in ALTERED_SCALE_TYPE_NS0_TO_NS2.keys():
+                scale_type_ns2 = ALTERED_SCALE_TYPE_NS0_TO_NS2[scale_type + altered_notes_str][0]
+            else:
+                if scale_type in SCALE_TYPE_NS0_TO_NS1.keys():
+                    scale_type_ns2 = SCALE_TYPE_NS0_TO_NS1[scale_type] + altered_notes_str
+                else:
+                    scale_type_ns2 = scale_type + altered_notes_str
+
+            if self._printoptions['ns'] == 1:
+                scale_type_out = scale_type_ns1
+            elif self._printoptions['ns'] == 2:
+                scale_type_out = scale_type_ns2
+            else:
+                scale_type_out = scale_type + altered_notes_str
+
+            # get scale tonic
+            scale_tonic = copy(self[0])
 
             if self._printoptions['show_register']:
                 scale_tonic_name = scale_tonic.get_name()
             else:
                 scale_tonic_name = scale_tonic.get_name(show_register=False)
 
-            # add scale name to list
-            if self._printoptions['ns'] == 1:
-                scale_names.append(SCALE_TYPE_NS0_TO_NS1[f'{mode_tonic_name}-mode'])
-            else:
-                scale_names.append(f'{mode_tonic_name}-mode')
-
-            # add altered notes to scale name
-            if altered_notes.items():
-                altered_notes = {k: altered_notes[k] for k in sorted(altered_notes)}
-                altered_notes_str = []
-                for i, (degree, accidental) in enumerate(altered_notes.items()):
-                    altered_notes_str.append('#' * accidental + 'b' * -accidental + f'{degree}')
-                scale_names[-1] += '(' + ', '.join(altered_notes_str) + ')'
-
-            # if `self._use_conventional_name`
-            if self._printoptions['ns'] == 2:
-                if scale_names[-1] in ALTERED_SCALE_TYPE_NS0_TO_NS2.keys():
-                    scale_names[-1] = ALTERED_SCALE_TYPE_NS0_TO_NS2[scale_names[-1]][0]
-
             # if `type_only`
-            if not type_only:
-                scale_names[-1] = scale_tonic_name + ' ' + scale_names[-1]
+            if type_only:
+                scale_names.append(scale_type_out)
+            else:
+                scale_names.append(scale_tonic_name + ' ' + scale_type_out)
 
         return unique(scale_names)
 
@@ -1062,9 +1078,9 @@ class Chord(object):
         self._printoptions = dict(ns=0, show_register=False)
 
     def __str__(self):
-        bass_names = [note.get_name() for note in self._bass]
-        body_names = [note.get_name() for note in self._body]
-        tension_names = [note.get_name() for note in self._tension]
+        bass_names = [note.get_name(self._printoptions['show_register']) for note in self._bass]
+        body_names = [note.get_name(self._printoptions['show_register']) for note in self._body]
+        tension_names = [note.get_name(self._printoptions['show_register']) for note in self._tension]
 
         str_1 = 'bass: [' + ', '.join(bass_names) + ']'
         str_2 = 'body: [' + ', '.join(body_names) + ']'
@@ -1125,6 +1141,13 @@ class Chord(object):
 
         return self
 
+    def get_intervals_seq(self, use_bass=True):
+        notes = self.get_notes(return_bass=use_bass)
+        return [n2 - n1 for n1, n2 in zip(notes[:-1], notes[1:])]
+
+    def get_intervals_cum(self, use_bass=True):
+        return [note - self[0] for note in self.get_notes(return_bass=use_bass)]
+
     def get_name(self, type_only=False):
         body_type, tension_type, bass_type = self.notes_to_chord_type(self._bass, self._body, self._tension)
 
@@ -1143,9 +1166,90 @@ class Chord(object):
                 whitespace = ' '
             return f"{self._body[0].get_name(show_register=self._printoptions['show_register'])}{whitespace}{chord_type}"
 
-    # TODO: finish this
-    def get_scale(self, enharmonic=False):
-        pass
+    def get_scale(self, use_bass=True, max_order=2, ns=2):
+        """
+        get all possible background scale of current chord, e.g.
+
+        EM9                  -> [E, G#, B, D#, F#]
+        circular_sorted(EM9) -> [E, F#, G#, (A), B, (C), D#]
+        unused_notes         -> [A, C]
+
+        possible A note      -> [A, A#]
+        possible C note      -> [C, C#, C##]
+
+        possible background scales:
+
+        [E, F#, G#, A, B, C, D#]
+        [E, F#, G#, A, B, C#, D#]
+        [E, F#, G#, A, B, C##, D#]
+        [E, F#, G#, A#, B, C, D#]
+        [E, F#, G#, A#, B, C#, D#]
+        [E, F#, G#, A#, B, C##, D#]
+
+        use `AlteredDiatonicScale` to get information about these scales
+        """
+        if use_bass:
+            notes = self.get_notes(return_bass=True)
+        else:
+            notes = self.get_notes(return_bass=False)
+
+        # when current chord is not well-formed, i.e. it contains same notes, raise an error
+        if len(unique([note.get_nnrel() for note in notes])) < len(notes):
+            raise ValueError( f'Current chord is not well-formed! Please make sure that notes are different from each other!')
+
+        # get normalized notes, e.g. [E1, G#1, B1, D#2, F#2] -> [E0, F#0, G#0, B0, D#1]
+        notes_sorted = circular_sorted(notes, 0, lambda x: x.get_nnrel())
+        notes_normed = [copy(note).set_vector(register=0) for note in notes_sorted]
+        for note in notes_normed:
+            if note < notes_normed[0]:
+                note.add_register(1)
+
+        # get unused notes, e.g. [E0, F#0, G#0, (A0), B0, (C1), D#1] -> [A0, C1], and indices of their left note, e.g. A0 -> 2, C1 -> 4
+        notes_named_nnrels = [note.get_named_nnrel() for note in notes_normed]
+        notes_nnabs_closed = [int(note) for note in notes_normed] + [int(notes_normed[0]) + N]
+
+        ds_name = f'{notes_normed[0].get_name(show_register=True)} {NAMED_STR_LIN[0]}-mode'
+        all_notes = list(DiatonicScale(ds_name))
+
+        unused_notes, indices, idx = [], [], -1
+        for note in all_notes:
+            if note.get_named_nnrel() in notes_named_nnrels:
+                idx += 1
+            else:
+                unused_notes.append(note)
+                indices.append(idx)
+
+        # get accidental range of unused notes, e.g. A0: (0, 2); C1: (0, 3)
+        accidental_ranges = []  # corresponds to `unused_names`
+        for cur_note, idx in zip(unused_notes, indices):
+            cur_nnabs = int(cur_note)
+            accidental_ranges.append(range(notes_nnabs_closed[idx] - cur_nnabs + 1, notes_nnabs_closed[idx + 1] - cur_nnabs))
+
+        # add accidentals to unused notes, put them into chord and get scale
+        scale_names = []
+        for accidentals in product(*accidental_ranges):
+            cur_scale = notes_normed + [copy(note).add_accidental(accidental) for note, accidental in zip(unused_notes, accidentals)]
+            cur_scale = circular_sorted(cur_scale, 0, key=lambda x: x.get_named_nnrel())
+
+            cur_r357ts = [(note - cur_scale[0]).get_r357t() for note in cur_scale]
+            altered_r357ts = [r357t for r357t in cur_r357ts]
+            altered_notes = '(' + ', '.join(altered_r357ts) + ')'
+
+            cur_scale_name = f'{str(notes_normed[0])} {NAMED_STR_LIN[0]}-mode{altered_notes}'
+
+            cur_ads = AlteredDiatonicScale(cur_scale_name).set_printoptions(ns=ns)
+
+            # filter out scales like [C, D, E, F, G, Ab, Bbbb] (Ab == Bbbb)
+            if True in [itv <= 0 for itv in cur_ads.get_intervals_seq()]:
+                continue
+
+            # filter out order > `max_order` scales
+            if cur_ads.get_order() > max_order:
+                continue
+
+            scale_names.extend(cur_ads.get_name())
+
+        return unique(scale_names)
 
 
 # TODO: write avoid type back to note
