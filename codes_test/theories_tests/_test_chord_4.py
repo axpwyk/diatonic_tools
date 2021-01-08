@@ -33,4 +33,9 @@ def prints(c):
 # prints(Chord('C R.3.4.5.7'))  # Ryukyu Scale
 # prints(Chord('C R.b3.4.5.b7'))  # Minor Pentatonic Scale
 
-prints(Chord('C R.3.7'))
+# prints(Chord('C R.3.7'))
+
+prints(Chord('D R.3.5.6.9'))
+prints(Chord('D R.b3.5.9.13'))
+prints(Chord('E R.b2.4.5.b7'))
+prints(Chord('C R.b3.4.b5.b7'))

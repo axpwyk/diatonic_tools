@@ -1255,6 +1255,9 @@ class Chord(object):
 # TODO: write avoid type back to note
 class ChordScale(AlteredDiatonicScale):
     def __init__(self, scale_name):
+        if NGS != '12.7.5':
+            raise ValueError('`ChordScale` class works properly only when NGS == 12.7.5!')
+
         super().__init__(scale_name)
         self._chord_notes = [0, 2, 4, 6]
         self._tension_notes = [k for k in range(7) if k not in self._chord_notes]

@@ -1,10 +1,9 @@
-from itertools import product
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import colorsys as cs
 
 from theories import *
-# from midi import *
+from midi import *
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -205,7 +204,6 @@ def within(x, a, b):
 ''' ----------------------------------------------------------------------------------------- '''
 
 
-# TODO: review `instruments.py`
 class _NoteList(object):
     def __init__(self):
         self._notes = []
@@ -223,7 +221,10 @@ class _NoteList(object):
         return self
 
     def _get_note_text(self, text_style):
-        if text_style in ['note', 'br357t', 'degree', 'avoid']:
+        if text_style == 'note':
+            for note in self._notes:
+                note.set_message(text=note.get_name())
+        elif text_style in ['br357t', 'degree', 'avoid']:
             for note in self._notes:
                 note.set_message(text=note.get_message(text_style))
         else:
@@ -260,16 +261,25 @@ class Guitar(_NoteList):
                  w_to_h_ratio=2.0, short_fret_markers=(3, 5, 7, 9), long_fret_markers=(0, )):
         # set `self._notes`
         super().__init__()
+
+        # prepare useful ndarrays
+        open_string_nnabs = np.expand_dims(np.array([int(note) for note in open_string_notes]), axis=0)  # shape = [1, n_strings]
+        fret_delta_nnabs = np.expand_dims(np.arange(0, max_fret + 1), axis=1)  # shape = [n_frets, 1]
+        fretboard_nnabs = open_string_nnabs + fret_delta_nnabs  # shape = [n_frets, n_strings]
+
         # basic properties of this guitar instance
-        self._modulo_on = modulo_on  # ignore register of note
-        self._max_fret = max_fret  # number of frets
-        self._max_string = len(open_string_notes)  # number of strings
+        self._modulo_on = modulo_on  # if ignore register of note
+        self._max_fret = max_fret  # max fret number (starting from 0)
+        self._max_string = len(open_string_notes)  # max string number (starting from 0, lowest string)
+        self._open_string_notes = list(open_string_notes)  # save open string notes to instance attribute
+
         # open string nnabs and fretboard nnabs
-        self._open_string_notes = list(open_string_notes)
-        self._open_string_nnabs = np.array([int(note) for note in open_string_notes])  # 1-d `np.ndarray`
-        self._fretboard_nnabs = np.array([self._open_string_nnabs + i for i in range(0, max_fret + 1)])  # [frets, strings]
+        self._open_string_nnabs = open_string_nnabs
+        self._fretboard_nnabs = fretboard_nnabs
+
         # w to h ratio of fretboard
         self._w_to_h_ratio = w_to_h_ratio
+
         # fret markers
         self._short_fret_markers = short_fret_markers
         self._long_fret_markers = long_fret_markers
@@ -278,7 +288,8 @@ class Guitar(_NoteList):
         """
         get notes and their indices of fretboard matrix
 
-        :param selection: string, e.g. 'x32010'
+        :param selection: str type, e.g. 'x32010'
+
         :return: note_list, indices_list, used_strings
         """
         note_list, indices_list, used_strings =  [], [], []
@@ -287,7 +298,7 @@ class Guitar(_NoteList):
         for i, note in enumerate(self._notes):
             # gather all matching notes on fretboard
             if self._modulo_on:
-                indices = np.stack(np.where(self._fretboard_nnabs%N == int(note)%N), axis=-1)  # [?, 2]
+                indices = np.stack(np.where(self._fretboard_nnabs % N == int(note) % N), axis=-1)  # [?, 2]
             else:
                 indices = np.stack(np.where(self._fretboard_nnabs == int(note)), axis=-1)  # [?, 2]
 
@@ -323,12 +334,17 @@ class Guitar(_NoteList):
         self._modulo_on = modulo_on
         return self
 
-    def auto_select(self, max_span=4, use_open_string=False, highest_bass_string=2, top_note=None, lowest_soprano_string=3):
+    def auto_select(self, max_span=4, use_open_string=False, highest_bass_string=2, top_note=None, lowest_soprano_string=-3):
         """
         select pressed notes automatically
-        :param max_span: maximal span of frets
-        :param use_open_string: will check open strings at first
-        :return: list of selections, e.g. ['x3201x', 'x32010', ...]
+
+        :param max_span: int type, maximum span of frets
+        :param use_open_string: bool type, will check open strings at first
+        :param highest_bass_string: int type, highest string of bass note or root note
+        :param top_note: str type, br357t of highest note
+        :param lowest_soprano_string: int type, lowest string of top note
+
+        :return: list of selections, e.g. ['x3201x', 'x32010', ...], and their corresponding frets
         """
 
         # find lowest note, B or R
@@ -355,8 +371,8 @@ class Guitar(_NoteList):
         fret_positions_range = range(0, N)
         n_strings = self._max_string
 
-        # get all chord schemes
-        chord_schemes = []
+        # get all chord diagrams
+        chord_diagrams = []
         fret_positions = []
         for fret_position in fret_positions_range:
             fretboard_bool = np.any([fretboard_nnrel == nnrel for _, nnrel in br357t_to_nnrels.items()], axis=0)
@@ -373,22 +389,22 @@ class Guitar(_NoteList):
                 s2f[string].append(fret)
 
             for frets in product(*s2f.values()):
-                chord_scheme = np.zeros_like(fretboard_bool, np.bool)
+                chord_diagram = np.zeros_like(fretboard_bool, np.bool)
                 for fret, string in zip(frets, s2f.keys()):
-                    chord_scheme[fret, string] = True
+                    chord_diagram[fret, string] = True
 
-                chord_schemes.append(chord_scheme)
+                chord_diagrams.append(chord_diagram)
                 fret_positions.append(fret_position)
 
-        print(f'All possible chord diagrams: {len(chord_schemes)}')
+        print(f'Number of all chord diagrams: {len(chord_diagrams)}')
 
-        # get real chord_schemes and fret_positions
-        chord_schemes_filt = []
+        # get real chord_diagrams and fret_positions
+        chord_diagrams_filt = []
         fret_positions_filt = []
-        for chord_scheme, fret_position in zip(chord_schemes, fret_positions):
+        for chord_diagram, fret_position in zip(chord_diagrams, fret_positions):
             # filters
             fretboard_nnrel_used = copy(fretboard_nnrel)
-            fretboard_nnrel_used[~chord_scheme] = -1
+            fretboard_nnrel_used[~chord_diagram] = -1
             if use_open_string and fret_position > 0:
                 fretboard_nnrel_used_slice = np.concatenate(
                     [
@@ -407,7 +423,7 @@ class Guitar(_NoteList):
             else:
                 string_low = np.where(fretboard_nnrel_used_low == nnrel_low)[1].min()
                 fretboard_nnrel_used_slice[:, :string_low] = -1
-                chord_scheme[:, :string_low] = False
+                chord_diagram[:, :string_low] = False
 
             # 2. highest strings contain top note
             if top_note is not None:
@@ -416,36 +432,36 @@ class Guitar(_NoteList):
                 else:
                     string_high = lowest_soprano_string + np.where(fretboard_nnrel_used_high == nnrel_high)[1].max()
                     fretboard_nnrel_used_slice[:, string_high+1:] = -1
-                    chord_scheme[:, string_high+1:] = False
+                    chord_diagram[:, string_high+1:] = False
 
             # 3. contains all notes
             if not all([k in fretboard_nnrel_used_slice for k in br357t_to_nnrels.values()]):
                 continue
 
-            chord_schemes_filt.append(chord_scheme)
+            chord_diagrams_filt.append(chord_diagram)
             fret_positions_filt.append(fret_position)
 
-        # convert chord schemes to str
-        chord_schemes_string = []
+        # convert chord diagrams to str
+        chord_diagrams_string = []
         fret_positions_string = []
-        for cs, fp in zip(chord_schemes_filt, fret_positions_filt):
+        for cs, fp in zip(chord_diagrams_filt, fret_positions_filt):
             used_indices = np.stack(np.where(cs), axis=-1)
             cs_str = ['x'] * n_strings
             for fret, string in used_indices:
                 cs_str[string] = np.base_repr(fret, N+max_span)
             cs_str = ''.join(cs_str).lower()
 
-            if cs_str not in chord_schemes_string:
-                chord_schemes_string.append(cs_str)
+            if cs_str not in chord_diagrams_string:
+                chord_diagrams_string.append(cs_str)
                 fret_positions_string.append(fp)
             else:
-                idx = chord_schemes_string.index(cs_str)
-                chord_schemes_string.pop(idx)
+                idx = chord_diagrams_string.index(cs_str)
+                chord_diagrams_string.pop(idx)
                 fret_positions_string.pop(idx)
-                chord_schemes_string.append(cs_str)
+                chord_diagrams_string.append(cs_str)
                 fret_positions_string.append(fp)
 
-        return chord_schemes_string, fret_positions_string
+        return chord_diagrams_string, fret_positions_string
 
     def plot(self, fret_left=0, fret_right=N, selection='pppppp', text_rotation=0, color_style='note', ax=None, title=None):
         # get note colors
@@ -470,20 +486,21 @@ class Guitar(_NoteList):
         if ax is None:
             w = coord_frets[fret_right] - coord_frets[fret_left] + 2 * w_to_h_ratio
             h = coord_strings[-1] - coord_strings[0] + 2
-            scale = 0.75
-            fig, ax = get_figure(w * scale, h * scale)
+            ax_w_to_h_ratio = w / h
+            fig, ax = get_figure(FIG_HEIGHT * ax_w_to_h_ratio, FIG_HEIGHT)
 
         # add title if provided
         if title:
+            # ax.set_title(title)
             ax.text(x=0.5, y=0.895, s=title, va='bottom', ha='center', transform=ax.transAxes)
 
         # plot fret markers
-        for i in range(fret_left+1, fret_right+1):
+        for i in range(fret_left + 1, fret_right + 1):
             if i % N in long_fret_markers:
                 rect = plt.Rectangle(
                     xy=(coord_fingers[i], coord_strings[0]),
-                    width=coord_frets[i]-coord_fingers[i],
-                    height=coord_strings[-1]-coord_strings[0],
+                    width=coord_frets[i] - coord_fingers[i],
+                    height=coord_strings[-1] - coord_strings[0],
                     color='gray',
                     alpha=0.2,
                     zorder=0
@@ -492,7 +509,7 @@ class Guitar(_NoteList):
             elif i % N in short_fret_markers:
                 rect = plt.Rectangle(
                     xy=(coord_fingers[i], middle(coord_strings[0], coord_strings[-1])),
-                    width=coord_frets[i]-coord_fingers[i],
+                    width=coord_frets[i] - coord_fingers[i],
                     height=middle(coord_strings[0], coord_strings[-1]),
                     color='gray',
                     alpha=0.2,
@@ -503,7 +520,7 @@ class Guitar(_NoteList):
                 pass
 
         # plot frets (vertical lines)
-        ax.set_xlim(coord_frets[fret_left]-w_to_h_ratio, coord_frets[fret_right]+w_to_h_ratio)
+        ax.set_xlim(coord_frets[fret_left] - w_to_h_ratio, coord_frets[fret_right] + w_to_h_ratio)
         _ = [
             ax.plot(
                 (coord_frets[i], coord_frets[i]),
@@ -511,7 +528,7 @@ class Guitar(_NoteList):
                 c='black',
                 lw=2.0,
                 zorder=1
-            ) for i in range(fret_left, fret_right+1)
+            ) for i in range(fret_left, fret_right + 1)
         ]
         _ = [
             ax.annotate(
@@ -520,11 +537,11 @@ class Guitar(_NoteList):
                 rotation=text_rotation,
                 color='black',
                 va='center',
-                ha='center') for i in range(fret_left, fret_right+1)
+                ha='center') for i in range(fret_left, fret_right + 1)
         ]
 
         # plot strings (horizontal lines)
-        ax.set_ylim(coord_strings[0]-1, coord_strings[-1]+1)
+        ax.set_ylim(coord_strings[0] - 1, coord_strings[-1] + 1)
         _ = [
             ax.plot(
                 (coord_frets[fret_left], coord_frets[fret_right]),
@@ -555,7 +572,7 @@ class Guitar(_NoteList):
                     )
                 )
                 ax.annotate(
-                    s=note.get_message('text'),
+                    s=note.get_message('text') if color_style != 'note' else note.get_name(),
                     xy=(coord_fingers[0] + coord_frets[fret_left], coord_strings[string]),
                     rotation=text_rotation,
                     color='black',
@@ -564,7 +581,7 @@ class Guitar(_NoteList):
                     zorder=4
                 )
             # other fret dots
-            elif within(fret, fret_left+1, fret_right+1):
+            elif within(fret, fret_left + 1, fret_right + 1):
                 circs.append(
                     plt.Circle(
                         xy=(coord_fingers[fret], coord_strings[string]),
@@ -575,7 +592,7 @@ class Guitar(_NoteList):
                     )
                 )
                 ax.annotate(
-                    s=note.get_message('text'),
+                    s=note.get_message('text') if color_style != 'note' else note.get_name(),
                     xy=(coord_fingers[fret], coord_strings[string]),
                     rotation=text_rotation,
                     color=note.get_message('text_color'),
@@ -606,50 +623,90 @@ class Guitar(_NoteList):
         _ = [ax.add_patch(circ) for circ in circs]
         _ = [ax.add_line(line) for line in crosses]
 
-    def plots(self, max_span=4, selections=('pppppp'), fret_positions=(0), text_rotation=0, color_style='note', title=''):
-        n_schemes = len(selections)
-        n_w = int(np.sqrt(n_schemes))
-        n_h = n_schemes // n_w + 1
+    def plots(self, max_span=4, selections=('pppppp'), fret_positions=(0), text_rotation=0, color_style='note', title=None):
+        # figure properties
+        n_diagrams = len(selections)
+        n_w = int(np.sqrt(n_diagrams))
+        n_h = n_diagrams // n_w + 1
 
-        fig = plt.figure(figsize=(4 * n_w * (self._w_to_h_ratio * max_span) / len(self._open_string_nnabs), 4 * n_h), dpi=144)
-        suptitle = f'{title}\nTuning: {" ".join([note.get_name() for note in self._open_string_notes])}\n'
-        fig.suptitle(suptitle)
-        fig.subplots_adjust(0.0, 0.0, 1.0, 1.0-1/(2*n_h), 0.0, 0.0)
+        # new figure
+        fig = plt.figure()
+
+        # add title to figure
+        suptitle = ''
+        if title is not None:
+            suptitle += title + '\n'
+        suptitle += f"Tuning: {' '.join([note.get_name() for note in self._open_string_notes])}\n"
+        fig.text(0.5, 1, suptitle, va='bottom', ha='center')
+
+        # plots
         spec = gridspec.GridSpec(ncols=n_w, nrows=n_h, figure=fig)
 
-        for i, (chord_scheme, fret_position) in enumerate(zip(selections, fret_positions)):
-            ax = fig.add_subplot(spec[i//n_w, i%n_w])
+        ax_w_to_h_ratio = 1
+        for i, (chord_diagram, fret_position) in enumerate(zip(selections, fret_positions)):
+            ax = fig.add_subplot(spec[i // n_w, i % n_w])
             ax.margins(0.0, 0.0)
             ax.set_axis_off()
             ax.set_aspect('equal')
             left = fret_position - 1 if fret_position > 0 else 0
             right = fret_position + max_span - 1 if fret_position > 0 else fret_position + max_span
-            self.plot(left, right, chord_scheme, text_rotation, color_style, ax, chord_scheme)
+            self.plot(left, right, chord_diagram, text_rotation, color_style, ax, chord_diagram)
 
-    def plot_all_chords(self, max_span=4, use_open_string=False, highest_bass_string=2, top_note=None, lowest_soprano_string=3, text_rotation=0, color_style='note', title=''):
-        chord_schemes, fret_positions = self.auto_select(max_span=max_span, use_open_string=use_open_string, highest_bass_string=highest_bass_string, top_note=top_note, lowest_soprano_string=lowest_soprano_string)
-        n_schemes = len(chord_schemes)
-        n_w = int(np.sqrt(n_schemes))
-        n_h = n_schemes // n_w + 1
+            if i == 0:
+                ax_size = ax.get_window_extent().size
+                ax_w_to_h_ratio = ax_size[0] / ax_size[1]
 
-        fig = plt.figure(figsize=(4 * n_w * (self._w_to_h_ratio * max_span) / len(self._open_string_nnabs), 4 * n_h), dpi=144)
-        suptitle = f'{title}\nTuning: {" ".join([note.get_name() for note in self._open_string_notes])}\n'
+        # figure settings
+        k = 0
+        fig_w_to_h_ratio = ax_w_to_h_ratio * n_w / (n_h + k)
+        fig.subplots_adjust(0.0, 0.0, 1.0, 1.0, 0.0, 0.0)
+        fig.set_figwidth(n_w * FIG_HEIGHT * fig_w_to_h_ratio)
+        fig.set_figheight((n_h + k) * FIG_HEIGHT)
+
+    def plot_all_chords(self, max_span=4, use_open_string=False, highest_bass_string=2, top_note=None, lowest_soprano_string=3, text_rotation=0, color_style='note', title=None):
+        selections, fret_positions = self.auto_select(max_span=max_span, use_open_string=use_open_string, highest_bass_string=highest_bass_string, top_note=top_note, lowest_soprano_string=lowest_soprano_string)
+        # figure properties
+        n_diagrams = len(selections)
+        n_w = int(np.sqrt(n_diagrams))
+        n_h = n_diagrams // n_w + 1
+
+        # new figure
+        fig = plt.figure()
+
+        # add title to figure
+        suptitle = ''
+        if title is not None:
+            suptitle += title + '\n'
+        suptitle += f"Tuning: {' '.join([note.get_name() for note in self._open_string_notes])}\n"
         suptitle += f'use_open_string={use_open_string}\n'
         suptitle += f'highest_bass_string={self._max_string-highest_bass_string}'
         if top_note is not None:
-            suptitle += f' | lowest_soprano_string={self._max_string-lowest_soprano_string} | top_note={top_note}'
-        fig.suptitle(suptitle)
-        fig.subplots_adjust(0.0, 0.0, 1.0, 1.0-1/(2*n_h), 0.0, 0.0)
+            suptitle += f'\ntop_note={top_note} | lowest_soprano_string={self._max_string-lowest_soprano_string}'
+        fig.text(0.5, 1, suptitle, va='bottom', ha='center')
+
+        # plots
         spec = gridspec.GridSpec(ncols=n_w, nrows=n_h, figure=fig)
 
-        for i, (chord_scheme, fret_position) in enumerate(zip(chord_schemes, fret_positions)):
+        ax_w_to_h_ratio = 1
+        for i, (chord_diagram, fret_position) in enumerate(zip(selections, fret_positions)):
             ax = fig.add_subplot(spec[i//n_w, i%n_w])
             ax.margins(0.0, 0.0)
             ax.set_axis_off()
             ax.set_aspect('equal')
             left = fret_position - 1 if fret_position > 0 else 0
             right = fret_position + max_span - 1 if fret_position > 0 else fret_position + max_span
-            self.plot(left, right, chord_scheme, text_rotation, color_style, ax, chord_scheme)
+            self.plot(left, right, chord_diagram, text_rotation, color_style, ax, chord_diagram)
+
+            if i == 0:
+                ax_size = ax.get_window_extent().size
+                ax_w_to_h_ratio = ax_size[0] / ax_size[1]
+
+        # figure settings
+        k = 0
+        fig_w_to_h_ratio = ax_w_to_h_ratio * n_w / (n_h + k)
+        fig.subplots_adjust(0.0, 0.0, 1.0, 1.0, 0.0, 0.0)
+        fig.set_figwidth(n_w * FIG_HEIGHT * fig_w_to_h_ratio)
+        fig.set_figheight((n_h + k) * FIG_HEIGHT)
 
 
 class Piano(_NoteList):
@@ -661,8 +718,8 @@ class Piano(_NoteList):
         return min(notes), max(notes)
 
     def plot_old(self, note_range=None, color_style='note', ax=None, title=None):
-        if not all([N==12, G==7, S==5]):
-            raise ValueError('`Piano.plot_old` works properly only when [N, G, S] = [12, 7, 5]!')
+        if NGS != '12.7.5':
+            raise ValueError('`Piano.plot_old` works properly only when NGS == 12.7.5!')
 
         # get note colors
         self._get_note_color(color_style)
@@ -730,27 +787,30 @@ class Piano(_NoteList):
 
         # constants
         keys_expand = 1
-        w = _note2pos_xy(note_range[1] + keys_expand)[0] - _note2pos_xy(note_range[0] - keys_expand)[0]
-        h = 6
+        paddings = 0.1
+        ax_w = _note2pos_xy(note_range[1] + keys_expand)[0] - _note2pos_xy(note_range[0] - keys_expand)[0]
+        ax_h = 6
+        fig_w = ax_w + 2 * paddings
+        fig_h = ax_h + 2 * paddings
+        fig_w_to_h_ratio = fig_w / fig_h
 
         # new figure
         if not ax:
-            scale = 0.75
-            fig, ax = get_figure(w * scale , h * scale)
+            fig, ax = get_figure(FIG_HEIGHT * fig_w_to_h_ratio , FIG_HEIGHT)
 
         # axes settings
-        ax.set_xlim(_note2pos_mark(note_range[0]-keys_expand)[0], _note2pos_mark(note_range[1]+keys_expand)[0])
-        ax.set_ylim(0, h)
+        ax.set_xlim(_note2pos_mark(note_range[0] - keys_expand)[0] - paddings, _note2pos_mark(note_range[1] + keys_expand)[0] + paddings)
+        ax.set_ylim(0 - paddings, ax_h + paddings)
 
         # add title
         if title:
             ax.text(0.5, 0.895, title, va='bottom', ha='center', transform=ax.transAxes)
-            ax.set_ylim(0, h+1)
+            ax.set_ylim(0 - paddings, ax_h + 1 + paddings)
 
         # draw
         rects = [
             plt.Rectangle(**_note2pos_rect(note))
-            for note in range(note_range[0]-1-keys_expand, note_range[1]+2+keys_expand)
+            for note in range(note_range[0] - 1 - keys_expand, note_range[1] + 2 + keys_expand)
         ]
         _ = [ax.add_patch(rect) for rect in rects]
 
@@ -778,24 +838,37 @@ class Piano(_NoteList):
             ) for note in self._notes
         ]
 
-    def plot(self, height=3, note_range=None, color_style='br357t', ax=None, title=None):
+    def plot(self, note_range=None, color_style='br357t', ax=None, title=None):
         # get note colors
         self._get_note_color(color_style)
 
         # get note texts
         self._get_note_text(color_style)
 
+        # get plot range
         if note_range is None:
             note_range = self._get_note_range()
 
-        if ax is None:
-            fig, ax = get_figure(length(*note_range) + 3, height, 72)
+        # constants
+        height = 4
+        paddings = 0.1
+        ax_w = length(*note_range) + 1
+        ax_h = height
+        fig_w = ax_w + 2 * paddings
+        fig_h = ax_h + 2 * paddings
+        fig_w_to_h_ratio = fig_w / fig_h
 
+        # new figure
+        if ax is None:
+            fig, ax = get_figure(FIG_HEIGHT * fig_w_to_h_ratio, FIG_HEIGHT)
+
+        # add title
         if title is not None:
-            ax.text(0.5, 0.895, title, va='bottom', ha='center', transform=ax.transAxes)
+            ax.text(0.5, 0.845, title, va='bottom', ha='center', transform=ax.transAxes)
+            ax.set_ylim(0 - paddings, ax_h + 1)
 
         # set display range
-        ax.set_xlim(note_range[0] - 1, note_range[1] + 2)
+        ax.set_xlim(note_range[0] - paddings, note_range[1] + 1 + paddings)
 
         # key patches
         key_rects = [
@@ -803,6 +876,7 @@ class Piano(_NoteList):
                 xy=(x, 0),
                 width=1,
                 height=height,
+                lw=2,
                 edgecolor='gray',
                 facecolor='white' if x % N in NAMED_NNREL_LIN else 'black'
             ) for x in range(note_range[0], note_range[1] + 1)
@@ -863,7 +937,7 @@ class Clock(_NoteList):
         ''' new figure '''
 
         if not ax:
-            fig, ax = get_figure(5, 5, 72)
+            fig, ax = get_figure(2 * FIG_HEIGHT, 2 * FIG_HEIGHT)
 
         ax.set_xlim(-(radius+4), radius+4)
         ax.set_ylim(-(radius+4), radius+4)
@@ -978,7 +1052,10 @@ class ColorScheme(_NoteList):
         y_max = (y_margins+h)*n_colors-y_margins+h_text
 
         if ax is None:
-            fig, ax = get_figure((x_max - x_min)/2, (y_max - y_min)/2, 72)
+            fig_w = (x_max - x_min) / 2
+            fig_h = (y_max - y_min) / 2
+            fig_w_to_h_ratio = fig_w / fig_h
+            fig, ax = get_figure(2 * FIG_HEIGHT * fig_w_to_h_ratio, 2 * FIG_HEIGHT)
 
         ax.set_xlim(x_min, x_max)
         ax.set_ylim(y_min, y_max)
@@ -993,12 +1070,12 @@ class ColorScheme(_NoteList):
                     va='center',
                     ha='center'
                 )
-        if title:
+        if title is not None:
             ax.annotate(
                 s=title + ' ' + ''.join([f'{k}/{N} ' for k in hs]),
                 xy=(((x_margins+w)*n_gradients-x_margins)/2, (y_margins+h)*n_colors-y_margins+h_text/2),
                 ha='center',
-                va='center'
+                va='bottom'
             )
 
 
@@ -1006,7 +1083,7 @@ class Tonnetz(_NoteList):
     def __init__(self):
         super().__init__()
 
-    def plot(self, n_x=11, n_y=11, enharmonic=True, upside_down=False, center_note=Note(), color_style='note', tds_on=False, ax=None, title=None):
+    def plot(self, n_x=7, n_y=7, enharmonic=True, upside_down=False, center_note=Note(), color_style='note', tds_on=False, ax=None, title=None):
         # get note colors
         self._get_note_color(color_style)
 
@@ -1014,7 +1091,7 @@ class Tonnetz(_NoteList):
         self._get_note_text(color_style)
 
         if ax is None:
-            fig, ax = get_figure(24, 24, 72)
+            fig, ax = get_figure(4 * FIG_HEIGHT, 4 * FIG_HEIGHT)
 
         # get background notes
         itv_gen = (Note(NAMED_STR_GEN[1]) - Note(NAMED_STR_GEN[0])).normalize()
@@ -1039,7 +1116,7 @@ class Tonnetz(_NoteList):
             ).reshape([-1])
 
         for note in notes_bg:
-            if all([N == 12, G == 7, S == 5]) and tds_on:
+            if NGS == '12.7.5' and tds_on:
                 tds = ['T', 'D', 'S'][int(note - center_note) % 3]
                 note.set_message(face_color=tds_colors(tds))
             else:
@@ -1447,10 +1524,10 @@ class Pianoroll(object):
             _ = [plt.annotate(lyric[k], (note['time1']+self._ticks_per_beat//16, note['note']-0.5),
                             color='#555555', va='center', fontsize=self._fontsize*3/4, zorder=5+0.001*(track+0.1)) for (k, note) in enumerate(notes) if k<len(lyric)]
 
-    def draw_notes(self, tracks=(0,), color_scheme='velocity', type='piano', alpha=1.0, lyric=None):
-        if color_scheme == 'velocity':
+    def draw_notes(self, tracks=(0,), color_style='velocity', type='piano', alpha=1.0, lyric=None):
+        if color_style == 'velocity':
             _ = [self._draw_notes(t, rgb_shader, type, alpha, lyric) for t in tracks]
-        elif color_scheme == 'track':
+        elif color_style == 'track':
             _ = [self._draw_notes(t, lambda x, x_min, x_max: cst_shader(x, x_min, x_max, self._track_colors[t]), type, alpha, lyric) for t in tracks]
 
     def draw_control_changes(self, track=0, controls=(64, ), plot_type='stair', alpha=1.0):
