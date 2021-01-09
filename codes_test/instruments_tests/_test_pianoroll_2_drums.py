@@ -1,5 +1,5 @@
 import os; os.chdir('../..')
-from instruments import *
+from midi import *
 from pathlib import Path
 
 sheet, ticks_per_beat, _ = midi2sheet(Path(r'midis/drum_funk.mid'))

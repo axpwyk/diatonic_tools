@@ -220,7 +220,7 @@ def note2label(note, type='piano', show_group=True, mode='Ab Ionian'):
 
 # assign a style
 plt.style.use('seaborn-pastel')
-plt.rc('figure', **{'dpi': 72})
+plt.rc('figure', **{'dpi': 144})
 
 # assign a math font
 plt.rc('mathtext', **{'fontset': 'cm'})
@@ -235,7 +235,7 @@ def get_figure(w, h, dpi=None):
     # figure settings
     fig = plt.figure(figsize=(w, h), dpi=dpi)
     fig.subplots_adjust(left=0.0, bottom=0.0, right=1.0, top=1.0, wspace=0.1, hspace=0.1)
-    ax = fig.gca(aspect='equal')
+    ax = fig.gca()
     ax.set_axis_off()
     ax.margins(x=0.01, y=0.01)
     return fig, ax
@@ -246,7 +246,6 @@ def get_figure(w, h, dpi=None):
 ''' ----------------------------------------------------------------------------------------- '''
 
 
-# TODO: make `Pianoroll` works again
 class Pianoroll(object):
     def __init__(self, sheet, ticks_per_beat):
         """ pianoroll initialization, extract messages of same kind from sheet """
