@@ -786,7 +786,7 @@ class Piano(_NoteList):
             ) for note in self._notes
         ]
 
-    def plot(self, note_range=None, color_style='br357t', ax=None, title=None):
+    def plot(self, note_range=None, color_style='note', ax=None, title=None):
         # get note colors
         self._get_note_color(color_style)
 
@@ -974,7 +974,7 @@ class ColorScheme(_NoteList):
     def __init__(self):
         super().__init__()
 
-    def plot(self, n_gradients=M, ax=None, title='ColorScheme'):
+    def plot(self, n_gradients=M, ax=None, title=None):
         h = np.linspace(0, 1, N, endpoint=False)
         hs = [int(t) % N for t in self._notes]
 
