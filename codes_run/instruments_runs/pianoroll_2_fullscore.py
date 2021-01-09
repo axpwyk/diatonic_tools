@@ -1,6 +1,6 @@
 from midi import *
 
-file = r'../../midi/fs.mid'
+file = r'../../midis/fs.mid'
 sheet, tpb, _ = midi2sheet(file)
 pr = Pianoroll(sheet, tpb)
 

@@ -1,5 +1,5 @@
 import os; os.chdir('../..')
-from instruments import *
+from midi import *
 from pathlib import Path
 # import tikzplotlib as tpl
 

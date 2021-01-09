@@ -2,34 +2,6 @@ def sign(x):
     return 1 if x > 0 else -1 if x < 0 else 0
 
 
-def unique(lst):
-    out = []
-    for e in lst:
-        if e in out:
-            continue
-        else:
-            out.append(e)
-    return out
-
-
-def circular_sorted(lst, idx, key=lambda x: x):
-    # return a sorted list, with `idx`-th element of original list at the beginning
-    _out = sorted([(e, i) for i, e in enumerate(lst)], key=lambda x: key(x[0]))
-    indices = sorted([(i, j) for j, (_, i) in enumerate(_out)], key=lambda x: x[0])
-
-    out = [x[0] for x in _out]
-    idx = indices[idx][1]
-
-    return out[idx:] + out[:idx]
-
-
-def nnrel_pair_to_accidental(nnrel_1, nnrel_2):
-    # convert nnrel pair to accidental, e.g. (11, 1) -> 2, (0, 11) -> -1, etc.
-    sgn_1 = -1 if abs(nnrel_2 - nnrel_1) > N / 2 else 1
-    sgn_2 = sign(nnrel_2 - nnrel_1)
-    return sgn_1 * sgn_2 * (N - abs(2 * abs(nnrel_1 - nnrel_2) - N)) // 2
-
-
 ''' ----------------------------------------------------------------------------------------- '''
 ''' *********************************** for `theories.py` *********************************** '''
 ''' ----------------------------------------------------------------------------------------- '''
@@ -89,6 +61,11 @@ CHORD_STEP_LIN = [nnrel - NAMED_NNREL_LIN[0] for nnrel in NAMED_NNREL_LIN].index
 SPECIAL_NGS = ['12.7.5', '19.11.8']
 
 
+''' ----------------------------------------------------------------------------------------- '''
+''' ************************************ basic utilities ************************************ '''
+''' ----------------------------------------------------------------------------------------- '''
+
+
 # a handy NGS checking function
 def NGSChecker():
     # registered [N, G, S] for special functions
@@ -96,6 +73,43 @@ def NGSChecker():
         return True
     else:
         return False
+
+
+# make elements of a list `lst` unique
+def unique(lst):
+    out = []
+    for e in lst:
+        if e in out:
+            continue
+        else:
+            out.append(e)
+    return out
+
+
+# return a sorted list, with `idx`-th element of original list at the beginning
+def circular_sorted(lst, idx, key=lambda x: x):
+    _out = sorted([(e, i) for i, e in enumerate(lst)], key=lambda x: key(x[0]))
+    indices = sorted([(i, j) for j, (_, i) in enumerate(_out)], key=lambda x: x[0])
+
+    out = [x[0] for x in _out]
+    idx = indices[idx][1]
+
+    return out[idx:] + out[:idx]
+
+
+# a handy length function
+def length(a, b):
+    return b - a
+
+
+# a handy middle point function
+def middle(a, b):
+    return (a + b) / 2
+
+
+# a handy if x \in [a, b) function
+def within(x, a, b):
+    return a <= x < b
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -312,11 +326,11 @@ NOTE_FACE_COLORS_LR = ['#f6b0f0', '#f6deb0']
 NOTE_EDGE_COLORS_LR = ['#222222', '#222222']
 NOTE_TEXT_COLORS_LR = ['#000000', '#000000']
 
-BR357T_FACE_COLORS = {'B': '#00ff00', 'R': '#ff0000', 'T': '#0000ff', 'CN': '#777777', None:'#000000'}
+BR357T_FACE_COLORS = {'B': '#00ff00', 'R': '#ff0000', 'T': '#0000ff', 'CN': '#444444', None:'#000000'}
 BR357T_EDGE_COLORS = {'B': '#222222', 'R': '#222222', 'T': '#222222', 'CN': '#222222', None:'#000000'}
 BR357T_TEXT_COLORS = {'B': '#000000', 'R': '#ffffff', 'T': '#ffffff', 'CN': '#ffffff', None:'#000000'}
 
-DEGREE_FACE_COLORS_LR = ['#ff0000', '#000000']
+DEGREE_FACE_COLORS_LR = ['#ff0000', '#222222']
 DEGREE_EDGE_COLORS_LR = ['#000000', '#000000']
 DEGREE_TEXT_COLORS_LR = ['#ffffff', '#ffffff']
 

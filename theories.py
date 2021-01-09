@@ -1,8 +1,9 @@
 import re
 from copy import copy
-import numpy as np
-from consts import *
 from itertools import product
+import numpy as np
+
+from consts import *
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -934,6 +935,12 @@ class AlteredDiatonicScale(DiatonicScale):
         scale_name                 -> C E-mode(b1)
         """
 
+        def _nnrel_pair_to_accidental(nnrel_1, nnrel_2):
+            # convert nnrel pair to accidental, e.g. (11, 1) -> 2, (0, 11) -> -1, etc.
+            sgn_1 = -1 if abs(nnrel_2 - nnrel_1) > N / 2 else 1
+            sgn_2 = sign(nnrel_2 - nnrel_1)
+            return sgn_1 * sgn_2 * (N - abs(2 * abs(nnrel_1 - nnrel_2) - N)) // 2
+
         ds = DiatonicScale()
         order, offsets = self.distance(ds, return_offsets=True)
 
@@ -955,7 +962,7 @@ class AlteredDiatonicScale(DiatonicScale):
             altered_notes = dict()
             for i, (nnrel_1, nnrel_2) in enumerate(zip(scale_1_nnrels_offset, scale_2_nnrels_offset)):
                 if nnrel_1 - nnrel_2 != 0:
-                    altered_notes[(i + mode_tonic_offset) % M + 1] = nnrel_pair_to_accidental(nnrel_2, nnrel_1)
+                    altered_notes[(i + mode_tonic_offset) % M + 1] = _nnrel_pair_to_accidental(nnrel_2, nnrel_1)
 
             # filter out modes like 'Ionian(#4, b7)', because it's not in simplest form 'Lydian(b7)'
             if len(altered_notes) > order:
