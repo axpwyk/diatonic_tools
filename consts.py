@@ -53,7 +53,7 @@ NAMED_STR_GEN = ''.join([NNREL_TO_STR[k] for k in NAMED_NNREL_GEN])
 # step length of M2 interval in generative sequence
 M2_STEP_GEN = NAMED_NNREL_GEN.index(S + NAMED_NNREL_LIN[1])
 
-# a reasonable step length of stacked notes on linear sequence
+# a reasonable step length of stacked notes in linear sequence (not good)
 CHORD_STEP_LIN = [nnrel - NAMED_NNREL_LIN[0] for nnrel in NAMED_NNREL_LIN].index(G) // 2
 
 # special [N, G, S] for special functions
@@ -99,6 +99,17 @@ def circular_sorted(lst, idx, key=lambda x: x):
     idx = indices[idx][1]
 
     return out[idx:] + out[:idx]
+
+
+# return 2 closest divisors of n
+def closest_divisors(n):
+    smallers = []
+    for i in range(1, int(n ** (1 / 2)) + 1):
+        if n % i == 0:
+            smallers.append(i)
+    smaller = max(smallers)
+
+    return smaller, n // smaller
 
 
 # a handy length function
@@ -166,23 +177,32 @@ SCALE_TYPE_NS1_TO_NS0 = dict((v, k) for k, v in SCALE_TYPE_NS0_TO_NS1.items())
 # altered scale type converter, change naming scheme 0 to naming scheme 2, e.g. 'E-mode(#3)' -> 'HmP5b'
 ALTERED_SCALE_TYPE_NS0_TO_NS2 = {
     # Class 1
-    'E-mode(#3)': ['Phrygian Dominant', 'HmP5b'],
-    'A-mode(#7)': ['Harmonic Minor'],
-    'D-mode(#4)': ['Ukrainian Dorian'],
+    'F-mode(#2)': ['Lydian(#2)'],  # name?
+    'C-mode(#5)': ['Ionian Augmented'],
     'Gb-mode(#1)': ['Ultra Locrian'],
+    'D-mode(#4)': ['Ukrainian Dorian'],
+    'A-mode(#7)': ['Harmonic Minor'],
+    'E-mode(#3)': ['Phrygian Dominant', 'HmP5b'],
+    'B-mode(#6)': ['Locrian(#6)'],  # name?
 
     # Class 3
-    'G-mode(#4)': ['Acoustic', 'Lydian Dominant'],
-    'F-mode(b7)': ['Lydian Dominant', 'Acoustic'],
-
-    'A-mode(#3)': ['Aeolian Dominant', 'Melodic Major'],
-    'G-mode(b6)': ['Melodic Major', 'Aeolian Dominant'],
+    'F-mode(#5)': ['Lydian Augmented'],
+    'E#-mode(b1)': ['Lydian Augmented'],
 
     'Cb-mode(#1)': ['Altered Dominant', 'Super Locrian'],
     'B-mode(b4)': ['Super Locrian', 'Altered Dominant'],
 
-    'D-mode(#7)': ['Melodic Minor'],
-    'C-mode(b3)': ['Melodic Minor'],
+    'G-mode(#4)': ['Acoustic', 'Lydian Dominant'],
+    'F-mode(b7)': ['Lydian Dominant', 'Acoustic'],
+
+    'D-mode(#7)': ['Melodic Minor', 'Minor Major'],
+    'C-mode(b3)': ['Minor Major', 'Melodic Minor'],
+
+    'A-mode(#3)': ['Aeolian Dominant', 'Melodic Major'],
+    'G-mode(b6)': ['Melodic Major', 'Aeolian Dominant'],
+
+    'E-mode(#6)': ['Phrygian(#6)'],  # name?
+    'D-mode(b2)': ['Dorian(b2)'],  # name?
 
     'B-mode(#2)': ['Half Diminished'],
     'A-mode(b5)': ['Half Diminished'],
@@ -392,7 +412,7 @@ ADD2_NOTE_NAMES = [
 ]
 
 # TODO: AGTC MIDI mapping
-AGTC_NOTE_NAMES = [0] * 128
+AGTC_NOTE_NAMES = [''] * 128
 
 # CC name list
 CC_NAMES = [f'cc {cc}' for cc in range(128)]

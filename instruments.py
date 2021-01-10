@@ -604,11 +604,10 @@ class Guitar(_NoteList):
                 ax_w_to_h_ratio = ax_size[0] / ax_size[1]
 
         # figure settings
-        k = 0
-        fig_w_to_h_ratio = ax_w_to_h_ratio * n_w / (n_h + k)
+        fig_w_to_h_ratio = ax_w_to_h_ratio * n_w / n_h
         fig.subplots_adjust(0.0, 0.0, 1.0, 1.0, 0.0, 0.0)
         fig.set_figwidth(n_w * FIG_HEIGHT * fig_w_to_h_ratio)
-        fig.set_figheight((n_h + k) * FIG_HEIGHT)
+        fig.set_figheight(n_h * FIG_HEIGHT)
 
     def plot_all_chords(self, max_span=4, use_open_string=False, highest_bass_string=2, top_note=None, lowest_soprano_string=3, text_rotation=0, color_style='note', title=None):
         selections, fret_positions = self.auto_select(max_span=max_span, use_open_string=use_open_string, highest_bass_string=highest_bass_string, top_note=top_note, lowest_soprano_string=lowest_soprano_string)
@@ -649,11 +648,10 @@ class Guitar(_NoteList):
                 ax_w_to_h_ratio = ax_size[0] / ax_size[1]
 
         # figure settings
-        k = 0
-        fig_w_to_h_ratio = ax_w_to_h_ratio * n_w / (n_h + k)
+        fig_w_to_h_ratio = ax_w_to_h_ratio * n_w / n_h
         fig.subplots_adjust(0.0, 0.0, 1.0, 1.0, 0.0, 0.0)
         fig.set_figwidth(n_w * FIG_HEIGHT * fig_w_to_h_ratio)
-        fig.set_figheight((n_h + k) * FIG_HEIGHT)
+        fig.set_figheight(n_h * FIG_HEIGHT)
 
 
 class Piano(_NoteList):
@@ -882,7 +880,7 @@ class Clock(_NoteList):
         texts = [''] * N
         for note in self._notes:
             if color_style != 'note':
-                texts[int(note) % N] += note.get_name(show_register=False) + f"({note.get_message('text')})"
+                texts[int(note) % N] += note.get_name(show_register=False) + f"\n{note.get_message('text')}"
             else:
                 texts[int(note) % N] += note.get_name(show_register=False)
 
