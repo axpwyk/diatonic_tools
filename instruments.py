@@ -25,7 +25,7 @@ plt.rc('axes', **{'unicode_minus': False})
 
 def get_figure(w, h, dpi=None):
     # figure settings
-    fig = plt.figure(figsize=(w, h), dpi=dpi)
+    fig = plt.figure(figsize=(w, h), dpi=dpi, facecolor='white')
     fig.subplots_adjust(left=0.0, bottom=0.0, right=1.0, top=1.0, wspace=0.1, hspace=0.1)
     ax = fig.gca(aspect='equal')
     ax.set_axis_off()
@@ -577,7 +577,7 @@ class Guitar(_NoteList):
         n_h = n_diagrams // n_w + 1
 
         # new figure
-        fig = plt.figure()
+        fig = plt.figure(facecolor='white')
 
         # add title to figure
         suptitle = ''
@@ -618,7 +618,7 @@ class Guitar(_NoteList):
         n_h = n_diagrams // n_w + 1
 
         # new figure
-        fig = plt.figure()
+        fig = plt.figure(facecolor='white')
 
         # add title to figure
         suptitle = ''
@@ -1010,7 +1010,7 @@ class ColorScheme(_NoteList):
         fig_w_to_h_ratio = ax_w / ax_h
 
         if ax is None:
-            fig, ax = get_figure(n_gradients / 4 * FIG_HEIGHT * fig_w_to_h_ratio, n_colors / 4 * FIG_HEIGHT)
+            fig, ax = get_figure(FIG_HEIGHT * ax_w / 6, FIG_HEIGHT * ax_h / 6)
 
         if title is not None:
             ax.set_title(title, y=0.95)
@@ -1030,11 +1030,164 @@ class ColorScheme(_NoteList):
                 )
 
 
+class GenLine(_NoteList):
+    def __init__(self, notes_list):
+        """
+        plot notes on a line in generative order
+
+        :param notes_list: list of `DiatonicScale`, `AlteredDiatonicScale`, `Chord`, `ChordScale` instances, or list of list of `Note` instances
+        """
+        super().__init__()
+        self._notes_list = notes_list
+
+    def plot(self, color_style='note', key_note=Note(), tds_on=True, ax=None, title=None):
+        def _get_pos(notes):
+            notes_named_nnrel = [note.get_named_nnrel() for note in notes]
+            notes_accidental = [note.get_accidental() for note in notes]
+
+            return [NAMED_NNREL_GEN.index(nnrel) + accidental * M for nnrel, accidental in zip(notes_named_nnrel, notes_accidental)]
+
+        if ax is None:
+            if_fig = True
+            fig, ax = get_figure(1, 1)
+        else:
+            if_fig = False
+            fig = plt.gcf()
+
+        if title is not None:
+            ax.set_title(title, y=1)
+
+        # constants
+        n_lines = len(self._notes_list)
+        paddings = 0.2
+        x_mins = []
+        x_maxs = []
+        y_lims = (-n_lines + 1 - paddings, 1 + paddings)
+
+        # iterate over `self._notes_list`
+        for i, notes in enumerate(self._notes_list):
+            # set notes
+            self.set_notes(notes)
+
+            # get note colors
+            self._get_note_color(color_style)
+
+            # get note texts
+            self._get_note_text(color_style)
+
+            # constants
+            xs = _get_pos(notes)
+            x_mins.append(min(xs))
+            x_maxs.append(max(xs))
+
+            # get background notes
+            notes_bg = [Note().set_vector(named_nnrel=NAMED_NNREL_GEN[x % M], accidental=x // M) for x in range(min(xs), max(xs) + 1)]
+
+            for note in notes_bg:
+                if NGS == '12.7.5' and tds_on:
+                    tds = ['T', 'D', 'S'][int(note - key_note) % 3]
+                    note.set_message(face_color=tds_colors(tds))
+                else:
+                    note.set_message(face_color='white')
+
+            # plot notes_bg
+            rects = [
+                plt.Rectangle(
+                    xy=(x, -i),
+                    width=1,
+                    height=1,
+                    facecolor=note.get_message('face_color'),
+                    edgecolor='black',
+                    zorder=0
+                ) for note, x in zip(notes_bg, range(min(xs), max(xs) + 1))
+            ]
+            _ = [ax.add_patch(rect) for rect in rects]
+            _ = [
+                ax.annotate(
+                    s=note.get_name(show_register=False),
+                    xy=(x + 1 / 2, -i + 1 / 2),
+                    color='black',
+                    va='center',
+                    ha='center',
+                    zorder=1
+                ) for note, x in zip(notes_bg, range(min(xs), max(xs) + 1))
+            ]
+
+            # plot notes
+            for note, x in zip(self._notes, xs):
+                rect = plt.Rectangle(
+                    xy=(x + 1 / 8, -i + 1 / 8),
+                    width=3 / 4,
+                    height=3 / 4,
+                    facecolor=note.get_message('face_color'),
+                    edgecolor=note.get_message('edge_color'),
+                    zorder=3
+                )
+                ax.add_patch(rect)
+                ax.annotate(
+                    s=note.get_name(show_register=False) if color_style == 'note' else note.get_name(show_register=False) + f"\n{note.get_message('text')}",
+                    xy=(x + 1 / 2, -i + 1 / 2),
+                    color=note.get_message('text_color'),
+                    va='center',
+                    ha='center',
+                    zorder=4
+                )
+
+        # tonality stuff
+        if NGS in ['12.7.5', '19.11.8']:
+            major_offset = -1
+        else:
+            major_offset = 0
+
+        # add vertical lines % M
+        for x in range(min(x_mins), max(x_maxs) + 2):
+            if x % M == NAMED_NNREL_GEN.index(key_note.get_named_nnrel()) + major_offset:
+                ax.plot((x, x), (-n_lines + 1, 1), 'b', lw=2, zorder=5.1)
+
+        # add vertical lines % N
+        for x in range(min(x_mins), max(x_maxs) + 2):
+            if x % N == NAMED_NNREL_GEN.index(key_note.get_named_nnrel()) + major_offset:
+                ax.plot((x, x), (-n_lines + 1, 1), '--r', zorder=5.2)
+
+        # add names
+        try:
+            names = [notes.get_name()[0] if isinstance(notes.get_name(), list) else notes.get_name() for notes in self._notes_list]
+        except:
+            names = ['[' + ', '.join([note.get_name(show_register=False) for note in notes]) + ']' for notes in self._notes_list]
+
+        text_width = max(len(name) for name in names) / 3.5
+
+        _ = [
+            ax.annotate(
+                s=name,
+                xy=(max(x_maxs) + 3 / 2, -i + 1 / 2),
+                color='black',
+                va='center',
+                ha='left',
+                zorder=6
+            ) for i, name in enumerate(names)
+        ]
+
+        # constants
+        x_lims = (min(x_mins) - paddings, max(x_maxs) + 1 + paddings + text_width)
+        ax_w = length(*x_lims) + 2 * paddings + text_width
+        ax_h = length(*y_lims) + 2 * paddings
+
+        # set axes lims
+        ax.set_xlim(*x_lims)
+        ax.set_ylim(*y_lims)
+
+        # set figure size
+        if if_fig:
+            fig.set_figwidth(FIG_HEIGHT * ax_w / 4)
+            fig.set_figheight(FIG_HEIGHT * ax_h  / 4)
+
+
 class Tonnetz(_NoteList):
     def __init__(self):
         super().__init__()
 
-    def plot(self, n_x=7, n_y=7, enharmonic=True, upside_down=False, center_note=Note(), color_style='note', tds_on=False, ax=None, title=None):
+    def plot(self, n_x=7, n_y=7, enharmonic=True, upside_down=False, center_note=Note(), color_style='note', tds_on=True, ax=None, title=None):
         # get note colors
         self._get_note_color(color_style)
 
@@ -1043,8 +1196,8 @@ class Tonnetz(_NoteList):
 
         # constants
         itv_gen = (Note(NAMED_STR_GEN[1]) - Note(NAMED_STR_GEN[0])).normalize()
-        itv_maj = (Note(NAMED_STR_LIN[CHORD_STEP_LIN]) - Note(NAMED_STR_LIN[0])).normalize()
-        itv_min = itv_gen - itv_maj
+        itv_major = (Note(NAMED_STR_LIN[CHORD_STEP_LIN]) - Note(NAMED_STR_LIN[0])).normalize()
+        itv_minor = itv_gen - itv_major
 
         step_x = 3
         step_y = 3 ** (1 / 2) * step_x / 2
@@ -1055,10 +1208,9 @@ class Tonnetz(_NoteList):
 
         ax_w = 2 * x_max
         ax_h = 2 * y_max
-        fig_w_to_h_ratio = ax_w / ax_h
 
         if ax is None:
-            fig, ax = get_figure(3 * FIG_HEIGHT * fig_w_to_h_ratio, 3 * FIG_HEIGHT)
+            fig, ax = get_figure(FIG_HEIGHT * ax_w / 6, FIG_HEIGHT * ax_h / 6)
 
         if title is not None:
             ax.set_title(title, y=0.95)
@@ -1071,7 +1223,7 @@ class Tonnetz(_NoteList):
             notes_bg = np.array(
                 [
                     [
-                        center_note + kx * itv_gen + ky * itv_min for kx in range(-(n_x // 2), n_x // 2 + 1)
+                        center_note + kx * itv_gen + ky * itv_minor for kx in range(-(n_x // 2), n_x // 2 + 1)
                     ] for ky in range(-(n_y // 2), n_y // 2 + 1)
                 ]
             ).reshape([-1])
@@ -1079,7 +1231,7 @@ class Tonnetz(_NoteList):
             notes_bg = np.array(
                 [
                     [
-                        center_note + kx * itv_gen + ky * itv_maj for kx in range(-(n_x // 2), n_x // 2 + 1)
+                        center_note + kx * itv_gen + ky * itv_major for kx in range(-(n_x // 2), n_x // 2 + 1)
                     ] for ky in range(-(n_y // 2), n_y // 2 + 1)
                 ]
             ).reshape([-1])
@@ -1122,7 +1274,7 @@ class Tonnetz(_NoteList):
 
                 circ = plt.Circle(cur_xy, step_x / 4, facecolor=face_color, edgecolor=edge_color)
                 ax.add_patch(circ)
-                s = cur_note.get_name(show_register=False) if color_style == 'note' else cur_note.get_name(show_register=False) + f'({text})'
+                s = cur_note.get_name(show_register=False) if color_style == 'note' else cur_note.get_name(show_register=False) + f'\n{text}'
                 ax.annotate(s, cur_xy, color=text_color, va='center', ha='center')
             else:
                 ax.annotate(cur_note.get_name(show_register=False), cur_xy, color='black', va='center', ha='center')

@@ -1,5 +1,4 @@
-def sign(x):
-    return 1 if x > 0 else -1 if x < 0 else 0
+from ast import literal_eval
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -17,9 +16,9 @@ def sign(x):
 
 
 # most basic constants (generate named nnrels from starting point `S` using step length `G` modulo `N`)
-N = 12  # `N`-tone equal temperament (`N`-TET)
-G = 7   # generator (step length)
-S = 5   # starter (starting point)
+N = 12  # int(input('N: '))  # `N`-tone equal temperament (`N`-TET)
+G = 7   # int(input('G: '))  # generator (step length)
+S = 5   # int(input('S: '))  # starter (starting point)
 
 # most basic calculations
 M = pow(G, -1, N)                            # number of tones in diatonic scale
@@ -73,6 +72,11 @@ def NGSChecker():
         return True
     else:
         return False
+
+
+# sign function
+def sign(x):
+    return 1 if x > 0 else -1 if x < 0 else 0
 
 
 # make elements of a list `lst` unique
@@ -259,7 +263,15 @@ CHORD_TYPE_NS0_TO_NS1 = {
         'R.2.b5.b7': ['7-5sus2'],
         'R.2.b5.6': ['6-5sus2'],
         'R.2.5': ['sus2'],
-        'R.2.b5': ['-5sus2']
+        'R.2.b5': ['-5sus2'],
+        # scales
+        'R.2.3.5.6': ['Gong'],
+        'R.2.4.5.6': ['Zhi'],
+        'R.2.4.6.b7': ['Shang'],
+        'R.b3.4.5.b7': ['Yu'],
+        'R.b3.4.b6.b7': ['Jue'],
+        'R.b2.4.5.b6': ['In'],
+        'R.3.4.5.7': ['Ryukyu'],
     },
     '19.11.8': {
         # 5**
@@ -295,7 +307,15 @@ CHORD_TYPE_NS0_TO_NS1 = {
         'R.2.b5.b7': ['7-5sus2'],
         'R.2.b5.6': ['6-5sus2'],
         'R.2.5': ['sus2'],
-        'R.2.b5': ['-5sus2']
+        'R.2.b5': ['-5sus2'],
+        # scales
+        'R.2.3.5.6': ['Gong'],
+        'R.2.4.5.6': ['Zhi'],
+        'R.2.4.6.b7': ['Shang'],
+        'R.b3.4.5.b7': ['Yu'],
+        'R.b3.4.b6.b7': ['Jue'],
+        'R.b2.4.5.b6': ['In'],
+        'R.3.4.5.7': ['Ryukyu'],
     }
 }
 
