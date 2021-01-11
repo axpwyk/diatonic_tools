@@ -1,6 +1,6 @@
 # diatonic-tools：<br>使用 Python 进行 Diatonic 音乐理论分析与绘图
 
-![1_showcase](README.assets/1_showcase.svg)
+![1_gen_line_chord_test](README.assets/1_gen_line_chord_test.svg)
 
 ## 0.1  综述
 
@@ -24,7 +24,7 @@
 
 
 
-* `consts.py` 是最基础的文件，里面定义了各种常数（如上文提到的 `N`, `G`, `S`, `M` 等）、名称、色彩方案以及常用函数
+* `consts.py` 是最基础的文件，定义了各种常数（如 `N`, `G`, `S`, `M` 等）、常用函数、名称、色彩方案等
 * `theories.py` 是 diatonic-tools 的核心，音乐理论对象的实现，包括了 `Note` 类、`Interval` 类、`DiatonicScale` 类、`AlteredDiatonicScale` 类、`Chord` 类和 `ChordScale` 类。这些类之间有相互运算、调用或继承的关系。一些主要的关系：
   * `Note` 和 `Note` 做减法得到 `Interval`
   * `Note` 和 `Interval` 做加法得到 `Interval`
@@ -47,25 +47,80 @@
 
 ### 1.1.1 使用 `Note` 类
 
+`Note` 是使用三元数组进行表示的音符类。(`named_nnrel`, `accidental`, `register`) 这个三元数组可以唯一确定一个音符。
+
+* 第一个参数 `named_nnrel` 表示**不带升降号的音名**对应的数字编号（模 `N` 取余）
+* 第二个参数 `accidental` 表示升降号数目，取值为负无穷到正无穷的整数
+* 第三个参数 `register` 表示音区，取值为负无穷到正无穷的整数
+
+`Note` 的绝对音高编号可以由公式 `named_nnrel` + `accidental` + `N` * `register` 获得。
+
+
+
+**Example. 1**  使用名称创建音符
+
+```python
+>>> Note('C')
+Note('C0')
+```
+
+
+
+**Example. 2**  使用三元数组创建音符
+
+```python
+>>> Note().set_vector(named_nnrel=2, accidental=1, register=1)
+Note('D#1')
+```
+
+
+
+**Example. 3**  获取音符名称
+
+```python
+>>> Note('Eb2').get_name()
+'Eb2'
+```
+
+```python
+>>> Note('Eb2').get_name(show_register=False)
+'Eb'
+```
+
+
+
+**Example. 4**  获取音符三元数组
+
+```
+>>> Note('F#3').get_vector()
+(5, 1, 3)
+```
+
+
+
 
 
 ### 1.1.2 使用 `Interval` 类
 
 
 
-### 1.1.3 使用 `DiatonicScale` 类
+### 1.1.3 `Note` 类和 `Interval` 类的交互
 
 
 
-### 1.1.4 使用 `AlteredDiatonicScale` 类
+### 1.1.4 使用 `DiatonicScale` 类
 
 
 
-### 1.1.5 使用 `Chord` 类
+### 1.1.5 使用 `AlteredDiatonicScale` 类
 
 
 
-### 1.1.6 使用 `ChordScale` 类
+### 1.1.6 使用 `Chord` 类
+
+
+
+### 1.1.7 使用 `ChordScale` 类
 
 
 
@@ -94,4 +149,6 @@
 ### 1.2.6 使用 `Tonnetz` 类
 
 
+
+## 1.3 修改 `consts.py` 文件
 
