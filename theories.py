@@ -726,7 +726,7 @@ class DiatonicScale(object):
         return [note.get_named_nnrel() for note in self]
 
     def get_nnrel_list(self):
-        return [(note.get_named_nnrel() + note.get_accidental()) % N for note in self]
+        return [note.get_nnrel() for note in self]
 
     def get_accidental_list(self):
         return [note.get_accidental() for note in self]

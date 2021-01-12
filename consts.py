@@ -16,9 +16,9 @@ from ast import literal_eval
 
 
 # most basic constants (generate named nnrels from starting point `S` using step length `G` modulo `N`)
-N = 12  # int(input('N: '))  # `N`-tone equal temperament (`N`-TET)
-G = 7   # int(input('G: '))  # generator (step length)
-S = 5   # int(input('S: '))  # starter (starting point)
+N = 19  # int(input('N: '))  # `N`-tone equal temperament (`N`-TET)
+G = 11   # int(input('G: '))  # generator (step length)
+S = 8   # int(input('S: '))  # starter (starting point)
 
 # most basic calculations
 M = pow(G, -1, N)                            # number of tones in diatonic scale

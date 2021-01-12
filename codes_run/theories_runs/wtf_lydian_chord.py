@@ -11,5 +11,4 @@ for _ in range(20):
 for note in c:
     note.set_message(br357t=(note - c[0]).get_r357t())
 
-Piano().set_notes(c).plot()
-plt.show()
+print(c)
