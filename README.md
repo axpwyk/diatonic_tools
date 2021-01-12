@@ -633,7 +633,7 @@ named notes: 0=C 2=D 4=E 5=F 7=G 9=A 11=B
 Dm7-5
 ```
 
-**Example. 4** 生成 sUpEr UlTrA hYpEr MeGa MeTa LyDiAn 和弦（youtube=https://www.youtube.com/watch?v=HeTygKpi6pI）
+**Example. 4** 生成 sUpEr UlTrA hYpEr MeGa MeTa LyDiAn 和弦 | youtube=https://www.youtube.com/watch?v=HeTygKpi6pI
 
 ```python
 from itertools import cycle
