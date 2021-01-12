@@ -12,13 +12,13 @@
 
 在某一套 `NGS` 配置下，在一个周期内从小到大进行排列的狭义 Diatonic 音阶叫做**自然音阶**。
 
-当 `[N, G, S] = [12, 7, 5]` 时，对应的自然音阶为 [0, 2, 4, 5, 7, 9, 11]。把这些音命名为 [C, D, E, F, G, A, B]，就可以和传统 12 平均律音乐理论保持一致。注意：传统乐理中自然音阶可以从任意一个音级开始。本程序要求自然音阶必须是从一个周期内最小的音开始的音阶。
+当 `[N, G, S] = [12, 7, 5]` 时，对应的自然音阶为 `[0, 2, 4, 5, 7, 9, 11]`。把这些音命名为 `[C, D, E, F, G, A, B]`，就可以和传统 12 平均律音乐理论保持一致。注意：传统乐理中自然音阶可以从任意一个音级开始。本程序要求自然音阶必须是从一个周期内最小的音开始的音阶。
 
-当 `[N, G, S] = [19, 11, 8]` 时，对应的自然音阶为 [0, 3, 6, 8, 11, 14, 17]，把这些音同样命名为 [C, D, E, F, G, A, B]，就得到了扩展至 19 平均律的自然音阶。
+当 `[N, G, S] = [19, 11, 8]` 时，对应的自然音阶为 `[0, 3, 6, 8, 11, 14, 17]`，把这些音同样命名为 `[C, D, E, F, G, A, B]`，就得到了扩展至 19 平均律的自然音阶。
 
 当 `[N, G, S]` 任意（`N`, `G` 互质）时，需要先通过 `pow(G, -1, N)` 算出音数 `M`，然后人工指定 `M` 个符号作为这些音的音名。在代码中这 `M` 个符号以字符串记录，为 `NAMED_STR_LIN`，也就是在单周期内音高从小到大线性排列时各音的名称。对于上述 12 平均律和 19 平均律两例，`M = 7`，`NAMED_STR_LIN = 'CDEFGAB'`。
 
-12 平均律下传统的调性，和声等概念的基础就是 Diatonic 音阶，其他各种复杂的音阶与和弦说到底可以用加入了一些变化的 Diatonic 音阶来表示，这里称为 Altered Diatonic 音阶。例如，[C, D, E, F, G, A, B]（C Ionian）是 Diatonic 音阶，[C, D, E, F#, G, A, B]（C Lydian）是 Diatonic 音阶，而 [C, D, Eb, F, G, A, B]（C Ionian(b3) 或 C Melodic Minor）则是 Altered Diatonic 音阶。又如：[C, E, G, F#] 是 Diatonic 和弦，因为它是 C Lydian 的一部分；而 [C, Eb, G, B] 却是 Altered Diatonic 和弦，因为它**不是**任何 Diatonic 音阶的一部分。注意：Altered Diatonic 音阶也可能产生 Diatonic 和弦！
+12 平均律下传统的调性，和声等概念的基础就是 Diatonic 音阶，其他各种复杂的音阶与和弦说到底可以用加入了一些变化的 Diatonic 音阶来表示，这里称为 Altered Diatonic 音阶。例如，`[C, D, E, F, G, A, B]`（C Ionian）是 Diatonic 音阶，`[C, D, E, F#, G, A, B]`（C Lydian）是 Diatonic 音阶，而 `[C, D, Eb, F, G, A, B]`（C Ionian(b3) 或 C Melodic Minor）则是 Altered Diatonic 音阶。又如：`[C, E, G, F#]` 是 Diatonic 和弦，因为它是 C Lydian 的一部分；而 `[C, Eb, G, B]` 却是 Altered Diatonic 和弦，因为它**不是**任何 Diatonic 音阶的一部分。注意：Altered Diatonic 音阶也可能产生 Diatonic 和弦！
 
 ## 0.2  diatonic-tools 框架结构
 
