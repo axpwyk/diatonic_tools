@@ -568,18 +568,18 @@ for _ in range(7):
 
 输出：
 
-```python
+```plain text
 ----------------------------------------------
 12-TET | 7-tone | step length: 7 | starting: 5
 named notes: 0=C 2=D 4=E 5=F 7=G 9=A 11=B 
 ----------------------------------------------
-F F-mode	FM7	G7	Am7	Bm7-5	CM7	Dm7	Em7	
-F C-mode	FM7	Gm7	Am7	BbM7	C7	Dm7	Em7-5	
-F G-mode	F7	Gm7	Am7-5	BbM7	Cm7	Dm7	EbM7	
-F D-mode	Fm7	Gm7	AbM7	Bb7	Cm7	Dm7-5	EbM7	
-F A-mode	Fm7	Gm7-5	AbM7	Bbm7	Cm7	DbM7	Eb7	
-F E-mode	Fm7	GbM7	Ab7	Bbm7	Cm7-5	DbM7	Ebm7	
-F B-mode	Fm7-5	GbM7	Abm7	Bbm7	CbM7	Db7	Ebm7	
+F Lydian	FM7	G7	Am7	Bm7-5	CM7	Dm7	Em7	
+F Ionian	FM7	Gm7	Am7	BbM7	C7	Dm7	Em7-5	
+F Mixolydian	F7	Gm7	Am7-5	BbM7	Cm7	Dm7	EbM7	
+F Dorian	Fm7	Gm7	AbM7	Bb7	Cm7	Dm7-5	EbM7	
+F Aeolian	Fm7	Gm7-5	AbM7	Bbm7	Cm7	DbM7	Eb7	
+F Phrygian	Fm7	GbM7	Ab7	Bbm7	Cm7-5	DbM7	Ebm7	
+F Locrian	Fm7-5	GbM7	Abm7	Bbm7	CbM7	Db7	Ebm7	
 ```
 
 **Example. 2** 旋律倒影
@@ -637,7 +637,6 @@ Dm7-5
 
 ```python
 from itertools import cycle
-from instruments import *
 
 intervals = [Interval('M2'), Interval('M2'), Interval('M2'), Interval('m2')]
 intervals_cycle = cycle(intervals)
@@ -645,9 +644,6 @@ intervals_cycle = cycle(intervals)
 c = [Note('C')]
 for _ in range(20):
     c.append(c[-1] + next(intervals_cycle))
-
-for note in c:
-    note.set_message(br357t=(note - c[0]).get_r357t())
 
 print(c)
 ```

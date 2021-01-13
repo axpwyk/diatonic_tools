@@ -1155,6 +1155,17 @@ class Chord(object):
     def get_intervals_cum(self, use_bass=True):
         return [note - self[0] for note in self.get_notes(return_bass=use_bass)]
 
+    def get_negative_chord(self, major_tonic=Note()):
+        if NGS != '12.7.5':
+            raise ValueError('`Chord.get_negative_chord` method works properly only when NGS == 12.7.5!')
+
+        phrygian_p5_tonic = major_tonic + Interval('P5')
+
+        notes = self[:]
+        intervals = [note - major_tonic for note in notes]
+
+        return Chord().set_notes(body=[phrygian_p5_tonic - itv for itv in reversed(intervals)])
+
     def get_name(self, type_only=False):
         body_type, tension_type, bass_type = self.notes_to_chord_type(self._bass, self._body, self._tension)
 

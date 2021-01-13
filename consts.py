@@ -29,6 +29,7 @@ NGS = '.'.join([str(k) for k in [N, G, S]])  # NGS for dict indexing
 # define named notes (natural notes) in linear order
 NAMED_STR_LIN = [
     'CDEFGAB',                                              # [12, 7, 5] and [19, 11, 8]
+    'ⅠⅡⅢⅣⅤⅥⅦ',                                          # [12, 7, 5] and [19, 11, 8]
     'CDEXGAB',                                              # [12, 7, 0] and [19, 11, 0] (X is F#)
     'CDEGA',                                                # [12, 5, 4]
     'ABCDEFGHIJ',                                           # [23, 7, 0]
@@ -247,7 +248,7 @@ ALTERED_SCALE_TYPE_NS2_TO_NS0 = dict((v, k) for k, vs in ALTERED_SCALE_TYPE_NS0_
 ''' ----------------------------------------------------------------------------------------- '''
 
 
-# chord type converter, change naming scheme 0 to naming scheme 1, e.g. '.3.5.b7' -> '7'
+# chord type converter, change naming scheme 0 to naming scheme 1, e.g. 'R.3.5.b7' -> '7'
 CHORD_TYPE_NS0_TO_NS1 = {
     '12.7.5': {
         # 5**
@@ -258,7 +259,7 @@ CHORD_TYPE_NS0_TO_NS1 = {
         'R.3.#5.7': ['M7+5', 'augM7'],
         'R.3.#5.b7': ['7+5', 'aug7'],
         'R.3.#5': ['+5', 'aug'],
-        'R.3.5.7': ['M7'],
+        'R.3.5.7': ['M7', 'maj7'],
         'R.3.5.7.9': ['M9'],
         'R.3.5.b7.9': ['9'],
         'R.3.5.b7': ['7'],
@@ -290,7 +291,7 @@ CHORD_TYPE_NS0_TO_NS1 = {
         'R.2.4.6.b7': ['Shang'],
         'R.b3.4.5.b7': ['Yu'],
         'R.b3.4.b6.b7': ['Jue'],
-        'R.b2.4.5.b6': ['In'],
+        'R.b2.4.5.b6': ['In', 'Miyakobushi'],
         'R.3.4.5.7': ['Ryukyu'],
     },
     '19.11.8': {
@@ -302,7 +303,7 @@ CHORD_TYPE_NS0_TO_NS1 = {
         'R.3.#5.7': ['M7+5', 'augM7'],
         'R.3.#5.b7': ['7+5', 'aug7'],
         'R.3.#5': ['+5', 'aug'],
-        'R.3.5.7': ['M7'],
+        'R.3.5.7': ['M7', 'maj7'],
         'R.3.5.7.9': ['M9'],
         'R.3.5.b7.9': ['9'],
         'R.3.5.b7': ['7'],
@@ -334,12 +335,12 @@ CHORD_TYPE_NS0_TO_NS1 = {
         'R.2.4.6.b7': ['Shang'],
         'R.b3.4.5.b7': ['Yu'],
         'R.b3.4.b6.b7': ['Jue'],
-        'R.b2.4.5.b6': ['In'],
+        'R.b2.4.5.b6': ['In', 'Miyakobushi'],
         'R.3.4.5.7': ['Ryukyu'],
     }
 }
 
-# chord type converter, change naming scheme 1 to naming scheme 0, e.g. '7' -> '.3.5.b7'
+# chord type converter, change naming scheme 1 to naming scheme 0, e.g. '7' -> 'R.3.5.b7'
 CHORD_TYPE_NS1_TO_NS0 = dict((ngs, dict((v, k) for k, vs in d.items() for v in vs)) for ngs, d in CHORD_TYPE_NS0_TO_NS1.items())
 
 
