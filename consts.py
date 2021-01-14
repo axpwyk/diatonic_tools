@@ -27,16 +27,15 @@ C3 = 440 * (T ** (36 - 45))                  # frequency of C3
 NGS = '.'.join([str(k) for k in [N, G, S]])  # NGS for dict indexing
 
 # define named notes (natural notes) in linear order
-NAMED_STR_LIN = [
-    'CDEFGAB',                                              # [12, 7, 5] and [19, 11, 8]
-    'ⅠⅡⅢⅣⅤⅥⅦ',                                          # [12, 7, 5] and [19, 11, 8]
-    'CDEXGAB',                                              # [12, 7, 0] and [19, 11, 0] (X is F#)
-    'CDEGA',                                                # [12, 5, 4]
-    'ABCDEFGHIJ',                                           # [23, 7, 0]
-    str().join([chr(ord('A')+j) for j in range(M)]),        # 97-TET 26-tone
-    str().join([chr(int('03B1', 16)+j) for j in range(M)])  # `N`-TET `M`-tone
-][0]
-if len(NAMED_STR_LIN) != M: raise ValueError('Number of symbols must equal to number of notes!')
+NAMED_STR_LIN = {
+    '12.7.5': 'CDEFGAB',
+    '19.11.8': 'CDEFGAB',
+    '12.7.0': 'cdeFgab',  # F == f#
+    '19.11.0': 'cdeFgab',  # F == f#
+    '12.5.4': 'CDEGA',
+    '53.31.22': 'cCdDefFgGaAb',  # C == c#, D == d#, F == f#, G == g#, A == a#
+    '97.56.0': str().join([chr(ord('A')+j) for j in range(M)]),  # 26-tone diatonic scale
+}.get(NGS, str().join([chr(int('03B1', 16)+j) for j in range(M)]))
 
 # relative note numbers (nnrels) in generative order, e.g. [5, 0, 7, 2, 9, 4, 11]
 NAMED_NNREL_GEN = [(S + i * G) % N for i in range(M)]
@@ -57,22 +56,10 @@ M2_STEP_GEN = NAMED_NNREL_GEN.index(S + NAMED_NNREL_LIN[1])
 # a reasonable step length of stacked notes in linear sequence (not good)
 CHORD_STEP_LIN = [nnrel - NAMED_NNREL_LIN[0] for nnrel in NAMED_NNREL_LIN].index(G) // 2
 
-# special [N, G, S] for special functions
-SPECIAL_NGS = ['12.7.5', '19.11.8']
-
 
 ''' ----------------------------------------------------------------------------------------- '''
 ''' ************************************ basic utilities ************************************ '''
 ''' ----------------------------------------------------------------------------------------- '''
-
-
-# a handy NGS checking function
-def NGSChecker():
-    # registered [N, G, S] for special functions
-    if NGS in SPECIAL_NGS:
-        return True
-    else:
-        return False
 
 
 # sign function
@@ -130,13 +117,15 @@ def within(x, a, b):
 
 ''' ----------------------------------------------------------------------------------------- '''
 ''' ********************************** for `Interval` Class ********************************* '''
+''' naming scheme 0: ..., dd, d, P, A, AA, ...                                                '''
+''' naming scheme 1: ..., dd, d, m, M, A, AA, ...                                             '''
 ''' ----------------------------------------------------------------------------------------- '''
 
 
-# convert delta step to naming scheme 1 or 2
+# convert delta step to naming scheme 0 or 1
 DELTA_STEP_TO_NS = {
-    '12.7.5': [1, 2, 2, 1, 1, 2, 2],
-    '19.11.8': [1, 2, 2, 1, 1, 2, 2]
+    '12.7.5': [0, 1, 1, 0, 0, 1, 1],
+    '19.11.8': [0, 1, 1, 0, 0, 1, 1]
 }
 
 
@@ -149,17 +138,31 @@ DELTA_STEP_TO_NS = {
 
 # scale type converter, change naming scheme 0 to naming scheme 1, e.g. 'C-mode' -> 'Ionian'
 SCALE_TYPE_NS0_TO_NS1 = {
-    'F-mode': 'Lydian',
-    'C-mode': 'Ionian',
-    'G-mode': 'Mixolydian',
-    'D-mode': 'Dorian',
-    'A-mode': 'Aeolian',
-    'E-mode': 'Phrygian',
-    'B-mode': 'Locrian'
+    '12.7.5': {
+        'F-mode': ['Lydian'],
+        'C-mode': ['Ionian'],
+        'G-mode': ['Mixolydian'],
+        'D-mode': ['Dorian'],
+        'A-mode': ['Aeolian'],
+        'E-mode': ['Phrygian'],
+        'B-mode': ['Locrian']
+    },
+    '19.11.8': {
+        'F-mode': ['Lydian'],
+        'C-mode': ['Ionian'],
+        'G-mode': ['Mixolydian'],
+        'D-mode': ['Dorian'],
+        'A-mode': ['Aeolian'],
+        'E-mode': ['Phrygian'],
+        'B-mode': ['Locrian']
+    }
 }
 
 # scale type converter, change naming scheme 1 to naming scheme 0, e.g. 'Ionian' -> 'C-mode'
-SCALE_TYPE_NS1_TO_NS0 = dict((v, k) for k, v in SCALE_TYPE_NS0_TO_NS1.items())
+SCALE_TYPE_NS1_TO_NS0 = dict((ngs, dict((v, k) for k, vs in d.items() for v in vs)) for ngs, d in SCALE_TYPE_NS0_TO_NS1.items())
+
+# default diatonic scale ns
+DEFAULT_DIATONIC_SCALE_NS = 1
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -176,69 +179,151 @@ SCALE_TYPE_NS1_TO_NS0 = dict((v, k) for k, v in SCALE_TYPE_NS0_TO_NS1.items())
 
 
 # altered scale type converter, change naming scheme 0 to naming scheme 2, e.g. 'E-mode(#3)' -> 'HmP5b'
-ALTERED_SCALE_TYPE_NS0_TO_NS2 = {
-    # Class 1
-    'F-mode(#2)': ['Lydian(#2)'],  # name?
-    'C-mode(#5)': ['Ionian Augmented'],
-    'Gb-mode(#1)': ['Ultra Locrian'],
-    'D-mode(#4)': ['Ukrainian Dorian'],
-    'A-mode(#7)': ['Harmonic Minor'],
-    'E-mode(#3)': ['Phrygian Dominant', 'HmP5b'],
-    'B-mode(#6)': ['Locrian(#6)'],  # name?
+SCALE_TYPE_NS0_TO_NS2 = {
+    '12.7.5': {
+        # Class 1
+        'F-mode(#2)': ['Lydian(#2)'],  # name?
+        'C-mode(#5)': ['Ionian Augmented'],
+        'Gb-mode(#1)': ['Ultra Locrian'],
+        'D-mode(#4)': ['Ukrainian Dorian'],
+        'A-mode(#7)': ['Harmonic Minor'],
+        'E-mode(#3)': ['Phrygian Dominant', 'HmP5b'],
+        'B-mode(#6)': ['Locrian(#6)'],  # name?
 
-    # Class 3
-    'F-mode(#5)': ['Lydian Augmented'],
-    'E#-mode(b1)': ['Lydian Augmented'],
+        # Class 3
+        'F-mode(#5)': ['Lydian Augmented'],
+        'E#-mode(b1)': ['Lydian Augmented'],
 
-    'Cb-mode(#1)': ['Altered Dominant', 'Super Locrian'],
-    'B-mode(b4)': ['Super Locrian', 'Altered Dominant'],
+        'Cb-mode(#1)': ['Altered Dominant', 'Super Locrian'],
+        'B-mode(b4)': ['Super Locrian', 'Altered Dominant'],
 
-    'G-mode(#4)': ['Acoustic', 'Lydian Dominant'],
-    'F-mode(b7)': ['Lydian Dominant', 'Acoustic'],
+        'G-mode(#4)': ['Acoustic', 'Lydian Dominant'],
+        'F-mode(b7)': ['Lydian Dominant', 'Acoustic'],
 
-    'D-mode(#7)': ['Melodic Minor', 'Minor Major'],
-    'C-mode(b3)': ['Minor Major', 'Melodic Minor'],
+        'D-mode(#7)': ['Melodic Minor', 'Minor Major'],
+        'C-mode(b3)': ['Minor Major', 'Melodic Minor'],
 
-    'A-mode(#3)': ['Aeolian Dominant', 'Melodic Major'],
-    'G-mode(b6)': ['Melodic Major', 'Aeolian Dominant'],
+        'A-mode(#3)': ['Aeolian Dominant', 'Melodic Major'],
+        'G-mode(b6)': ['Melodic Major', 'Aeolian Dominant'],
 
-    'E-mode(#6)': ['Phrygian(#6)'],  # name?
-    'D-mode(b2)': ['Dorian(b2)'],  # name?
+        'E-mode(#6)': ['Phrygian(#6)'],  # name?
+        'D-mode(b2)': ['Dorian(b2)'],  # name?
 
-    'B-mode(#2)': ['Half Diminished'],
-    'A-mode(b5)': ['Half Diminished'],
+        'B-mode(#2)': ['Half Diminished'],
+        'A-mode(b5)': ['Half Diminished'],
 
-    # Class 4
-    'E-mode(#7)': ['Minor Neapolitan'],
+        # Class 4
+        'E-mode(#7)': ['Minor Neapolitan'],
 
-    # Class 6
-    'C-mode(b6)': ['Harmonic Major'],
-    'G-mode(b2)': ['HMP5b'],
+        # Class 6
+        'C-mode(b6)': ['Harmonic Major'],
+        'G-mode(b2)': ['HMP5b'],
 
-    # Class 9
-    'E-mode(#3, #7)': ['Double Harmonic', 'Gypsy Major'],
-    'C-mode(b2, b6)': ['Gypsy Major', 'Double Harmonic'],
+        # Class 9
+        'E-mode(#3, #7)': ['Double Harmonic', 'Gypsy Major'],
+        'C-mode(b2, b6)': ['Gypsy Major', 'Double Harmonic'],
 
-    'A-mode(#4, #7)': ['Hungarian Minor'],
-    'F-mode(b3, b6)': ['Hungarian Minor'],
+        'A-mode(#4, #7)': ['Hungarian Minor'],
+        'F-mode(b3, b6)': ['Hungarian Minor'],
 
-    # Class 16
-    'E-mode(#6, #7)': ['Major Neapolitan'],
-    'D-mode(b2, #7)': ['Major Neapolitan'],
-    'C-mode(b2, b3)': ['Major Neapolitan'],
+        # Class 16
+        'E-mode(#6, #7)': ['Major Neapolitan'],
+        'D-mode(b2, #7)': ['Major Neapolitan'],
+        'C-mode(b2, b3)': ['Major Neapolitan'],
 
-    # Class 33
-    'F-mode(b2, #5, #6)': ['Enigmatic'],
-    'E#-mode(b1, b2, #6)': ['Enigmatic'],
-    'D#-mode(b1, bb2)': ['Enigmatic'],
+        # Class 33
+        'F-mode(b2, #5, #6)': ['Enigmatic'],
+        'E#-mode(b1, b2, #6)': ['Enigmatic'],
+        'D#-mode(b1, bb2)': ['Enigmatic'],
 
-    # Class 0
-    'C-mode': ['Major'],
-    'A-mode': ['Minor']
+        # Class 0
+        'C-mode': ['Major'],
+        'A-mode': ['Minor']
+    },
+    '19.11.8': {
+        # Class 1
+        'F-mode(#2)': ['Lydian(#2)'],  # name?
+        'C-mode(#5)': ['Ionian Augmented'],
+        'Gb-mode(#1)': ['Ultra Locrian'],
+        'D-mode(#4)': ['Ukrainian Dorian'],
+        'A-mode(#7)': ['Harmonic Minor'],
+        'E-mode(#3)': ['Phrygian Dominant', 'HmP5b'],
+        'B-mode(#6)': ['Locrian(#6)'],  # name?
+
+        # Class 3
+        'F-mode(#5)': ['Lydian Augmented'],
+        'E#-mode(b1)': ['Lydian Augmented'],
+
+        'Cb-mode(#1)': ['Altered Dominant', 'Super Locrian'],
+        'B-mode(b4)': ['Super Locrian', 'Altered Dominant'],
+
+        'G-mode(#4)': ['Acoustic', 'Lydian Dominant'],
+        'F-mode(b7)': ['Lydian Dominant', 'Acoustic'],
+
+        'D-mode(#7)': ['Melodic Minor', 'Minor Major'],
+        'C-mode(b3)': ['Minor Major', 'Melodic Minor'],
+
+        'A-mode(#3)': ['Aeolian Dominant', 'Melodic Major'],
+        'G-mode(b6)': ['Melodic Major', 'Aeolian Dominant'],
+
+        'E-mode(#6)': ['Phrygian(#6)'],  # name?
+        'D-mode(b2)': ['Dorian(b2)'],  # name?
+
+        'B-mode(#2)': ['Half Diminished'],
+        'A-mode(b5)': ['Half Diminished'],
+
+        # Class 4
+        'E-mode(#7)': ['Minor Neapolitan'],
+
+        # Class 6
+        'C-mode(b6)': ['Harmonic Major'],
+        'G-mode(b2)': ['HMP5b'],
+
+        # Class 9
+        'E-mode(#3, #7)': ['Double Harmonic', 'Gypsy Major'],
+        'C-mode(b2, b6)': ['Gypsy Major', 'Double Harmonic'],
+
+        'A-mode(#4, #7)': ['Hungarian Minor'],
+        'F-mode(b3, b6)': ['Hungarian Minor'],
+
+        # Class 16
+        'E-mode(#6, #7)': ['Major Neapolitan'],
+        'D-mode(b2, #7)': ['Major Neapolitan'],
+        'C-mode(b2, b3)': ['Major Neapolitan'],
+
+        # Class 33
+        'F-mode(b2, #5, #6)': ['Enigmatic'],
+        'E#-mode(b1, b2, #6)': ['Enigmatic'],
+        'D#-mode(b1, bb2)': ['Enigmatic'],
+
+        # Class 0
+        'C-mode': ['Major'],
+        'A-mode': ['Minor']
+    }
 }
 
 # altered scale type converter, change naming scheme 2 to naming scheme 0, e.g. 'HmP5b' -> 'E-mode(#3)'
-ALTERED_SCALE_TYPE_NS2_TO_NS0 = dict((v, k) for k, vs in ALTERED_SCALE_TYPE_NS0_TO_NS2.items() for v in vs)
+SCALE_TYPE_NS2_TO_NS0 = dict((ngs, dict((v, k) for k, vs in d.items() for v in vs)) for ngs, d in SCALE_TYPE_NS0_TO_NS2.items())
+
+# default altered diatonic scale ns
+DEFAULT_ALTERED_DIATONIC_SCALE_NS = 2
+
+
+def scale_type_convertor(scale_type, ns_old, ns_new):
+    if ns_old == 0 and ns_new == 1:
+        mapping = SCALE_TYPE_NS0_TO_NS1.get(NGS, {})
+        return mapping.get(scale_type, [scale_type])[0]
+    elif ns_old == 1 and ns_new == 0:
+        mapping = SCALE_TYPE_NS1_TO_NS0.get(NGS, {})
+        return mapping.get(scale_type, scale_type)
+    elif ns_old == 0 and ns_new == 2:
+        mapping = SCALE_TYPE_NS0_TO_NS2.get(NGS, {})
+        return mapping.get(scale_type, [scale_type])[0]
+    elif ns_old == 2 and ns_new == 0:
+        mapping = SCALE_TYPE_NS2_TO_NS0.get(NGS, {})
+        return mapping.get(scale_type, scale_type)
+    else:
+        raise ValueError('[`ns_old`, `ns_new`] must be [0, 1], [1, 0], [0, 2] or [2, 0]!')
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -252,15 +337,15 @@ ALTERED_SCALE_TYPE_NS2_TO_NS0 = dict((v, k) for k, vs in ALTERED_SCALE_TYPE_NS0_
 CHORD_TYPE_NS0_TO_NS1 = {
     '12.7.5': {
         # 5**
-        'R.4.#5.7': ['M7+5sus4', 'augM7sus4'],
+        'R.4.#5.7': ['augM7sus4', 'M7+5sus4'],
         'R.4.5.7': ['M7sus4'],
         'R.4.5': ['sus4'],
         # 4**
-        'R.3.#5.7': ['M7+5', 'augM7'],
-        'R.3.#5.b7': ['7+5', 'aug7'],
-        'R.3.#5': ['+5', 'aug'],
+        'R.3.#5.7': ['augM7', 'M7+5'],
+        'R.3.#5.b7': ['aug7', '7+5'],
+        'R.3.#5': ['aug', '+5'],
         'R.3.5.7': ['M7', 'maj7'],
-        'R.3.5.7.9': ['M9'],
+        'R.3.5.7.9': ['M9', 'maj9'],
         'R.3.5.b7.9': ['9'],
         'R.3.5.b7': ['7'],
         'R.3.5.6': ['6'],
@@ -292,19 +377,19 @@ CHORD_TYPE_NS0_TO_NS1 = {
         'R.b3.4.5.b7': ['Yu'],
         'R.b3.4.b6.b7': ['Jue'],
         'R.b2.4.5.b6': ['In', 'Miyakobushi'],
-        'R.3.4.5.7': ['Ryukyu'],
+        'R.3.4.5.7': ['Ryukyu']
     },
     '19.11.8': {
         # 5**
-        'R.4.#5.7': ['M7+5sus4', 'augM7sus4'],
+        'R.4.#5.7': ['augM7sus4', 'M7+5sus4'],
         'R.4.5.7': ['M7sus4'],
         'R.4.5': ['sus4'],
         # 4**
-        'R.3.#5.7': ['M7+5', 'augM7'],
-        'R.3.#5.b7': ['7+5', 'aug7'],
-        'R.3.#5': ['+5', 'aug'],
+        'R.3.#5.7': ['augM7', 'M7+5'],
+        'R.3.#5.b7': ['aug7', '7+5'],
+        'R.3.#5': ['aug', '+5'],
         'R.3.5.7': ['M7', 'maj7'],
-        'R.3.5.7.9': ['M9'],
+        'R.3.5.7.9': ['M9', 'maj9'],
         'R.3.5.b7.9': ['9'],
         'R.3.5.b7': ['7'],
         'R.3.5.6': ['6'],
@@ -336,12 +421,26 @@ CHORD_TYPE_NS0_TO_NS1 = {
         'R.b3.4.5.b7': ['Yu'],
         'R.b3.4.b6.b7': ['Jue'],
         'R.b2.4.5.b6': ['In', 'Miyakobushi'],
-        'R.3.4.5.7': ['Ryukyu'],
+        'R.3.4.5.7': ['Ryukyu']
     }
 }
 
 # chord type converter, change naming scheme 1 to naming scheme 0, e.g. '7' -> 'R.3.5.b7'
 CHORD_TYPE_NS1_TO_NS0 = dict((ngs, dict((v, k) for k, vs in d.items() for v in vs)) for ngs, d in CHORD_TYPE_NS0_TO_NS1.items())
+
+# default chord ns
+DEFAULT_CHORD_NS = 1
+
+
+def chord_type_convertor(chord_type, ns_old, ns_new):
+    if ns_old == 0 and ns_new == 1:
+        mapping = CHORD_TYPE_NS0_TO_NS1.get(NGS, {})
+        return mapping.get(chord_type, [chord_type])[0]
+    elif ns_old == 1 and ns_new == 0:
+        mapping = CHORD_TYPE_NS1_TO_NS0.get(NGS, {})
+        return mapping.get(chord_type, chord_type)
+    else:
+        raise ValueError('[`ns_old`, `ns_new`] must be [0, 1] or [1, 0]!')
 
 
 ''' -----------------------------------------------------------------------------------------'''

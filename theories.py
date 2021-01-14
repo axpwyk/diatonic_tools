@@ -39,15 +39,11 @@ def scale_name_parser(scale_name):
     pattern_2 = r'(?P<scale_type>[\w#b+-]*)'
     pattern_3 = r'(?P<altered_note>(\([^ac-z]*\)){0,1})'
 
-    # first we should make sure that `scale_name` is written in new naming scheme
+    # first we should make sure that `scale_name` is written in naming scheme 0
     scale_type = re.sub(pattern_1, '', scale_name)
 
-    if scale_type in SCALE_TYPE_NS1_TO_NS0.keys():
-        scale_type = SCALE_TYPE_NS1_TO_NS0[scale_type]
-    elif scale_type in ALTERED_SCALE_TYPE_NS2_TO_NS0.keys():
-        scale_type = ALTERED_SCALE_TYPE_NS2_TO_NS0[scale_type]
-    else:
-        pass
+    scale_type = scale_type_convertor(scale_type, 2, 0)
+    scale_type = scale_type_convertor(scale_type, 1, 0)
 
     scale_name = re.match(pattern_1, scale_name).group() + scale_type
 
@@ -87,10 +83,8 @@ def chord_name_parser(chord_name):
 
     results = search_obj.groupdict()
 
-    # make sure that `chord_type` is written in new naming scheme
-    if NGSChecker():
-        if results['chord_type'] in CHORD_TYPE_NS1_TO_NS0[NGS].keys():
-            results['chord_type'] = CHORD_TYPE_NS1_TO_NS0[NGS][results['chord_type']]
+    # make sure that `chord_type` is written in naming scheme 0
+    results['chord_type'] = chord_type_convertor(results['chord_type'], 1, 0)
 
     return results
 
@@ -357,7 +351,7 @@ class Note(object):
         elif direction == 'auto':
             offset = sign(self._accidental)
         else:
-            raise ValueError(r"Illegal `direction`! Please choose one from 'up', 'down' or 'auto'!")
+            raise ValueError("Illegal direction! Please choose from ['up', 'down', 'auto']!")
 
         step = NAMED_NNREL_LIN.index(self._named_nnrel)
         new_step = step + offset
@@ -371,7 +365,7 @@ class Note(object):
 
 class Interval(object):
     @staticmethod
-    def interval_name_to_interval_vector(interval_name, ns=0):
+    def interval_name_to_interval_vector(interval_name, ns=-1):
         """
         when [N, G, S] == [12, 7, 5], will choose naming scheme according to `DELTA_STEP_TO_NS`
         when [N, G, S] != [12, 7, 5], will use naming scheme 2
@@ -393,25 +387,20 @@ class Interval(object):
         # get `abs(delta_step)`
         delta_step = degree - 1
 
-        # get naming scheme
-        if ns == 0:
-            if NGSChecker():
-                ns = DELTA_STEP_TO_NS[NGS][delta_step % M]
-            else:
-                ns = 2
-        else:
-            pass
+        # get naming scheme automatically
+        if ns == -1:
+            ns = DELTA_STEP_TO_NS.get(NGS, [2] * M)[delta_step % M]
 
         # calculate `delta_group`
-        if ns == 1:
+        if ns == 0:
             delta_group = interval_type.count('A') - interval_type.count('d')
-        elif ns == 2:
+        elif ns == 1:
             if 'd' in interval_type:
                 delta_group = interval_type.count('A') - interval_type.count('m') - interval_type.count('d') - 1
             else:
                 delta_group = interval_type.count('A') - interval_type.count('m')
         else:
-            raise ValueError('No such naming scheme! Choose `ns` from [1, 2]!')
+            raise ValueError(f'No naming scheme {ns}! Please choose from [0, 1]!')
 
         # calculate `delta_nnabs`
         delta_step_rel = delta_step % M
@@ -424,7 +413,7 @@ class Interval(object):
         return sgn * delta_nnabs, sgn * delta_step
 
     @staticmethod
-    def interval_vector_to_interval_name(delta_nnabs, delta_step, ns=0):
+    def interval_vector_to_interval_name(delta_nnabs, delta_step, ns=-1):
         """
         it only exists 2 types of intervals that contain same number of named notes in diatonic scale
 
@@ -449,23 +438,18 @@ class Interval(object):
         named_nnrel = NAMED_NNREL_LIN[delta_step_rel]
         delta_group = delta_nnabs - N * delta_register - named_nnrel
 
-        # get naming scheme
-        if ns == 0:
-            if NGSChecker():
-                ns = DELTA_STEP_TO_NS[NGS][delta_step % M]
-            else:
-                ns = 2
-        else:
-            pass
+        # get naming scheme automatically
+        if ns == -1:
+            ns = DELTA_STEP_TO_NS.get(NGS, [2] * M)[delta_step % M]
 
-        if ns == 1:
+        if ns == 0:
             if delta_group > 0:
                 itv_type = 'A' * delta_group
             elif delta_group == 0:
                 itv_type = 'P'
             else:
                 itv_type = 'd' * abs(delta_group)
-        elif ns == 2:
+        elif ns == 1:
             if delta_group > 0:
                 itv_type = 'A' * delta_group
             elif delta_group == 0:
@@ -475,7 +459,7 @@ class Interval(object):
             else:
                 itv_type = 'd' * (abs(delta_group) - 1)
         else:
-            raise ValueError('No such naming scheme! Choose `ns` from [1, 2]!')
+            raise ValueError(f'No naming scheme {ns}! Please choose from [0, 1]!')
 
         return -sgn * '-' + itv_type + f'{delta_step + 1}'
 
@@ -615,7 +599,7 @@ class Interval(object):
 
     def get_r357t(self):
         # (when `NGS` == '12.7.5') P2 -> 2, d2 -> b2, A2 -> #2, etc.
-        r357t = self.interval_vector_to_interval_name(self._delta_nnabs, self._delta_step, ns=1)
+        r357t = self.interval_vector_to_interval_name(self._delta_nnabs, self._delta_step, ns=0)
         r357t = r357t.replace('P', '').replace('d', 'b').replace('A', '#')
         r357t = 'R' if r357t == '1' else r357t
 
@@ -628,7 +612,7 @@ class Interval(object):
             return self
         else:
             interval_name = 'P' + r357t.replace('b', 'd').replace('#', 'A')
-            self._delta_nnabs, self._delta_step = self.interval_name_to_interval_vector(interval_name, ns=1)
+            self._delta_nnabs, self._delta_step = self.interval_name_to_interval_vector(interval_name, ns=0)
 
         return self
 
@@ -682,7 +666,7 @@ class DiatonicScale(object):
         self._refresh_messages()
 
         # print options initialization
-        self._printoptions = dict(ns=0, show_register=False)
+        self._printoptions = dict(ns=DEFAULT_DIATONIC_SCALE_NS, show_register=False)
 
     def __getitem__(self, item):
         """
@@ -736,15 +720,7 @@ class DiatonicScale(object):
 
     def set_printoptions(self, ns=None, show_register=None):
         if ns is not None:
-            if ns == 0:
-                self._printoptions['ns'] = 0
-            elif ns in [1, 2]:
-                if NGSChecker():
-                    self._printoptions['ns'] = ns
-                else:
-                    print(f'Naming scheme {ns} works properly only when NGS in {SPECIAL_NGS}!')
-            else:
-                raise ValueError(f'No naming scheme {ns}! Please choose from [0, 1, 2]!')
+            self._printoptions['ns'] = ns
 
         if show_register is not None:
             self._printoptions['show_register'] = show_register
@@ -787,7 +763,7 @@ class DiatonicScale(object):
         scale_type = NAMED_STR_GEN[mt_step_gen] + '-mode'
 
         if self._printoptions['ns'] == 1:
-            scale_type = SCALE_TYPE_NS0_TO_NS1[scale_type]
+            scale_type = scale_type_convertor(scale_type, 0, 1)
 
         if type_only:
             return scale_type
@@ -887,6 +863,9 @@ class AlteredDiatonicScale(DiatonicScale):
             for a, d in zip(accidentals, altered_degrees):
                 self[d % M].add_accidental(a)
 
+        # print options default value
+        self._printoptions['ns'] = DEFAULT_ALTERED_DIATONIC_SCALE_NS
+
     def __repr__(self):
         return '\n'.join([f"AlteredDiatonicScale('{scale_name}')" for scale_name in self.get_name()])
 
@@ -983,25 +962,16 @@ class AlteredDiatonicScale(DiatonicScale):
             else:
                 altered_notes_str = ''
 
-            if scale_type in SCALE_TYPE_NS0_TO_NS1.keys():
-                scale_type_ns1 = SCALE_TYPE_NS0_TO_NS1[scale_type] + altered_notes_str
-            else:
-                scale_type_ns1 = scale_type + altered_notes_str
-
-            if scale_type + altered_notes_str in ALTERED_SCALE_TYPE_NS0_TO_NS2.keys():
-                scale_type_ns2 = ALTERED_SCALE_TYPE_NS0_TO_NS2[scale_type + altered_notes_str][0]
-            else:
-                if scale_type in SCALE_TYPE_NS0_TO_NS1.keys():
-                    scale_type_ns2 = SCALE_TYPE_NS0_TO_NS1[scale_type] + altered_notes_str
-                else:
-                    scale_type_ns2 = scale_type + altered_notes_str
+            scale_type_ns0 = scale_type + altered_notes_str
+            scale_type_ns1 = scale_type_convertor(scale_type, 0, 1) + altered_notes_str
+            scale_type_ns2 = scale_type_convertor(scale_type + altered_notes_str, 0, 2)
 
             if self._printoptions['ns'] == 1:
                 scale_type_out = scale_type_ns1
             elif self._printoptions['ns'] == 2:
                 scale_type_out = scale_type_ns2
             else:
-                scale_type_out = scale_type + altered_notes_str
+                scale_type_out = scale_type_ns0
 
             # get scale tonic
             scale_tonic = copy(self[0])
@@ -1082,7 +1052,7 @@ class Chord(object):
         self._bass, self._body, self._tension = self.chord_name_to_notes(chord_name)
 
         # print options initialization
-        self._printoptions = dict(ns=0, show_register=False)
+        self._printoptions = dict(ns=DEFAULT_CHORD_NS, show_register=False)
 
     def __str__(self):
         bass_names = [note.get_name(self._printoptions['show_register']) for note in self._bass]
@@ -1133,15 +1103,7 @@ class Chord(object):
 
     def set_printoptions(self, ns=None, show_register=None):
         if ns is not None:
-            if ns == 0:
-                self._printoptions['ns'] = 0
-            elif ns in [1, ]:
-                if NGSChecker():
-                    self._printoptions['ns'] = ns
-                else:
-                    raise ValueError(f'Naming scheme {ns} works properly only when NGS in {SPECIAL_NGS}!')
-            else:
-                raise ValueError(f'No naming scheme {ns}! Please choose from [0, 1]!')
+            self._printoptions['ns'] = ns
 
         if show_register is not None:
             self._printoptions['show_register'] = show_register
@@ -1161,17 +1123,26 @@ class Chord(object):
 
         phrygian_p5_tonic = major_tonic + Interval('P5')
 
-        notes = self[:]
-        intervals = [note - major_tonic for note in notes]
+        bass_itvs = [note - major_tonic for note in self._bass]
+        bass_itvs_neg_rev = [-itv for itv in reversed(bass_itvs)]
 
-        return Chord().set_notes(body=[phrygian_p5_tonic - itv for itv in reversed(intervals)])
+        main_itvs = [note - major_tonic for note in self._body + self._tension]
+        main_itvs_neg_rev = [-itv for itv in reversed(main_itvs)]
+
+        body_bool = [(itv - main_itvs_neg_rev[0]).normalize().get_delta_step() in [0, 2, 4, 6] for itv in main_itvs_neg_rev]
+        tension_bool = [(itv - main_itvs_neg_rev[0]).normalize().get_delta_step() in [1, 3, 5] for itv in main_itvs_neg_rev]
+
+        bass = [phrygian_p5_tonic + itv for itv in bass_itvs_neg_rev]
+        body = [phrygian_p5_tonic + itv for itv, b in zip(main_itvs_neg_rev, body_bool) if b]
+        tension = [phrygian_p5_tonic + itv for itv, b in zip(main_itvs_neg_rev, tension_bool) if b]
+
+        return Chord().set_notes(bass=bass, body=body, tension=tension)
 
     def get_name(self, type_only=False):
         body_type, tension_type, bass_type = self.notes_to_chord_type(self._bass, self._body, self._tension)
 
         if self._printoptions['ns'] == 1:
-            if body_type in CHORD_TYPE_NS0_TO_NS1[NGS].keys():
-                body_type = CHORD_TYPE_NS0_TO_NS1[NGS][body_type][0]
+            body_type = chord_type_convertor(body_type, 0, 1)
 
         chord_type = body_type + tension_type + bass_type
 
@@ -1184,7 +1155,7 @@ class Chord(object):
                 whitespace = ' '
             return f"{self._body[0].get_name(show_register=self._printoptions['show_register'])}{whitespace}{chord_type}"
 
-    def get_scale(self, use_bass=True, max_order=2, ns=2):
+    def get_scale(self, use_bass=True, max_order=2, ns=DEFAULT_ALTERED_DIATONIC_SCALE_NS):
         """
         get all possible background scale of current chord, e.g.
 
@@ -1268,6 +1239,10 @@ class Chord(object):
             scale_names.extend(cur_ads.get_name())
 
         return unique(scale_names)
+
+
+class SlashChord(object):
+    pass
 
 
 class ChordScale(AlteredDiatonicScale):

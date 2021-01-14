@@ -16,8 +16,8 @@ def scale_name_parser(scale_name):
 
     if scale_type in SCALE_TYPE_NS1_TO_NS0.keys():
         scale_type = SCALE_TYPE_NS1_TO_NS0[scale_type]
-    elif scale_type in ALTERED_SCALE_TYPE_NS2_TO_NS0.keys():
-        scale_type = ALTERED_SCALE_TYPE_NS2_TO_NS0[scale_type]
+    elif scale_type in SCALE_TYPE_NS2_TO_NS0.keys():
+        scale_type = SCALE_TYPE_NS2_TO_NS0[scale_type]
     else:
         pass
 

@@ -203,11 +203,15 @@ class _NoteList(object):
 
 
 class Guitar(_NoteList):
-    def __init__(self, modulo_on=True, max_fret=24,
-                 open_string_notes=(Note('E1'), Note('A1'), Note('D2'), Note('G2'), Note('B2'), Note('E3')),
-                 w_to_h_ratio=2.0, short_fret_markers=(3, 5, 7, 9), long_fret_markers=(0, )):
+    def __init__(self, modulo_on=True, max_fret=2*N, open_string_notes=None, w_to_h_ratio=2.0, short_fret_markers=(3, 5, 7, 9), long_fret_markers=(0, )):
         # set `self._notes`
         super().__init__()
+
+        # default params
+        if open_string_notes is None and NGS == '12.7.5':
+            open_string_notes = [Note('E1'), Note('A1'), Note('D2'), Note('G2'), Note('B2'), Note('E3')]
+        else:
+            open_string_notes = [Note()]
 
         # prepare useful ndarrays
         open_string_nnabs = np.expand_dims(np.array([int(note) for note in open_string_notes]), axis=0)  # shape = [1, n_strings]
@@ -609,7 +613,7 @@ class Guitar(_NoteList):
         fig.set_figwidth(n_w * FIG_HEIGHT * fig_w_to_h_ratio)
         fig.set_figheight(n_h * FIG_HEIGHT)
 
-    def plot_all_chords(self, max_span=4, use_open_string=False, highest_bass_string=2, top_note=None, lowest_soprano_string=3, text_rotation=0, color_style='note', title=None):
+    def plot_all_chords(self, max_span=4, use_open_string=False, highest_bass_string=2, top_note=None, lowest_soprano_string=-3, text_rotation=0, color_style='note', title=None):
         selections, fret_positions = self.auto_select(max_span=max_span, use_open_string=use_open_string, highest_bass_string=highest_bass_string, top_note=top_note, lowest_soprano_string=lowest_soprano_string)
         # figure properties
         n_diagrams = len(selections)
@@ -658,9 +662,31 @@ class Piano(_NoteList):
     def __init__(self):
         super().__init__()
 
+    def _get_note_range_old(self):
+        notes = [int(note) for note in self._notes]
+
+        if notes == []:
+            return 0, 23
+
+        notes_min = min(notes)
+        notes_max = max(notes)
+        if notes_min % 12 in [0, 1, 3, 5, 6, 8, 10]:
+            notes_min -= 1
+        else:
+            notes_min -= 2
+        if notes_max % 12 in [1, 3, 4, 6, 8, 10, 11]:
+            notes_max += 1
+        else:
+            notes_max += 2
+        return notes_min, notes_max
+
     def _get_note_range(self):
         notes = [int(note) for note in self._notes]
-        return min(notes), max(notes)
+
+        if notes == []:
+            return 0, 2 * N
+
+        return min(notes), max(notes) + 1
 
     def plot_old(self, note_range=None, color_style='note', ax=None, title=None):
         if NGS != '12.7.5':
@@ -728,13 +754,16 @@ class Piano(_NoteList):
 
         # constants
         if note_range is None:
-            note_range = self._get_note_range()
+            note_range = self._get_note_range_old()
+        else:
+            note_range = (note_range[0], note_range[1] - 1)
 
-        keys_expand = 1
         height = 6
-        paddings = 0.1
-        x_lims = (_note2pos_mark(note_range[0] - keys_expand)[0] - paddings, _note2pos_mark(note_range[1] + keys_expand)[0] + paddings)
-        y_lims = (0 - paddings, height + 0.4 + paddings)
+        paddings = 0.0
+        x_left = _note2pos_xy(note_range[0])[0]
+        x_right = _note2pos_xy(note_range[1])[0] + 1.5
+        x_lims = (x_left - paddings, x_right + paddings)
+        y_lims = (0 - paddings, height + paddings)
         ax_w = length(*x_lims)
         ax_h = length(*y_lims)
         fig_w_to_h_ratio = ax_w / ax_h
@@ -749,12 +778,12 @@ class Piano(_NoteList):
 
         # add title
         if title:
-            ax.set_title(title, y=0.95)
+            ax.set_title(title, y=1.0)
 
         # key patches
         rects = [
             plt.Rectangle(**_note2pos_rect(note))
-            for note in range(note_range[0] - 1 - keys_expand, note_range[1] + 2 + keys_expand)
+            for note in range(note_range[0] - 1, note_range[1] + 2)
         ]
         _ = [ax.add_patch(rect) for rect in rects]
 
@@ -768,7 +797,7 @@ class Piano(_NoteList):
                 ec=note.get_message('edge_color'),
                 fc=note.get_message('face_color'),
                 zorder=3
-            ) for note in self._notes
+            ) for note in self._notes if int(note) in range(*note_range)
         ]
         _ = [ax.add_patch(circ) for circ in circs]
 
@@ -781,7 +810,7 @@ class Piano(_NoteList):
                 ha='center',
                 va='center',
                 zorder=4
-            ) for note in self._notes
+            ) for note in self._notes if int(note) in range(*note_range)
         ]
 
     def plot(self, note_range=None, color_style='note', ax=None, title=None):
@@ -797,8 +826,8 @@ class Piano(_NoteList):
 
         height = 4
         paddings = 0.1
-        x_lims = (note_range[0] - paddings, note_range[1] + 1 + paddings)
-        y_lims = (0 - paddings, height + 0.2 + paddings)
+        x_lims = (note_range[0] - paddings, note_range[1] + paddings)
+        y_lims = (0 - paddings, height + paddings)
         ax_w = length(*x_lims)
         ax_h = length(*y_lims)
         fig_w = ax_w + 2 * paddings
@@ -811,7 +840,7 @@ class Piano(_NoteList):
 
         # add title
         if title is not None:
-            ax.set_title(title, y=0.95)
+            ax.set_title(title, y=1.0)
 
         # set display range
         ax.set_xlim(*x_lims)
@@ -826,7 +855,7 @@ class Piano(_NoteList):
                 lw=1.2,
                 edgecolor='black',
                 facecolor='white' if x % N in NAMED_NNREL_LIN else 'gray'
-            ) for x in range(note_range[0], note_range[1] + 1)
+            ) for x in range(*note_range)
         ]
         _ = [ax.add_patch(key_rect) for key_rect in key_rects]
 
@@ -838,7 +867,7 @@ class Piano(_NoteList):
                 ha='center',
                 va='center',
                 color='black',
-            ) for x in range(note_range[0], note_range[1] + 1)
+            ) for x in range(*note_range)
         ]
 
         # note patches
@@ -848,7 +877,7 @@ class Piano(_NoteList):
                 radius=1 / 3,
                 edgecolor=note.get_message('edge_color'),
                 facecolor=note.get_message('face_color')
-            ) for note in self._notes
+            ) for note in self._notes if int(note) in range(*note_range)
         ]
         _ = [ax.add_patch(note_circ) for note_circ in note_circs]
 
@@ -860,7 +889,7 @@ class Piano(_NoteList):
                 ha='center',
                 va='center',
                 color=note.get_message('text_color')
-            ) for note in self._notes
+            ) for note in self._notes if int(note) in range(*note_range)
         ]
 
 
@@ -938,12 +967,15 @@ class Clock(_NoteList):
                 ha='center',
                 bbox=dict(facecolor=hand_colors[k], alpha=0.2, edgecolor=hand_colors[k])) for k in range(N)]
 
-        nnabs_list_2 = nnabs_list_1 + [nnabs_list_1[0] + N]
+        if nnabs_list_1 != []:
+            nnabs_list_2 = nnabs_list_1 + [nnabs_list_1[0] + N]
+        else:
+            nnabs_list_2 = []
 
         if interval_anno_style == 'degree':
             _ = [
                 ax.annotate(
-                    s=f'{(k2-k1)*(360/N)}°',
+                    s=f'{(k2-k1)*(360/N):.2f}°',
                     xy=(np.real(0.65*radius*omega**(k1+(k2-k1)/2)*offset), np.imag(0.65*radius*omega**(k1+(k2-k1)/2)*offset)),
                     ha='center',
                     va='center'
@@ -1005,7 +1037,6 @@ class ColorScheme(_NoteList):
         y_lims = 0 - h_text, (y_margins + h) * n_colors - y_margins + h_text
         ax_w = length(*x_lims)
         ax_h = length(*y_lims)
-        fig_w_to_h_ratio = ax_w / ax_h
 
         if ax is None:
             fig, ax = get_figure(FIG_HEIGHT * ax_w / 6, FIG_HEIGHT * ax_h / 6)
@@ -1053,7 +1084,7 @@ class GenLine(_NoteList):
             fig = plt.gcf()
 
         if title is not None:
-            ax.set_title(title, y=1)
+            ax.set_title(title, y=1.0)
 
         # constants
         n_lines = len(self._notes_list)
@@ -1132,19 +1163,16 @@ class GenLine(_NoteList):
                 )
 
         # tonality stuff
-        if NGS in ['12.7.5', '19.11.8']:
-            major_offset = -1
-        else:
-            major_offset = 0
+        key_offset = -NAMED_NNREL_GEN.index(NAMED_NNREL_LIN[0])
 
         # add vertical lines % M
         for x in range(min(x_mins), max(x_maxs) + 2):
-            if x % M == NAMED_NNREL_GEN.index(key_note.get_named_nnrel()) + major_offset:
+            if x % M == NAMED_NNREL_GEN.index(key_note.get_named_nnrel()) + key_offset:
                 ax.plot((x, x), (-n_lines + 1, 1), 'b', lw=2, zorder=5.1)
 
         # add vertical lines % N
         for x in range(min(x_mins), max(x_maxs) + 2):
-            if x % N == NAMED_NNREL_GEN.index(key_note.get_named_nnrel()) + major_offset:
+            if x % N == NAMED_NNREL_GEN.index(key_note.get_named_nnrel()) + key_offset:
                 ax.plot((x, x), (-n_lines + 1, 1), '--r', zorder=5.2)
 
         # add names
@@ -1235,7 +1263,7 @@ class Tonnetz(_NoteList):
             ).reshape([-1])
 
         for note in notes_bg:
-            if NGS == '12.7.5' and tds_on:
+            if tds_on and NGS == '12.7.5':
                 tds = ['T', 'D', 'S'][int(note - center_note) % 3]
                 note.set_message(face_color=tds_colors(tds))
             else:

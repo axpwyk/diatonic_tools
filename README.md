@@ -608,7 +608,7 @@ named notes: 0=C 2=D 4=E 5=F 7=G 9=A 11=B
 [Note('E0'), Note('D0'), Note('C0'), Note('B-1'), Note('A-1'), Note('G-1'), Note('F-1')]
 ```
 
-**Example. 3** 求负和声
+**Example. 3** 求负和声（已加入 `Chord` 类，`get_negative_chord` 方法）
 
 ```python
 from theories import *
@@ -812,15 +812,15 @@ C3 = 440 * (T ** (36 - 45))                  # frequency of C3
 NGS = '.'.join([str(k) for k in [N, G, S]])  # NGS for dict indexing
 
 # define named notes (natural notes) in linear order
-NAMED_STR_LIN = [
-    'CDEFGAB',                                              # [12, 7, 5] and [19, 11, 8]
-    'CDEXGAB',                                              # [12, 7, 0] and [19, 11, 0] (X is F#)
-    'CDEGA',                                                # [12, 5, 4]
-    'ABCDEFGHIJ',                                           # [23, 7, 0]
-    str().join([chr(ord('A')+j) for j in range(M)]),        # 97-TET 26-tone
-    str().join([chr(int('03B1', 16)+j) for j in range(M)])  # `N`-TET `M`-tone
-][0]
-if len(NAMED_STR_LIN) != M: raise ValueError('Number of symbols must equal to number of notes!')
+NAMED_STR_LIN = {
+    '12.7.5': 'CDEFGAB',
+    '19.11.8': 'CDEFGAB',
+    '12.7.0': 'cdeFgab',  # F == f#
+    '19.11.0': 'cdeFgab',  # F == f#
+    '12.5.4': 'CDEGA',
+    '53.31.22': 'cCdDefFgGaAb',  # C == c#, D == d#, F == f#, G == g#, A == a#
+    '97.56.0': str().join([chr(ord('A')+j) for j in range(M)]),  # 26-tone diatonic scale
+}.get(NGS, str().join([chr(int('03B1', 16)+j) for j in range(M)]))
 ```
 
 假设现在我们想使用 19 平均律。则上述文件应在如下几行进行修改：
