@@ -389,7 +389,7 @@ class Interval(object):
 
         # get naming scheme automatically
         if ns == -1:
-            ns = DELTA_STEP_TO_NS.get(NGS, [2] * M)[delta_step % M]
+            ns = DELTA_STEP_TO_NS.get(NGS, [1] * M)[delta_step % M]
 
         # calculate `delta_group`
         if ns == 0:
@@ -440,7 +440,7 @@ class Interval(object):
 
         # get naming scheme automatically
         if ns == -1:
-            ns = DELTA_STEP_TO_NS.get(NGS, [2] * M)[delta_step % M]
+            ns = DELTA_STEP_TO_NS.get(NGS, [1] * M)[delta_step % M]
 
         if ns == 0:
             if delta_group > 0:
