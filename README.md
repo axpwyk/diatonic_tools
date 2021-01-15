@@ -429,9 +429,9 @@ DiatonicScale('C# C-mode')
 **Example. 3** 求两个 Altered Diatonic 音阶之间的结构距离
 
 ```python
->>> ads1 = AlteredDiatonicScale('C Lydian(b7)')
->>> ads2 = AlteredDiatonicScale('C Ionian(#5)')
->>> ads1.distance(ads2)
+>> > ads1 = AlteredDiatonicScale('C Lydian(b7)')
+>> > ads2 = AlteredDiatonicScale('C Ionian(#5)')
+>> > ads1.distance_0(ads2)
 1
 ```
 

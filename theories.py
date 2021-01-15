@@ -869,7 +869,21 @@ class AlteredDiatonicScale(DiatonicScale):
     def __repr__(self):
         return '\n'.join([f"AlteredDiatonicScale('{scale_name}')" for scale_name in self.get_name()])
 
-    def distance(self, other, return_offsets=False):
+    # TODO: `AlteredDiatonicScale.distance_0` documentations
+    def distance_0(self, other, return_offsets=False):
+        """
+        structural distance of 2 scales (allow transposition = True, allow enharmonic note = True)
+
+        :param other: another scale (instance of `DiatonicScale` class or its subclass)
+        :param return_offsets: `offsets` are transposition number of 2 scales when transposed scales have least differences
+
+        :return:
+        """
+
+        # instance type check
+        if not isinstance(other, DiatonicScale):
+            raise TypeError('`other` must be of type `DiatonicScale`!')
+
         a = np.expand_dims(np.array(self.get_nnabs_list()), axis=-1)  # [M, 1]
         b = np.expand_dims(np.array(other.get_nnabs_list()), axis=-1)  # [M, 1]
         x = np.expand_dims(np.arange(N), axis=0)  # [1, N]
@@ -886,8 +900,78 @@ class AlteredDiatonicScale(DiatonicScale):
         else:
             return d
 
+    # TODO: `AlteredDiatonicScale.distance_1` documentations
+    def distance_1(self, other, return_self_left_offset=False):
+        """
+        enharmonic distance of 2 scales (allow transposition = False, allow enharmonic note = True)
+
+        :param other:
+        :param return_self_left_offset:
+
+        :return:
+        """
+
+        # instance type check
+        if not isinstance(other, DiatonicScale):
+            raise TypeError('`other` must be of type `DiatonicScale`!')
+
+        def _nnrel_pair_to_accidental(nnrel_1, nnrel_2):
+            # convert nnrel pair to accidental, e.g. (11, 1) -> 2, (0, 11) -> -1, etc.
+            sgn_1 = -1 if abs(nnrel_2 - nnrel_1) > N / 2 else 1
+            sgn_2 = sign(nnrel_2 - nnrel_1)
+            return sgn_1 * sgn_2 * (N - abs(2 * abs(nnrel_1 - nnrel_2) - N)) // 2
+
+        nnrels_self = [nnrel % N for nnrel in self.get_nnrel_list()]
+        nnrels_other = [nnrel % N for nnrel in other.get_nnrel_list()]
+
+        ds = []
+        for left_offset in range(M):
+            nnrels_self_offset = nnrels_self[left_offset:] + nnrels_self[:left_offset]
+            d = sum([abs(_nnrel_pair_to_accidental(nnrel_1, nnrel_2)) for nnrel_1, nnrel_2 in zip(nnrels_self_offset, nnrels_other)])
+            ds.append(d)
+        d = min(ds)
+
+        if return_self_left_offset:
+            return d, ds.index(d)
+        else:
+            return d
+
+    # TODO: `AlteredDiatonicScale.distance_2` documentations
+    def distance_2(self, other, return_delta_accidental_list=False):
+        """
+        note-wise distance of 2 scales (allow transposition = False, allow enharmonic note = False)
+
+        :param other:
+        :param return_delta_accidental_list:
+
+        :return:
+        """
+
+        # instance type check
+        if not isinstance(other, DiatonicScale):
+            raise TypeError('`other` must be of type `DiatonicScale`!')
+
+        named_nnrel_list_self, accidental_list_self = self.get_named_nnrel_list(), self.get_accidental_list()
+        named_nnrel_list_other, accidental_list_other = other.get_named_nnrel_list(), other.get_accidental_list()
+
+        # [(named_nnrel_1, accidental_1), (named_nnrel_2, accidental_2), ...]
+        sorted_zip_self = sorted(list(zip(named_nnrel_list_self, accidental_list_self)), key=lambda x: x[0])
+        sorted_zip_other = sorted(list(zip(named_nnrel_list_other, accidental_list_other)), key=lambda x: x[0])
+
+        sorted_accidental_list_self = list(zip(*sorted_zip_self))[1]
+        sorted_accidental_list_other = list(zip(*sorted_zip_other))[1]
+
+        delta_accidental_list = [x - y for x, y in zip(sorted_accidental_list_self, sorted_accidental_list_other)]
+
+        d = sum([abs(x) for x in delta_accidental_list])
+
+        if return_delta_accidental_list:
+            return d, delta_accidental_list
+        else:
+            return d
+
     def get_order(self):
-        return self.distance(DiatonicScale())
+        return self.distance_0(DiatonicScale())
 
     def get_name(self, type_only=False):
         """
@@ -921,7 +1005,7 @@ class AlteredDiatonicScale(DiatonicScale):
             return sgn_1 * sgn_2 * (N - abs(2 * abs(nnrel_1 - nnrel_2) - N)) // 2
 
         ds = DiatonicScale()
-        order, offsets = self.distance(ds, return_offsets=True)
+        order, offsets = self.distance_0(ds, return_offsets=True)
 
         scale_names = []
         for offset in offsets:
@@ -988,6 +1072,152 @@ class AlteredDiatonicScale(DiatonicScale):
                 scale_names.append(scale_tonic_name + ' ' + scale_type_out)
 
         return unique(scale_names)
+
+
+class ChordScale(AlteredDiatonicScale):
+    def __init__(self, scale_name):
+        if NGS != '12.7.5':
+            raise ValueError('`ChordScale` class works properly only when NGS == 12.7.5!')
+
+        super().__init__(scale_name)
+
+        self._chord_notes = [0, 2, 4, 6]
+        self._tension_notes = [k for k in range(7) if k not in self._chord_notes]
+
+        self._refresh()
+
+    def __repr__(self):
+        return '\n'.join([f"ChordScale('{scale_name}')" for scale_name in self.get_name()])
+
+    def _get_info(self):
+        # [D, E, F, G, A, B, C]
+        itvs = [n - self[0] for n in self]  # [P1, M2, m3, P4, P5, M6, m7]
+        itvs_abs = [int(i) for i in itvs]  # [0, 2, 3, 5, 7, 9, 10]
+        itvs_rel = [i % 12 for i in itvs_abs]  # [0, 2, 3, 5, 7, 9, 10] (?)
+        r357ts = [i.get_r357t() for i in itvs]
+        labels = [''] * len(r357ts)
+        fake_dom7 = False
+        fake_m7 = False
+
+        # add "[CN]" to every base chord note
+        for i in self._chord_notes:
+            labels[i] = '[CN]'
+
+        # add "[TN]" to every tension note
+        for i in self._tension_notes:
+            labels[i] = '[TN]'
+
+        # if it contains dom7 chord (include enharmonic equivalents)
+        if all([na in itvs_rel for na in [4, 10]]):
+            # if it contains real dom7 chord
+            if '3' in r357ts and 'b7' in r357ts:
+                # half tone above base chord note, but available because of dom7 base chord
+                for idx in range(1, len(itvs_abs)):
+                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
+                        labels[idx] = '[OK]'
+                # avoid_type_0: tonic note in dom7 chord
+                if 5 in itvs_rel:
+                    idx = itvs_rel.index(5)
+                    labels[idx] = '[A0]'
+
+            # if it contains fake dom7 chord
+            else:
+                fake_dom7 = True
+                for idx in range(1, len(itvs_abs)):
+                    # avoid_type_1: half tone above base chord note
+                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
+                        labels[idx] = '[A1]'
+                    # avoid_type_1: half tone below M7
+                    if '7' in r357ts:
+                        idx_maj7 = r357ts.index('7')
+                        if itvs_abs[idx_maj7] - itvs_abs[idx] == 1:
+                            labels[idx] = '[A1]'
+
+        # if it contains m7 / m7-5 chord (include enharmonic equivalents)
+        if all([na in itvs_rel for na in [3, 10]]):
+            # if it contains real m7 / m7-5 chord
+            if 'b3' in r357ts and 'b7' in r357ts:
+                # avoid_type_1: half tone above base chord note
+                for idx in range(1, len(itvs_abs)):
+                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
+                        labels[idx] = '[A1]'
+                # avoid_type_2: dorian / locrian 13th
+                if 9 in itvs_rel:
+                    idx = itvs_rel.index(9)
+                    labels[idx] = '[A2]'
+
+            # if it contains fake m7 / m7-5 chord
+            else:
+                fake_m7 = True
+                for idx in range(1, len(itvs_abs)):
+                    # avoid_type_1: half tone above 7th chord note
+                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
+                        labels[idx] = '[A1]'
+                    # avoid_type_1: half tone below M7
+                    if '7' in r357ts:
+                        idx_maj7 = r357ts.index('7')
+                        if itvs_abs[idx_maj7] - itvs_abs[idx] == 1:
+                            labels[idx] = '[A1]'
+
+        # if it not contain dom7, m7 and m7-5
+        if not (all([na in itvs_rel for na in [4, 10]]) or all([na in itvs_rel for na in [3, 10]])):
+            # avoid_type_1: half tone above 7th chord note
+            for idx in range(1, len(itvs_abs)):
+                if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
+                    labels[idx] = '[A1]'
+                # avoid_type_1: half tone below M7
+                if '7' in r357ts:
+                    idx_maj7 = r357ts.index('7')
+                    if itvs_abs[idx_maj7] - itvs_abs[idx] == 1:
+                        labels[idx] = '[A1]'
+
+        long_list = ['x'] * 12
+        for i, n in enumerate(itvs_rel):
+            long_list[n] = labels[i] + ' ' + r357ts[i]
+
+        return labels, long_list, fake_dom7, fake_m7
+
+    def _refresh(self):
+        labels, long_list, fake_dom7, fake_m7 = self._get_info()
+
+        for note, label in zip(self, labels):
+            note.set_message(avoid=label)
+
+        self._long_list = long_list
+        self._fake_dom7 = fake_dom7
+        self._fake_m7 = fake_m7
+
+    def set_chord_notes(self, chord_notes=(0, 2, 4, 6)):
+        self._chord_notes = chord_notes
+        self._tension_notes = [k for k in range(7) if k not in self._chord_notes]
+        self._refresh()
+
+        return self
+
+    def get_long_list(self):
+        return self._long_list
+
+    def if_fake_dom7(self):
+        return self._fake_dom7
+
+    def if_fake_m7(self):
+        return self._fake_m7
+
+    def get_color(self):
+        color = '#'
+        for i in self._chord_notes + self._tension_notes:
+            if i == 0:
+                continue
+
+            itv = self[i] - self[0]
+            color = color + f'{hex(int(itv))}'[2:]
+
+        return color
+
+
+class Modulation(object):
+    # TODO: `Modulation` class
+    pass
 
 
 class Chord(object):
@@ -1070,9 +1300,6 @@ class Chord(object):
 
     def __getitem__(self, item):
         return (self._bass + self._body + self._tension)[item]
-
-    def __abs__(self):
-        return [int(note) for note in self._bass + self._body + self._tension]
 
     def set_notes(self, bass=None, body=None, tension=None):
         if bass is not None:
@@ -1242,148 +1469,68 @@ class Chord(object):
 
 
 class SlashChord(object):
-    pass
+    def __init__(self, nu, de):
+        """
+        a slash chord class
 
+        :param nu: numerator chord
+        :param de: denominator chord
+        """
+        self._nu = nu
+        self._de = de
 
-class ChordScale(AlteredDiatonicScale):
-    def __init__(self, scale_name):
-        if NGS != '12.7.5':
-            raise ValueError('`ChordScale` class works properly only when NGS == 12.7.5!')
+        # print options initialization
+        self._printoptions = dict(ns=DEFAULT_CHORD_NS, show_register=False)
 
-        super().__init__(scale_name)
-
-        self._chord_notes = [0, 2, 4, 6]
-        self._tension_notes = [k for k in range(7) if k not in self._chord_notes]
-
-        self._refresh()
+    def __str__(self):
+        return f'{self._nu.get_name()}/{self._de.get_name()}'
 
     def __repr__(self):
-        return '\n'.join([f"ChordScale('{scale_name}')" for scale_name in self.get_name()])
+        return f'SlashChord({repr(self._nu)}, {repr(self._de)})'
 
-    def _get_info(self):
-        # [D, E, F, G, A, B, C]
-        itvs = [n - self[0] for n in self]  # [P1, M2, m3, P4, P5, M6, m7]
-        itvs_abs = [int(i) for i in itvs]  # [0, 2, 3, 5, 7, 9, 10]
-        itvs_rel = [i % 12 for i in itvs_abs]  # [0, 2, 3, 5, 7, 9, 10] (?)
-        r357ts = [i.get_r357t() for i in itvs]
-        labels = [''] * len(r357ts)
-        fake_dom7 = False
-        fake_m7 = False
+    def __getitem__(self, item):
+        return (self._de.get_notes() + self._nu.get_notes())[item]
 
-        # add "[CN]" to every base chord note
-        for i in self._chord_notes:
-            labels[i] = '[CN]'
+    def set_notes(self, nu=None, de=None):
+        if nu is not None and isinstance(nu, Chord):
+            self._nu = nu
 
-        # add "[TN]" to every tension note
-        for i in self._tension_notes:
-            labels[i] = '[TN]'
-
-        # if it contains dom7 chord (include enharmonic equivalents)
-        if all([na in itvs_rel for na in [4, 10]]):
-            # if it contains real dom7 chord
-            if '3' in r357ts and 'b7' in r357ts:
-                # half tone above base chord note, but available because of dom7 base chord
-                for idx in range(1, len(itvs_abs)):
-                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
-                        labels[idx] = '[OK]'
-                # avoid_type_0: tonic note in dom7 chord
-                if 5 in itvs_rel:
-                    idx = itvs_rel.index(5)
-                    labels[idx] = '[A0]'
-
-            # if it contains fake dom7 chord
-            else:
-                fake_dom7 = True
-                for idx in range(1, len(itvs_abs)):
-                    # avoid_type_1: half tone above base chord note
-                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
-                        labels[idx] = '[A1]'
-                    # avoid_type_1: half tone below M7
-                    if '7' in r357ts:
-                        idx_maj7 = r357ts.index('7')
-                        if itvs_abs[idx_maj7] - itvs_abs[idx] == 1:
-                            labels[idx] = '[A1]'
-
-        # if it contains m7 / m7-5 chord (include enharmonic equivalents)
-        if all([na in itvs_rel for na in [3, 10]]):
-            # if it contains real m7 / m7-5 chord
-            if 'b3' in r357ts and 'b7' in r357ts:
-                # avoid_type_1: half tone above base chord note
-                for idx in range(1, len(itvs_abs)):
-                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
-                        labels[idx] = '[A1]'
-                # avoid_type_2: dorian / locrian 13th
-                if 9 in itvs_rel:
-                    idx = itvs_rel.index(9)
-                    labels[idx] = '[A2]'
-
-            # if it contains fake m7 / m7-5 chord
-            else:
-                fake_m7 = True
-                for idx in range(1, len(itvs_abs)):
-                    # avoid_type_1: half tone above 7th chord note
-                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
-                        labels[idx] = '[A1]'
-                    # avoid_type_1: half tone below M7
-                    if '7' in r357ts:
-                        idx_maj7 = r357ts.index('7')
-                        if itvs_abs[idx_maj7] - itvs_abs[idx] == 1:
-                            labels[idx] = '[A1]'
-
-        # if it not contain dom7, m7 and m7-5
-        if not (all([na in itvs_rel for na in [4, 10]]) or all([na in itvs_rel for na in [3, 10]])):
-            # avoid_type_1: half tone above 7th chord note
-            for idx in range(1, len(itvs_abs)):
-                if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
-                    labels[idx] = '[A1]'
-                # avoid_type_1: half tone below M7
-                if '7' in r357ts:
-                    idx_maj7 = r357ts.index('7')
-                    if itvs_abs[idx_maj7] - itvs_abs[idx] == 1:
-                        labels[idx] = '[A1]'
-
-        long_list = ['x'] * 12
-        for i, n in enumerate(itvs_rel):
-            long_list[n] = labels[i] + ' ' + r357ts[i]
-
-        return labels, long_list, fake_dom7, fake_m7
-
-    def _refresh(self):
-        labels, long_list, fake_dom7, fake_m7 = self._get_info()
-
-        for note, label in zip(self, labels):
-            note.set_message(avoid=label)
-
-        self._long_list = long_list
-        self._fake_dom7 = fake_dom7
-        self._fake_m7 = fake_m7
-
-    def set_chord_notes(self, chord_notes=(0, 2, 4, 6)):
-        self._chord_notes = chord_notes
-        self._tension_notes = [k for k in range(7) if k not in self._chord_notes]
-        self._refresh()
+        if de is not None and isinstance(nu, Chord):
+            self._de = de
 
         return self
 
-    def get_long_list(self):
-        return self._long_list
+    def get_nu(self):
+        return self._nu.get_notes(return_bass=True, tension_only=False)
 
-    def if_fake_dom7(self):
-        return self._fake_dom7
+    def get_de(self):
+        return self._de.get_notes(return_bass=True, tension_only=False)
 
-    def if_fake_m7(self):
-        return self._fake_m7
+    def set_printoptions(self, ns=None, show_register=None):
+        if ns is not None:
+            self._printoptions['ns'] = ns
 
-    def get_color(self):
-        color = '#'
-        for i in self._chord_notes + self._tension_notes:
-            if i == 0:
-                continue
+        if show_register is not None:
+            self._printoptions['show_register'] = show_register
 
-            itv = self[i] - self[0]
-            color = color + f'{hex(int(itv))}'[2:]
+        return self
 
-        return color
+    def get_intervals_seq(self):
+        return [n2 - n1 for n1, n2 in zip(self[:-1], self[1:])]
+
+    def get_intervals_cum(self):
+        return [note - self[0] for note in self]
+
+    def get_negative_chord(self, major_tonic=Note()):
+        return SlashChord(self._nu.get_negative_chord(major_tonic=major_tonic), self._de.get_negative_chord(major_tonic=major_tonic))
+
+    def get_name(self):
+        return f'{self._nu.get_name()}/{self._de.get_name()}'
+
+
+class ChordProgression(object):
+    # TODO: `ChordProgression` class
+    pass
 
 
 ''' ----------------------------------------------------------------------------------------- '''

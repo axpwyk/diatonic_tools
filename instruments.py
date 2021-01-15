@@ -1105,7 +1105,7 @@ class GenLine(_NoteList):
             self._get_note_text(color_style)
 
             # constants
-            xs = _get_pos(notes)
+            xs = _get_pos(self._notes)
             x_mins.append(min(xs))
             x_maxs.append(max(xs))
 
