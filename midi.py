@@ -1,4 +1,5 @@
 from pathlib import Path
+from itertools import cycle
 from copy import copy, deepcopy
 from mido import MidiFile, MidiTrack
 from mido import Message, MetaMessage
@@ -173,6 +174,54 @@ def sheet2midi(sheet, ticks_per_beat, filename='untitled.mid'):
 ''' ----------------------------------------------------------------------------------------- '''
 ''' ********************************** utilities for sheet ********************************** '''
 ''' ----------------------------------------------------------------------------------------- '''
+
+
+def cige(filename, hits_per_bar=16, line_breaks=(4, ), shortening_factor=2, use_x=True):
+    NAMED_STR_LST = ['C', 'd', 'D', 'e', 'E', 'F', 'g', 'G', 'a', 'A', 'b', 'B']
+    hits_per_beat = hits_per_bar / 4
+
+    sheet, ticks_per_beat, _ = midi2sheet(Path(filename))
+
+    lrcs = []
+    t1s = []
+    t2s = []
+    for msglist in sheet:
+        for msg in msglist:
+            if msg['type'] == 'note':
+                lrcs.append(NAMED_STR_LST[msg.get('note', 'x') % 12])
+                t1s.append(int(msg['time1'] / ticks_per_beat * hits_per_beat))
+                t2s.append(int(msg['time2'] / ticks_per_beat * hits_per_beat))
+    if use_x:
+        lrcs = 'x' * len(lrcs)
+    t1s = [t1 % hits_per_bar + (t1 // hits_per_bar - t1s[0] // hits_per_bar) * hits_per_bar for t1 in t1s]
+
+    n_bars = (max(t1s) + max(t2s)) // hits_per_bar + 1
+
+    stream = [' '] * n_bars * hits_per_bar
+    for lrc, t1, t2 in zip(lrcs, t1s, t2s):
+        stream[t1] = lrc
+        for v in range(1, t2):
+            if v % shortening_factor == 0:
+                stream[t1 + v] = '-'
+
+    stream_out = []
+    line_breaks_cycle = cycle(line_breaks)
+    lb_cur = next(line_breaks_cycle)
+    lb_cum = lb_cur
+    for i, s in enumerate(stream):
+        if i % hits_per_bar == 0 and i != 0:
+            stream_out.append(' | ')
+        if i // hits_per_bar == lb_cum and i % hits_per_bar == 0:
+            stream_out.append('\n')
+            lb_cur = next(line_breaks_cycle)
+            while lb_cur == 0:
+                stream_out.append('\n')
+                lb_cur = next(line_breaks_cycle)
+            lb_cum += lb_cur
+
+        stream_out.append(s)
+
+    return ''.join(stream_out)
 
 
 def max_ticks(sheet):

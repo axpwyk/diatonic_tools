@@ -856,3 +856,108 @@ Piano(Piano().set_notes(DiatonicScale('C Ionian')).plot(title='C Ionian (19-TET)
 ### 1.3.2 增加已命名音阶/和弦种类
 
 直接读代码照葫芦画瓢就可以理解，这里略过。
+
+## 1.4 使用 `midi.py`
+
+### 1.4.1 生成词格
+
+**Example. 1** 生成《千本桜》的词格，MIDI 文件来自 黒うさP 的分轨：https://vocaloid-collection.jp/stems/
+
+```python
+from midi import cige
+
+print(cige('midis/senbonzakura.mid', line_breaks=(4, 4, 0, 4, 4, 0, 4, 4, 4, 4, 0, 4, 4, 0, 4, 4, 0, 4, 4, 0, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 4, 0, 4, 4, 0, 4, 4, 4, 4)))
+```
+
+输出：
+
+```plain text
+used tracks:
+track 0: 143-MindBender Shakers
+track 1: mero
+
+x   x  xx x x x  | x   x  xx x x x  | x   x  xx x x x  | x   x xxx - x    | 
+x   x  xx x x x  | x   x  xx x x x  | x   x  xx x x x  | x - x xxx - x    | 
+
+x - x - x - x    | x xxx x x -      | x x x   x   x    | x - x x x - -    | 
+x - x - x - x    | x xxx x x   x x  | x x   x x - x -  | x - - -     x x  | 
+
+x  x  x x -   x  | xx  x x x - x x  | x  x  x x -   x  | x x x x x - x x  | 
+x  x  x x -   x  | xx  x x x - x x  | x - x - x - x    | x x x x x   x x  | 
+x  x  x x -   x  | xx  x x x - x x  | x  x  x x -   x  | x x x x x - x x  | 
+x  x  x x -   x  | xx  x x x - x x  | x - x - x - x    | x x x x x -      | 
+
+                 |                  |                  |                  | 
+                 |                  |                  |                  | 
+
+x   x  xx x x x  | x   x  xx x x x  | x   x  xx x x x  | x   x xxx - x    | 
+x   x  xx x x x  | x   x  xx x x x  | x   x  xx x x x  | x - x xxx - x    | 
+
+x - x - x - x    | x xxx x x -      | x x x   x   x    | x - x x x - -    | 
+x - x - x - x    | x xxx x x   x x  | x x   x x - x -  | x - - -     x x  | 
+
+x  x  x x -   x  | xx  x x x - x x  | x  x  x x -   x  | x x x x x - x x  | 
+x  x  x x -   x  | xx  x x x - x x  | x - x - x - x    | x x x x x   x x  | 
+x  x  x x -   x  | xx  x x x - x x  | x  x  x x -   x  | x x x x x - x x  | 
+x  x  x x -   x  | xx  x x x - x x  | x - x - x - x    | x x x x x -      | 
+
+                 |                  |                  |                  | 
+                 |                  |                  |                  | 
+                 |                  |                  |                  | 
+                 |                  |                  |                  | 
+                 |                  |                  |                  | 
+                 |                  |                  |                  | 
+                 |                  |                  |                  | 
+
+x - x - x - x    | x xxx x x -      | x x x   x   x    | x - x x x - -    | 
+x - x - x - x    | x xxx x x   x x  | x x   x x - x -  | x - - -     x x  | 
+
+x  x  x x -   x  | xx  x x x - x x  | x  x  x x -   x  | x x x x x - x x  | 
+x  x  x x -   x  | xx  x x x - x x  | x - x - x - x -  | x x x x x   x x  | 
+x  xx x x -   x  | xx  x x x - x x  | x  x  x x -   x  | x x x x x - x x  | 
+x  x  x x -   x  | xx  x x x - x x  | x - x - x - x    | x x x x x - - -  | 
+- - - - - - - - 
+```
+
+### 1.4.2 使用 `Pianoroll` 类
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
