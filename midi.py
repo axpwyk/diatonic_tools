@@ -177,6 +177,12 @@ def sheet2midi(sheet, ticks_per_beat, filename='untitled.mid'):
 
 
 def cige(filename, hits_per_bar=16, line_breaks=(4, ), shortening_factor=2, use_x=True):
+    if hits_per_bar & (hits_per_bar - 1) != 0:
+        raise ValueError('`hits_per_bar` should be power of 2!')
+
+    if shortening_factor & (shortening_factor - 1) != 0:
+        raise ValueError('`hits_per_bar` should be power of 2!')
+
     NAMED_STR_LST = ['C', 'd', 'D', 'e', 'E', 'F', 'g', 'G', 'a', 'A', 'b', 'B']
     hits_per_beat = hits_per_bar / 4
 
@@ -205,6 +211,8 @@ def cige(filename, hits_per_bar=16, line_breaks=(4, ), shortening_factor=2, use_
                 stream[t1 + v] = '-'
 
     stream_out = []
+    if all(lb == 0 for lb in line_breaks):
+        raise ValueError('`line_breaks` should contain non-zero value!')
     line_breaks_cycle = cycle(line_breaks)
     lb_cur = next(line_breaks_cycle)
     lb_cum = lb_cur
@@ -238,7 +246,7 @@ def max_ticks(sheet):
     return ticks
 
 
-def note2label(note, type='piano', show_group=True, mode='Ab Ionian'):
+def note2label(note, type='piano', show_group=True, mode='#'):
     # note: midi note number
     if type == 'piano':
         modes = {'b': ['C', r'D$\flat$', 'D', r'E$\flat$', 'E', 'F', r'G$\flat$', 'G', r'A$\flat$', 'A', r'B$\flat$', 'B'],
@@ -383,11 +391,78 @@ class Pianoroll(object):
 
     # ---------------------------------------------------------------------------------------------------- #
 
+    def _set_whdpi(self, width, height, dpi):
+        pass
+
+    def _set_hadpi(self, height, aspect_note, dpi):
+        pass
+
+    def _draw_notes(self, track=0, shader=rgb_shader, type='piano', alpha=1.0, lyric=None):
+        """ draw notes """
+
+        ''' pianoroll checking '''
+
+        if not self._pianoroll_exists:
+            raise ValueError('You should draw a pianoroll first using `draw_pianoroll()` method!')
+
+        ''' notes parsing '''
+
+        # divide notes both in note_interval and time_interval into 3 parts: left, full and right
+        notes0 = [note for note in self._notes[track] if within(note['note'], *self._note_interval)]
+        notes = [note for note in notes0 if within(note['time1'], *self._time_interval) or within(note['time1'] + note['time2'], *self._time_interval)]
+        notes_full = [note for note in notes if within(note['time1'], *self._time_interval) and within(note['time1'] + note['time2'], *self._time_interval)]
+        notes_left = [note for note in notes if note['time1'] < self._time_interval[0] <= note['time1'] + note['time2']]
+        notes_right = [note for note in notes if note['time1'] < self._time_interval[1] <= note['time1'] + note['time2']]
+        notes_rearranged = notes_full + notes_left + notes_right
+        # getting rectangles of notes for pianoroll
+        notes_full_rects = [plt.Rectangle((note['time1'], note['note']), note['time2'], 1,
+                                          color=shader(note['velocity_on'], 0, 127), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_full]
+        notes_left_rects = [plt.Rectangle((self._time_interval[0], note['note']), note['time2'] - self._time_interval[0] + note['time1'], 1,
+                                          color=shader(note['velocity_on'], 0, 127), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_left]
+        notes_right_rects = [plt.Rectangle((note['time1'], note['note']), self._time_interval[1] - note['time1'], 1,
+                                           color=shader(note['velocity_on'], 0, 127), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_right]
+        notes_rects = notes_full_rects + notes_left_rects + notes_right_rects
+
+        ''' draw notes '''
+
+        ax = plt.gca()
+        _ = [ax.add_patch(rect) for rect in notes_rects]
+        # note edge
+        _ = [ax.plot([note['time1'], note['time1']+note['time2'], note['time1']+note['time2'], note['time1'], note['time1']],
+                      [note['note'], note['note'], note['note']+1, note['note']+1, note['note']],
+                      color='#123456', lw=0.5, solid_capstyle='round', alpha=alpha, zorder=5+0.001*(track+0.2)) for note in notes_full]
+        _ = [ax.plot([self._time_interval[0], note['time1'] + note['time2'], note['time1'] + note['time2'], self._time_interval[0]],
+                      [note['note'], note['note'], note['note']+1, note['note']+1],
+                      color='#123456', lw=0.5, solid_capstyle='round', alpha=alpha, zorder=5+0.001*(track+0.2)) for note in notes_left]
+        _ = [ax.plot([self._time_interval[1], note['time1'], note['time1'], self._time_interval[1]],
+                      [note['note']+1, note['note']+1, note['note'], note['note']],
+                      color='#123456', lw=0.5, solid_capstyle='round', alpha=alpha, zorder=5+0.001*(track+0.2)) for note in notes_right]
+        # note label
+        if type == 'lyric':
+            _ = [ax.annotate(note['lyric'], (note['time1'] + self._ticks_per_beat // 16, note['note'] + 0.5),
+                              color='#ffffff', va='center', fontsize=self._fontsize, alpha=alpha, zorder=5 + 0.001 * (track + 0.1),
+                              clip_path=notes_rects[k]) for (k, note) in enumerate(notes_rearranged)]
+        else:
+            _ = [ax.annotate(note2label(note['note'], type=type, show_group=False), (note['time1'] + self._ticks_per_beat // 16, note['note'] + 0.5),
+                              color='#ffffff', va='center', fontsize=self._fontsize, alpha=alpha, zorder=5 + 0.001 * (track + 0.1),
+                              clip_path=notes_rects[k]) for (k, note) in enumerate(notes_rearranged)]
+        # on-velocity
+        notes_full_vels = [plt.Line2D([note['time1'], note['time1']], [self._bottom, self._bottom + note['velocity_on'] / 127 * self._bottom_lane_h],
+                                      color=shader(note['velocity_on'], 0, 127), lw=1.0, solid_capstyle='butt', alpha=alpha, zorder=3+0.001*track,
+                                      marker='x', markevery=[1], markersize=self._markersize, mew=1) for note in notes_full + notes_right]
+        _ = [ax.add_line(vel) for vel in notes_full_vels]
+        _ = [vel.set_clip_path(self._bl_rect) for vel in notes_full_vels]
+        # lyric
+        if lyric:
+            _ = [ax.annotate(lyric[k], (note['time1']+self._ticks_per_beat//16, note['note']-0.5),
+                            color='#555555', va='center', fontsize=self._fontsize*3/4, zorder=5+0.001*(track+0.1)) for (k, note) in enumerate(notes) if k<len(lyric)]
+
     def use_default_intervals(self):
         self._time_interval = (0, max(self._max_ticks))
         self._note_interval = (48, 72)
-        self._pianoroll_exists = False
-        plt.clf()
+        if self._pianoroll_exists:
+            self._pianoroll_exists = False
+            plt.gcf().clf()
 
     def set_intervals(self, time_interval=None, note_interval=None):
         if time_interval:
@@ -400,18 +475,12 @@ class Pianoroll(object):
                 raise ValueError('`note_interval[0]` should not larger than `note_interval[1]`!')
             else:
                 self._note_interval = note_interval
-
-        self._pianoroll_exists = False
-        plt.clf()
+        if self._pianoroll_exists:
+            self._pianoroll_exists = False
+            plt.gcf().clf()
 
     def set_track_color(self, track, color):
         self._track_colors[track] = color
-
-    def _set_whdpi(self, width, height, dpi):
-        pass
-
-    def _set_hadpi(self, height, aspect_note, dpi):
-        pass
 
     def draw_pianoroll(self, height=8, aspect_note=4, dpi=72, splits_per_beat=4, type='piano'):
         """
@@ -437,7 +506,6 @@ class Pianoroll(object):
             raise ValueError('Please set_vector intervals at first. You can use `use_default_intervals()` or `set_intervals()` to finish this job.')
         else:
             self._pianoroll_exists = True
-            plt.clf()
 
         ''' [01] pianoroll meta params '''
 
@@ -533,32 +601,32 @@ class Pianoroll(object):
             text = f'bpm\n{self._bpm_range[0]}\n\nvel\n0..127'
         else:
             text = f'bpm\n{self._bpm_range[0]}..{self._bpm_range[1]}\n\nvel\n0..127'
-        plt.annotate(text, (left + keyboard_width / 2, bottom + bottom_lane_h / 2), color='#555555',
+        ax.annotate(text, (left + keyboard_width / 2, bottom + bottom_lane_h / 2), color='#555555',
                      va='center', ha='center', fontsize=fontsize, zorder=4.1, clip_path=lb_rect)
         # keyboard
         white_kbd_rects = [plt.Rectangle((left, note), keyboard_width, 1, facecolor='#ffffff', lw=0.0, zorder=4) for note in white_notes]
         black_kbd_rects = [plt.Rectangle((left, note), keyboard_width, 1, facecolor='#222222', lw=0.0, zorder=4) for note in black_notes]
         _ = [ax.add_patch(rect) for rect in white_kbd_rects+black_kbd_rects]
         # split lines of keys
-        _ = [plt.plot([left, self._time_interval[0]], [note, note], color='#222222', lw=0.5, solid_capstyle='butt', zorder=4.1) for note in range(*self._note_interval)]
+        _ = [ax.plot([left, self._time_interval[0]], [note, note], color='#222222', lw=0.5, solid_capstyle='butt', zorder=4.1) for note in range(*self._note_interval)]
         # text on keys
-        _ = [plt.annotate(note2label(note, type=type), (left+keyboard_width//16, note+0.5), color='#555555', va='center', fontsize=fontsize, zorder=4.1,
+        _ = [ax.annotate(note2label(note, type=type), (left+keyboard_width//16, note+0.5), color='#555555', va='center', fontsize=fontsize, zorder=4.1,
                           clip_path=white_kbd_rects[k]) for (k, note) in enumerate(white_notes)]
-        _ = [plt.annotate(note2label(note, type=type), (left+keyboard_width//16, note+0.5), color='#ffffff', va='center', fontsize=fontsize, zorder=4.1,
+        _ = [ax.annotate(note2label(note, type=type), (left+keyboard_width//16, note+0.5), color='#ffffff', va='center', fontsize=fontsize, zorder=4.1,
                           clip_path=black_kbd_rects[k]) for (k, note) in enumerate(black_notes)]
         # horizontal grid lines
-        _ = [plt.plot(self._time_interval, [note, note], color='#999999', lw=0.5, solid_capstyle='butt', zorder=2) for note in range(self._note_interval[0] + 1, self._note_interval[1])]
+        _ = [ax.plot(self._time_interval, [note, note], color='#999999', lw=0.5, solid_capstyle='butt', zorder=2) for note in range(self._note_interval[0] + 1, self._note_interval[1])]
         # vertical grid lines
-        _ = [plt.plot([x, x], [bottom, self._note_interval[1]], color='#aaaaaa', lw=0.5, solid_capstyle='butt', zorder=2.1) for x in x3s]
-        _ = [plt.plot([x, x], [bottom, self._note_interval[1]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=2.1) for x in x2s]
-        _ = [plt.plot([x, x], [bottom, self._note_interval[1]], color='#222222', lw=1.0, solid_capstyle='butt', zorder=2.1) for x in x1s]
+        _ = [ax.plot([x, x], [bottom, self._note_interval[1]], color='#aaaaaa', lw=0.5, solid_capstyle='butt', zorder=2.1) for x in x3s]
+        _ = [ax.plot([x, x], [bottom, self._note_interval[1]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=2.1) for x in x2s]
+        _ = [ax.plot([x, x], [bottom, self._note_interval[1]], color='#222222', lw=1.0, solid_capstyle='butt', zorder=2.1) for x in x1s]
         # horizontal split lines
-        plt.plot(self._time_interval, [self._note_interval[0], self._note_interval[0]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6.1)
-        plt.plot([left, self._time_interval[1]], [self._note_interval[1], self._note_interval[1]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6.1)
-        plt.plot([left, self._time_interval[1]], [self._note_interval[1] + 1, self._note_interval[1] + 1], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6.1)
-        plt.plot([left, self._time_interval[1]], [self._note_interval[1] + 2, self._note_interval[1] + 2], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6.1)
+        ax.plot(self._time_interval, [self._note_interval[0], self._note_interval[0]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6.1)
+        ax.plot([left, self._time_interval[1]], [self._note_interval[1], self._note_interval[1]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6.1)
+        ax.plot([left, self._time_interval[1]], [self._note_interval[1] + 1, self._note_interval[1] + 1], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6.1)
+        ax.plot([left, self._time_interval[1]], [self._note_interval[1] + 2, self._note_interval[1] + 2], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6.1)
         # vertical split lines
-        plt.plot([self._time_interval[0], self._time_interval[0]], [bottom, self._note_interval[1]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6)
+        ax.plot([self._time_interval[0], self._time_interval[0]], [bottom, self._note_interval[1]], color='#555555', lw=0.5, solid_capstyle='butt', zorder=6)
 
         ''' [02] draw set_tempos '''
 
@@ -570,77 +638,17 @@ class Pianoroll(object):
                 return lam * (self._note_interval[0] - bottom_lane_h) + (1 - lam) * self._note_interval[0]
             sts_x = [st[0] for st in sts]
             sts_y = [_bpm2vel(tempo2bpm(st[1])) for st in sts]
-            plot = plt.step(sts_x, sts_y, color='#ee5511', lw=1.0, solid_capstyle='butt', solid_joinstyle='bevel', where='post', zorder=2.9, label='tempo')
+            plot = ax.step(sts_x, sts_y, color='#ee5511', lw=1.0, solid_capstyle='butt', solid_joinstyle='bevel', where='post', zorder=2.9, label='tempo')
             _ = [p.set_clip_path(bl_rect) for p in plot]
 
         ''' [03] draw time_signatures '''
 
         # time_signature labels
-        _ = [plt.annotate(f'{ts[1]}/{ts[2]}', (ts[0], self._note_interval[1] + 1.5), color='#555555', va='center', ha='center', fontsize=fontsize) for ts in tss]
+        _ = [ax.annotate(f'{ts[1]}/{ts[2]}', (ts[0], self._note_interval[1] + 1.5), color='#555555', va='center', ha='center', fontsize=fontsize) for ts in tss]
         # bar labels
-        _ = [plt.annotate(l1, (x1, self._note_interval[1] + 2.5), color='#555555', va='center', ha='center', fontsize=fontsize) for (x1, l1) in zip(x1s, l1s)]
+        _ = [ax.annotate(l1, (x1, self._note_interval[1] + 2.5), color='#555555', va='center', ha='center', fontsize=fontsize) for (x1, l1) in zip(x1s, l1s)]
         # beat labels
-        _ = [plt.annotate(l2, (x2, self._note_interval[1] + 2.5), fontsize=fontsize * 3 / 4, color='#555555', va='center', ha='center') for (x2, l2) in zip(x2s, l2s)]
-
-    def _draw_notes(self, track=0, shader=rgb_shader, type='piano', alpha=1.0, lyric=None):
-        """ draw notes """
-
-        ''' pianoroll checking '''
-
-        if not self._pianoroll_exists:
-            raise ValueError('You should draw a pianoroll first using `draw_pianoroll()` method!')
-
-        ''' notes parsing '''
-
-        # divide notes both in note_interval and time_interval into 3 parts: left, full and right
-        notes0 = [note for note in self._notes[track] if within(note['note'], *self._note_interval)]
-        notes = [note for note in notes0 if within(note['time1'], *self._time_interval) or within(note['time1'] + note['time2'], *self._time_interval)]
-        notes_full = [note for note in notes if within(note['time1'], *self._time_interval) and within(note['time1'] + note['time2'], *self._time_interval)]
-        notes_left = [note for note in notes if note['time1'] < self._time_interval[0] <= note['time1'] + note['time2']]
-        notes_right = [note for note in notes if note['time1'] < self._time_interval[1] <= note['time1'] + note['time2']]
-        notes_rearranged = notes_full + notes_left + notes_right
-        # getting rectangles of notes for pianoroll
-        notes_full_rects = [plt.Rectangle((note['time1'], note['note']), note['time2'], 1,
-                                          color=shader(note['velocity_on'], 0, 127), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_full]
-        notes_left_rects = [plt.Rectangle((self._time_interval[0], note['note']), note['time2'] - self._time_interval[0] + note['time1'], 1,
-                                          color=shader(note['velocity_on'], 0, 127), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_left]
-        notes_right_rects = [plt.Rectangle((note['time1'], note['note']), self._time_interval[1] - note['time1'], 1,
-                                           color=shader(note['velocity_on'], 0, 127), joinstyle='round', lw=0.0, alpha=alpha, zorder=5+0.001*track) for note in notes_right]
-        notes_rects = notes_full_rects + notes_left_rects + notes_right_rects
-
-        ''' draw notes '''
-
-        ax = plt.gca()
-        _ = [ax.add_patch(rect) for rect in notes_rects]
-        # note edge
-        _ = [plt.plot([note['time1'], note['time1']+note['time2'], note['time1']+note['time2'], note['time1'], note['time1']],
-                      [note['note'], note['note'], note['note']+1, note['note']+1, note['note']],
-                      color='#123456', lw=0.5, solid_capstyle='round', alpha=alpha, zorder=5+0.001*(track+0.2)) for note in notes_full]
-        _ = [plt.plot([self._time_interval[0], note['time1'] + note['time2'], note['time1'] + note['time2'], self._time_interval[0]],
-                      [note['note'], note['note'], note['note']+1, note['note']+1],
-                      color='#123456', lw=0.5, solid_capstyle='round', alpha=alpha, zorder=5+0.001*(track+0.2)) for note in notes_left]
-        _ = [plt.plot([self._time_interval[1], note['time1'], note['time1'], self._time_interval[1]],
-                      [note['note']+1, note['note']+1, note['note'], note['note']],
-                      color='#123456', lw=0.5, solid_capstyle='round', alpha=alpha, zorder=5+0.001*(track+0.2)) for note in notes_right]
-        # note label
-        if type == 'lyric':
-            _ = [plt.annotate(note['lyric'], (note['time1'] + self._ticks_per_beat // 16, note['note'] + 0.5),
-                              color='#ffffff', va='center', fontsize=self._fontsize, alpha=alpha, zorder=5 + 0.001 * (track + 0.1),
-                              clip_path=notes_rects[k]) for (k, note) in enumerate(notes_rearranged)]
-        else:
-            _ = [plt.annotate(note2label(note['note'], type=type, show_group=False), (note['time1'] + self._ticks_per_beat // 16, note['note'] + 0.5),
-                              color='#ffffff', va='center', fontsize=self._fontsize, alpha=alpha, zorder=5 + 0.001 * (track + 0.1),
-                              clip_path=notes_rects[k]) for (k, note) in enumerate(notes_rearranged)]
-        # on-velocity
-        notes_full_vels = [plt.Line2D([note['time1'], note['time1']], [self._bottom, self._bottom + note['velocity_on'] / 127 * self._bottom_lane_h],
-                                      color=shader(note['velocity_on'], 0, 127), lw=1.0, solid_capstyle='butt', alpha=alpha, zorder=3+0.001*track,
-                                      marker='x', markevery=[1], markersize=self._markersize, mew=1) for note in notes_full + notes_right]
-        _ = [ax.add_line(vel) for vel in notes_full_vels]
-        _ = [vel.set_clip_path(self._bl_rect) for vel in notes_full_vels]
-        # lyric
-        if lyric:
-            _ = [plt.annotate(lyric[k], (note['time1']+self._ticks_per_beat//16, note['note']-0.5),
-                            color='#555555', va='center', fontsize=self._fontsize*3/4, zorder=5+0.001*(track+0.1)) for (k, note) in enumerate(notes) if k<len(lyric)]
+        _ = [ax.annotate(l2, (x2, self._note_interval[1] + 2.5), fontsize=fontsize * 3 / 4, color='#555555', va='center', ha='center') for (x2, l2) in zip(x2s, l2s)]
 
     def draw_notes(self, tracks=(0,), color_style='velocity', type='piano', alpha=1.0, lyric=None):
         if color_style == 'velocity':
@@ -681,18 +689,20 @@ class Pianoroll(object):
             color1 = cs.rgb_to_hsv(*self._track_colors[track])
             color2 = [color1[0], color1[1]/10, color1[2]/10]
             color = hsv_shader(i, 0, len(controls), color1, color2)
+
+            ax = plt.gca()
             if plot_type == 'piecewise':
-                plot = plt.plot(ccs_stts[control], ccs_values[control], color=color, alpha=alpha,
+                plot = ax.plot(ccs_stts[control], ccs_values[control], color=color, alpha=alpha,
                                 lw=0.75, ls='--', dash_capstyle='butt', dash_joinstyle='bevel', zorder=2.9+0.001*(track+0.1*control),
                                 clip_path=self._main_rect, label=f'[track {track}] {CC_NAMES[control]}')
                 _ = [p.set_clip_path(self._main_rect) for p in plot]
             elif plot_type == 'stair':
-                plot = plt.step(ccs_stts[control], ccs_values[control], color=color, alpha=alpha,
+                plot = ax.step(ccs_stts[control], ccs_values[control], color=color, alpha=alpha,
                                 lw=0.75, ls='--', dash_capstyle='butt', dash_joinstyle='bevel', zorder=2.9+0.001*(track+0.1*control),
                                 where='post', clip_path=self._main_rect, label=f'[track {track}] {CC_NAMES[control]}')
                 _ = [p.set_clip_path(self._main_rect) for p in plot]
             elif plot_type == 'stair_fill':
-                plot = plt.fill_between(ccs_stts[control], ccs_values[control], self._note_interval[0],
+                plot = ax.fill_between(ccs_stts[control], ccs_values[control], self._note_interval[0],
                                         color=color, alpha=alpha, step='post', lw=0.75, linestyle='--',
                                         capstyle='butt', joinstyle='bevel', zorder=2.9+0.001*(track+0.1*control),
                                         clip_path=self._main_rect, label=f'[track {track}] {CC_NAMES[control]}')
@@ -719,18 +729,20 @@ class Pianoroll(object):
 
         ''' draw pitchwheels '''
 
+        ax = plt.gca()
+
         pws_stts = [pw[0] for pw in pws]
         pws_pits = [pw[1] / 16384 * length(*self._note_interval) + middle(*self._note_interval) for pw in pws]
         if plot_type == 'piecewise':
-            plot = plt.plot(pws_stts, pws_pits, color=shader(0), lw=1.0, solid_capstyle='butt', solid_joinstyle='bevel', alpha=alpha,
+            plot = ax.plot(pws_stts, pws_pits, color=shader(0), lw=1.0, solid_capstyle='butt', solid_joinstyle='bevel', alpha=alpha,
                             zorder=2.9+0.001*track, label=f'[track {track}] pitchwheel')
             _ = [p.set_clip_path(self._main_rect) for p in plot]
         elif plot_type == 'stair':
-            plot = plt.step(pws_stts, pws_pits, color=shader(0), lw=1.0, solid_capstyle='butt', solid_joinstyle='bevel', alpha=alpha,
+            plot = ax.step(pws_stts, pws_pits, color=shader(0), lw=1.0, solid_capstyle='butt', solid_joinstyle='bevel', alpha=alpha,
                             where='post', zorder=2.9+0.001*track, label=f'[track {track}] pitchwheel')
             _ = [p.set_clip_path(self._main_rect) for p in plot]
         elif plot_type == 'stair_fill':
-            plot = plt.fill_between(pws_stts, pws_pits, middle(*self._note_interval),
+            plot = ax.fill_between(pws_stts, pws_pits, middle(*self._note_interval),
                                     color=shader(0), lw=1.0, capstyle='butt', joinstyle='bevel', alpha=alpha, step='post',
                                     zorder=2.9+0.001*track, label=f'[track {track}] pitchwheel')
             plot.set_clip_path(self._main_rect)
@@ -740,7 +752,8 @@ class Pianoroll(object):
         _ = [self._draw_pitchwheels(t, lambda x: cst_shader(x, 0, 1, self._track_colors[t]), plot_type, alpha) for t in tracks]
 
     def show_legends(self):
-        l = plt.legend(loc='lower right', fontsize=self._fontsize)
+        ax = plt.gca()
+        l = ax.legend(loc='lower right', fontsize=self._fontsize)
         l.set_zorder(20)
 
     def show_chords(self, times, chords):
@@ -758,7 +771,8 @@ class Pianoroll(object):
         ''' show chords '''
 
         chords = [chord for chord in chords0 if within(chord[0], *self._time_interval)]
-        _ = [plt.annotate(chord[1], (chord[0], self._note_interval[1] + 0.5), color='#555555', va='center', ha='center', fontsize=self._fontsize) for chord in chords]
+        ax = plt.gca()
+        _ = [ax.annotate(chord[1], (chord[0], self._note_interval[1] + 0.5), color='#555555', va='center', ha='center', fontsize=self._fontsize) for chord in chords]
 
     # ---------------------------------------------------------------------------------------------------- #
 
