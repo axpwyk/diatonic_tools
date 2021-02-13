@@ -26,7 +26,7 @@ T = 2 ** (1 / N)                             # ratio of semi-tone frequencies
 C3 = 440 * (T ** (36 - 45))                  # frequency of C3
 NGS = '.'.join([str(k) for k in [N, G, S]])  # NGS for dict indexing
 
-# define named notes (natural notes) in linear order
+# define named notes (basic notes) in linear order
 NAMED_STR_LIN = {
     '12.7.5': 'CDEFGAB',
     '19.11.8': 'CDEFGAB',
@@ -237,8 +237,13 @@ SCALE_TYPE_NS0_TO_NS2 = {
         'D#-mode(b1, bb2)': ['Enigmatic'],
 
         # Class 0
-        'C-mode': ['Major'],
-        'A-mode': ['Minor']
+        'F-mode': ['Lydian'],
+        'C-mode': ['Major', 'Ionian'],
+        'G-mode': ['Mixolydian'],
+        'D-mode': ['Dorian'],
+        'A-mode': ['Minor', 'Aeolian'],
+        'E-mode': ['Phrygian'],
+        'B-mode': ['Locrian']
     },
     '19.11.8': {
         # Class 1
@@ -297,8 +302,13 @@ SCALE_TYPE_NS0_TO_NS2 = {
         'D#-mode(b1, bb2)': ['Enigmatic'],
 
         # Class 0
-        'C-mode': ['Major'],
-        'A-mode': ['Minor']
+        'F-mode': ['Lydian'],
+        'C-mode': ['Major', 'Ionian'],
+        'G-mode': ['Mixolydian'],
+        'D-mode': ['Dorian'],
+        'A-mode': ['Minor', 'Aeolian'],
+        'E-mode': ['Phrygian'],
+        'B-mode': ['Locrian']
     }
 }
 
@@ -326,6 +336,88 @@ def scale_type_convertor(scale_type, ns_old, ns_new):
         raise ValueError('[`ns_old`, `ns_new`] must be [0, 1], [1, 0], [0, 2] or [2, 0]!')
 
 
+# all possible altered diatonic scale types
+ALL_SCALE_TYPES = {
+    '12.7.5': [
+    # order 0
+	'Lydian',
+    # order 1
+	'Lydian(#2)',
+	'Lydian(#3)',
+	'Lydian(#5)',
+	'Lydian(#6)',
+	'Lydian(b2)',
+	'Lydian(b3)',
+	'Lydian(b6)',
+    # order 2
+	'Lydian(#2, #3)',
+	'Lydian(#2, #6)',
+	'Lydian(#2, b6)',
+	'Lydian(#2, b7)',
+	'Lydian(#3, #6)',
+	'Lydian(#3, b2)',
+	'Lydian(#3, b6)',
+	'Lydian(#3, b7)',
+	'Lydian(#5, #6)',
+	'Lydian(#5, b2)',
+	'Lydian(#5, b3)',
+	'Lydian(#6, b2)',
+	'Lydian(#6, b3)',
+	'Lydian(b2, b3)',
+	'Lydian(b2, b6)',
+    # order 3
+	'Lydian(#2, #2, #3)',
+	'Lydian(#2, #3, b6)',
+	'Lydian(#2, #3, b7)',
+	'Lydian(#2, b1, b7)',
+	'Lydian(#2, b6, b7)',
+	'Lydian(#3, #6, b2)',
+	'Lydian(#3, b1, b7)',
+	'Lydian(#3, b2, b6)',
+	'Lydian(#3, b2, b7)',
+	'Lydian(#3, b6, b7)',
+	'Lydian(#5, #6, b2)',
+	'Lydian(#5, #6, b3)',
+	'Lydian(#5, b2, b3)',
+	'Lydian(#6, b2, b3)',
+	'Lydian(b2, b3, b3)',
+    # order 4
+	'Lydian(#2, #2, #3, b6)',
+	'Lydian(#2, #2, #3, b7)',
+	'Lydian(#2, #3, b1, b7)',
+	'Lydian(#2, #3, b6, b7)',
+	'Lydian(#2, b1, b6, b7)',
+	'Lydian(#2, b6, b7, b7)',
+	'Lydian(#3, b1, b2, b7)',
+	'Lydian(#3, b1, b6, b7)',
+	'Lydian(#3, b6, b7, b7)',
+	'Lydian(#5, #6, b2, b3)',
+	'Lydian(#5, b2, b3, b3)',
+	'Lydian(#6, b2, b3, b3)',
+    # order 5
+	'Lydian(#2, #2, #3, b1, b7)',
+	'Lydian(#2, #2, #3, b6, b7)',
+	'Lydian(#2, #3, b1, b6, b7)',
+	'Lydian(#2, #3, b6, b7, b7)',
+	'Lydian(#2, b1, b6, b7, b7)',
+	'Lydian(#3, b1, b2, b2, b7)',
+	'Lydian(#3, b1, b6, b7, b7)',
+	'Lydian(#5, #6, b2, b3, b3)',
+    # order 6
+	'Lydian(#2, #2, #3, b1, b6, b7)',
+	'Lydian(#2, #2, #3, b6, b7, b7)',
+	'Lydian(#2, #3, b1, b6, b7, b7)',
+	'Lydian(#2, b1, b1, b6, b7, b7)',
+	'Lydian(#3, b1, b1, b6, b7, b7)',
+    # order 7
+	'Lydian(#2, #2, #3, b1, b6, b7, b7)',
+	'Lydian(#2, #3, b1, b1, b6, b7, b7)',
+    # order 8
+	'Lydian(#2, #2, #3, b1, b1, b6, b7, b7)'
+]
+}
+
+
 ''' ----------------------------------------------------------------------------------------- '''
 ''' *********************************** for `Chord` Class *********************************** '''
 ''' naming scheme 0 (NS0): 1.3.5.7, 1.b3.5.b7, ...                                            '''
@@ -340,6 +432,8 @@ CHORD_TYPE_NS0_TO_NS1 = {
         'R.4.#5.7': ['augM7sus4', 'M7+5sus4'],
         'R.4.5.7': ['M7sus4'],
         'R.4.5': ['sus4'],
+        'R.#3.#5.7': ['M7+5sus4(!)'],
+        'R.#3.5.7': ['M7sus4(!)'],
         # 4**
         'R.3.#5.7': ['augM7', 'M7+5'],
         'R.3.#5.b7': ['aug7', '7+5'],
@@ -358,6 +452,7 @@ CHORD_TYPE_NS0_TO_NS1 = {
         'R.b3.#5.b7': ['m7+5'],
         'R.b3.5.7': ['mM7'],
         'R.b3.5.b7': ['m7'],
+        'R.b3.5.bb7': ['m6(!)'],
         'R.b3.5.6': ['m6'],
         'R.b3.5': ['m'],
         'R.b3.b5.7': ['mM7-5'],
@@ -365,6 +460,9 @@ CHORD_TYPE_NS0_TO_NS1 = {
         'R.b3.b5.bb7': ['dim7', 'm6-5'],
         'R.b3.b5': ['dim'],
         # 2**
+        'R.bb3.5.b7': ['7sus2(!)'],
+        'R.bb3.b5.b7': ['7-5sus2(!)'],
+        'R.bb3.b5.bb7': ['6-5sus2(!)'],
         'R.2.5.b7': ['7sus2'],
         'R.2.b5.b7': ['7-5sus2'],
         'R.2.b5.6': ['6-5sus2'],
@@ -384,6 +482,8 @@ CHORD_TYPE_NS0_TO_NS1 = {
         'R.4.#5.7': ['augM7sus4', 'M7+5sus4'],
         'R.4.5.7': ['M7sus4'],
         'R.4.5': ['sus4'],
+        'R.#3.#5.7': ['M7+5sus4(!)'],
+        'R.#3.5.7': ['M7sus4(!)'],
         # 4**
         'R.3.#5.7': ['augM7', 'M7+5'],
         'R.3.#5.b7': ['aug7', '7+5'],
@@ -402,6 +502,7 @@ CHORD_TYPE_NS0_TO_NS1 = {
         'R.b3.#5.b7': ['m7+5'],
         'R.b3.5.7': ['mM7'],
         'R.b3.5.b7': ['m7'],
+        'R.b3.5.bb7': ['m6(!)'],
         'R.b3.5.6': ['m6'],
         'R.b3.5': ['m'],
         'R.b3.b5.7': ['mM7-5'],
@@ -409,6 +510,9 @@ CHORD_TYPE_NS0_TO_NS1 = {
         'R.b3.b5.bb7': ['dim7', 'm6-5'],
         'R.b3.b5': ['dim'],
         # 2**
+        'R.bb3.5.b7': ['7sus2(!)'],
+        'R.bb3.b5.b7': ['7-5sus2(!)'],
+        'R.bb3.b5.bb7': ['6-5sus2(!)'],
         'R.2.5.b7': ['7sus2'],
         'R.2.b5.b7': ['7-5sus2'],
         'R.2.b5.6': ['6-5sus2'],

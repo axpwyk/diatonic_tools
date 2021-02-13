@@ -973,6 +973,19 @@ class AlteredDiatonicScale(DiatonicScale):
     def get_order(self):
         return self.distance_0(DiatonicScale())
 
+    def if_well_formed(self):
+        nnabs_list = self.get_nnabs_list()
+        nnabs_list.append(nnabs_list[0] + N)
+
+        smis = []  # strictly monotone increasing
+        for prev, next in zip(nnabs_list[:-1], nnabs_list[1:]):
+            if prev >= next:
+                smis.append(False)
+            else:
+                smis.append(True)
+
+        return all(smis)
+
     def get_name(self, type_only=False):
         """
         get all possible lowest-order names of current altered diatonic scale, e.g.
@@ -1213,11 +1226,6 @@ class ChordScale(AlteredDiatonicScale):
             color = color + f'{hex(int(itv))}'[2:]
 
         return color
-
-
-class Modulation(object):
-    # TODO: `Modulation` class
-    pass
 
 
 class Chord(object):
@@ -1495,7 +1503,7 @@ class SlashChord(object):
         if nu is not None and isinstance(nu, Chord):
             self._nu = nu
 
-        if de is not None and isinstance(nu, Chord):
+        if de is not None and isinstance(de, Chord):
             self._de = de
 
         return self
@@ -1529,8 +1537,62 @@ class SlashChord(object):
 
 
 class ChordProgression(object):
-    # TODO: `ChordProgression` class
-    pass
+    def __init__(self, prev, next):
+        if isinstance(prev, Chord) and isinstance(next, Chord):
+            self._prev = prev
+            self._next = next
+
+    def __str__(self):
+        return f'{self._prev.get_name()} -> {self._next.get_name()}'
+
+    def __repr__(self):
+        return f'ChordProgression({repr(self._prev)}, {repr(self._next)})'
+
+    def set_notes(self, prev=None, next=None):
+        if prev is not None and isinstance(prev, Chord):
+            self._prev = prev
+
+        if next is not None and isinstance(next, Chord):
+            self._next = next
+
+        return self
+
+    def get_prev(self):
+        return self._prev.get_notes(return_bass=True, tension_only=False)
+
+    def get_next(self):
+        return self._next.get_notes(return_bass=True, tension_only=False)
+
+    def get_bg_scale(self, max_order=2, ns=DEFAULT_ALTERED_DIATONIC_SCALE_NS):
+        notes = [*self._prev, *self._next]
+        notes_used = []
+        notes_drop = []
+
+        for note in notes:
+            used_nnrels = [n.get_nnrel() for n in notes_used]
+            used_named_nnrels = [n.get_named_nnrel() for n in notes_used]
+            if note.get_nnrel() in used_nnrels:
+                notes_drop.append(note)
+                continue
+            elif note.get_named_nnrel() in used_named_nnrels:
+                if note.get_enharmonic_note().get_named_nnrel() in used_named_nnrels:
+                    notes_drop.append(note)
+                    continue
+                else:
+                    notes_used.append(note.get_enharmonic_note())
+            else:
+                notes_used.append(note)
+        ch = Chord().set_notes(body=notes_used)
+
+        print(f'used: {notes_used}\ndrop: {notes_drop}')
+
+        return ch.get_scale(max_order=max_order, ns=ns)
+
+    def get_movement(self):
+        root_movement = (self._next[0] - self._prev[0]).normalize().get_name()
+        type_prev = self._prev.get_name(type_only=True)
+        type_next = self._next.get_name(type_only=True)
+        return root_movement, type_prev, type_next
 
 
 ''' ----------------------------------------------------------------------------------------- '''
