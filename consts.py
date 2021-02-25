@@ -5,9 +5,10 @@ from ast import literal_eval
 ''' *********************************** for `theories.py` *********************************** '''
 ''' ----------------------------------------------------------------------------------------- '''
 ''' NN = note number, ABS = absolute, REL = relative, NNREL/NNABS = int type                  '''
-''' STR = str type, LIST = list type, LIN = linear, GEN = generative                          '''
+''' STR = str type, LST = list type, LIN = linear, GEN = generative                           '''
 '''                                                                                           '''
 ''' * we call [index of `NAMED_NNREL_LIN`] `step`                                             '''
+''' * we call [index of `NAMED_NNREL_GEN`] `span`                                             '''
 ''' * we call [index of a scale] or [number of notes contained in an interval] `degree`       '''
 '''                                                                                           '''
 ''' * WARNING: Changing `S` will lead to different interval naming scheme                     '''
@@ -39,6 +40,9 @@ NAMED_STR_LIN = {
 
 # relative note numbers (nnrels) in generative order, e.g. [5, 0, 7, 2, 9, 4, 11]
 NAMED_NNREL_GEN = [(S + i * G) % N for i in range(M)]
+
+# NAMED_NNREL_GEN.index(0)
+SPAN_OFFSET = (-S * M) % N
 
 # relative note numbers (nnrels) in linear order, e.g. [0, 2, 4, 5, 7, 9, 11]
 NAMED_NNREL_LIN = sorted(NAMED_NNREL_GEN)

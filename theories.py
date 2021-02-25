@@ -1,6 +1,8 @@
 import re
 from copy import copy
 from itertools import product
+from math import floor
+from fractions import Fraction
 import numpy as np
 
 from consts import *
@@ -287,6 +289,9 @@ class Note(object):
 
     def get_register(self):
         return self._register
+
+    def get_span(self):
+        return ((self._named_nnrel - S) * M) % N + self._accidental * M - SPAN_OFFSET
 
     def get_name(self, show_register=True):
         # get name of `Note`, e.g. Note('C0').get_name() = 'C0', Note('C0').get_name(show_register=False) = 'C', etc.
@@ -1596,15 +1601,110 @@ class ChordProgression(object):
 
 
 ''' ----------------------------------------------------------------------------------------- '''
+''' ************************************* Secai Hesheng ************************************* '''
+''' ----------------------------------------------------------------------------------------- '''
+
+
+class MyFraction(Fraction):
+    def __str__(self):
+        nu = self.numerator
+        de = self.denominator
+        return f'{nu // de} + {Fraction(nu % de, de)}'
+
+    def __sub__(self, other):
+        if isinstance(other, MyFraction):
+            frac = Fraction(self.numerator, self.denominator) - Fraction(other.numerator, other.denominator)
+            return MyFraction(frac.numerator, frac.denominator)
+        else:
+            raise TypeError
+
+
+def get_span(notes, enharmonic=False):
+    # get span on generative sequence
+    spans = [note.get_span() for note in notes]
+    if enharmonic:
+        spans = sorted(unique([span % N for span in spans]))
+        spans_closed = [*spans, spans[0] + N]
+        spans_delta = [j - i for i, j in zip(spans_closed[:-1], spans_closed[1:])]
+        return N - max(spans_delta)
+    else:
+        return max(spans) - min(spans)
+
+
+def get_polar(notes, enharmonic=False):
+    spans = [note.get_span() for note in notes]
+    if enharmonic:
+        spans_original = [span % N for span in spans]
+        spans = sorted(unique(spans_original))
+        spans_closed = [*spans, spans[0] + N]
+        spans_delta = [j - i for i, j in zip(spans_closed[:-1], spans_closed[1:])]
+
+        indices_max = []
+        for idx, span in enumerate(spans_delta):
+            if span == max(spans_delta):
+                indices_max.append(idx)
+        indices_min = [s + 1 for s in indices_max]
+
+        max_polar_spans = [spans_closed[idx] for idx in indices_max]
+        min_polar_spans = [spans_closed[idx] for idx in indices_min]
+
+        indices_min = [spans_original.index(span % N) for span in max_polar_spans]
+        indices_max = [spans_original.index(span % N) for span in min_polar_spans]
+
+        return [(notes[idx_min], notes[idx_max]) for idx_min, idx_max in zip(indices_max, indices_min)]
+    else:
+        idx_min = spans.index(min(spans))
+        idx_max = spans.index(max(spans))
+
+        return [(notes[idx_min], notes[idx_max])]
+
+
+def get_color(notes, use_fraction=True):
+    spans = [note.get_span() for note in notes]
+    if use_fraction:
+        return MyFraction(sum(spans), len(spans))
+    else:
+        return sum(spans) / len(spans)
+
+
+''' ----------------------------------------------------------------------------------------- '''
 ''' ******************************** other exciting functions ******************************* '''
 ''' ----------------------------------------------------------------------------------------- '''
 
 
 def circular_permutation_with_repetition(n, ns):
+    # greatest common divisor
+    def _gcd(a, b):
+        while (b):
+            a, b = b, a % b
+        return a
+
+    # production
+    def _prod(lst):
+        out = 1
+        while(lst):
+            out *= lst.pop(0)
+        return out
+
+    # factorial of n
+    def _f(n):
+        if n == 1:
+            return n
+        else:
+            return n * _f(n - 1)
+
+    # euler totient function
+    def _phi(n):
+        out = 0
+        for k in range(n):
+            if _gcd(k, n) == 1:
+                out += 1
+        return out
+
     # gcd of n_1, n_2, ..., n_K
     p = ns[0]
     for k in range(len(ns)-1):
-        p = np.gcd(p, ns[k+1])
+        p = _gcd(p, ns[k+1])
 
     # ds = {d: d|p}
     ds = []
@@ -1612,22 +1712,5 @@ def circular_permutation_with_repetition(n, ns):
         if p % d == 0:
             ds.append(d)
 
-    # euler totient function
-    def _phi(n):
-        ret = 0
-        for k in range(n):
-            if np.gcd(k, n) == 1:
-                ret += 1
-        return ret
-
-    # factorial of n
-    def _f(n):
-        if n == 1:
-            return n
-        else:
-            return n*_f(n-1)
-
     # circular permutation with repetition
-    tmp = np.sum([_phi(d)*_f(n//d)//np.prod([_f(n_k//d) for n_k in ns]) for d in ds])//n
-
-    return tmp
+    return sum([_phi(d)*_f(n//d)//_prod([_f(n_k//d) for n_k in ns]) for d in ds])//n
