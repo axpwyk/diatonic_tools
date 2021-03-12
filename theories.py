@@ -1,10 +1,13 @@
+# built-in libs
 import re
 from copy import copy
 from itertools import product
-from math import floor
 from fractions import Fraction
+
+# 3rd-party libs
 import numpy as np
 
+# project libs
 from consts import *
 
 
@@ -302,6 +305,14 @@ class Note(object):
 
     def from_name(self, note_name):
         self._named_nnrel, self._accidental, self._register = self.note_name_to_note_vector(note_name)
+        return self
+
+    def add_generator(self, n=0):
+        span = self.get_span() + n
+        accidental = (span + SPAN_OFFSET) // M
+        named_nnrel = (G * (span + SPAN_OFFSET - accidental * M) + S) % N
+        self._accidental = accidental
+        self._named_nnrel = named_nnrel
         return self
 
     def add_accidental(self, n=0):
@@ -1093,10 +1104,8 @@ class AlteredDiatonicScale(DiatonicScale):
 
 
 class ChordScale(AlteredDiatonicScale):
+    @ngs_checker(['12.7.5'])
     def __init__(self, scale_name):
-        if NGS != '12.7.5':
-            raise ValueError('`ChordScale` class works properly only when NGS == 12.7.5!')
-
         super().__init__(scale_name)
 
         self._chord_notes = [0, 2, 4, 6]
@@ -1233,6 +1242,7 @@ class ChordScale(AlteredDiatonicScale):
         return color
 
 
+# TODO: `Chord` generated from name in other NGS
 class Chord(object):
     @staticmethod
     def chord_name_to_notes(chord_name):
@@ -1357,10 +1367,8 @@ class Chord(object):
     def get_intervals_cum(self, use_bass=True):
         return [note - self[0] for note in self.get_notes(return_bass=use_bass)]
 
+    @ngs_checker(['12.7.5'])
     def get_negative_chord(self, major_tonic=Note()):
-        if NGS != '12.7.5':
-            raise ValueError('`Chord.get_negative_chord` method works properly only when NGS == 12.7.5!')
-
         phrygian_p5_tonic = major_tonic + Interval('P5')
 
         bass_itvs = [note - major_tonic for note in self._bass]
@@ -1665,6 +1673,149 @@ def get_color(notes, use_fraction=True):
         return MyFraction(sum(spans), len(spans))
     else:
         return sum(spans) / len(spans)
+
+
+# TODO: `get_characteristic_note()` review
+def get_characteristic_note(notes, tonic_triad_indices=(0, 2, 4)):
+    polar_notes = get_polar(notes, enharmonic=True)
+    bottom, top = get_polar(notes, enharmonic=False)[0]
+    cmps = []
+    for bt in polar_notes:
+        cmps.append(all([bottom in bt, top in bt]))
+    if not any(cmps):
+        bottom, top = polar_notes[0]
+
+    tonic_triad = [notes[idx] for idx in tonic_triad_indices]
+    if bottom in tonic_triad:
+        if top in tonic_triad:
+            if abs(bottom.get_span() - tonic_triad[0].get_span()) > abs(top.get_span() - tonic_triad[0].get_span()):
+                return bottom
+            else:
+                return top
+        else:
+            return top
+    else:
+        if top in tonic_triad:
+            return bottom
+        else:
+            if abs(bottom.get_span() - tonic_triad[0].get_span()) > abs(top.get_span() - tonic_triad[0].get_span()):
+                return bottom
+            else:
+                return top
+
+
+# TODO: `get_functions()` review
+def get_functions(notes):
+    # will regard 1st note of `notes` as tonic
+    spans = [note.get_span() for note in notes]
+    spans_delta = [s - spans[0] for s in spans]
+    return ['T' if s == 0 else 'S' * abs(s) if s < 0 else 'D' * s for s in spans_delta]
+
+
+# TODO: `get_sorted_chords()` method review
+@ngs_checker(['12.7.5'])
+def get_sorted_chords(ads):
+    c_note = get_characteristic_note(ads)
+
+    chords_3 = [Chord().set_notes(body=ads.get_chord(k, 3)) for k in range(M)]
+    chords_4 = [Chord().set_notes(body=ads.get_chord(k, 4)) for k in range(M)]
+
+    chords_c, chords_t, chords_r = [], [], []
+    if chords_3[0].get_name(type_only=True) == 'm':
+        chords_t.append(chords_3.pop(0))
+        if c_note not in chords_4[0]:
+            chords_t.append(chords_3.pop(1))
+            chords_t.append(chords_4.pop(0))
+    elif chords_3[0].get_name(type_only=True) == '':
+        chords_t.append(chords_3.pop(0))
+        if c_note not in chords_4[-2]:
+            chords_t.append(chords_3.pop(-2))
+            chords_t.append(chords_4.pop(-2))
+    else:
+        pass
+
+    for i, chord in enumerate(chords_3 + chords_4):
+        ids = [note.get_name(show_register=False) for note in chord]
+        c_note_in_ids = c_note.get_name(show_register=False) in ids
+        if c_note_in_ids:
+            chords_c.append(chord)
+        else:
+            chords_r.append(chord)
+
+    return chords_c, chords_t, chords_r
+
+
+''' ----------------------------------------------------------------------------------------- '''
+''' *************************************** Deprecated ************************************** '''
+''' ----------------------------------------------------------------------------------------- '''
+
+
+class Notes(object):
+    def __init__(self):
+        self._notes = []
+        self._printoptions = dict(ns=DEFAULT_DIATONIC_SCALE_NS, show_register=False)
+
+    def __getitem__(self, item):
+        return self._notes[item]
+
+    def __str__(self):
+        note_names = [note.get_name(self._printoptions['show_register']) for note in self._notes]
+        return '[' + ', '.join(note_names) + ']'
+
+    def get_notes(self):
+        return self._notes
+
+    def set_notes(self, notes=None):
+        if notes is not None:
+            if not all([isinstance(note, Note) for note in notes]):
+                raise ValueError('Argument `notes` should only contain instances of `Note` class!')
+            self._notes = notes
+        return self
+
+    def get_span(self, enharmonic=False):
+        # get span on generative sequence
+        spans = [note.get_span() for note in self._notes]
+        if enharmonic:
+            spans = sorted(unique([span % N for span in spans]))
+            spans_closed = [*spans, spans[0] + N]
+            spans_delta = [j - i for i, j in zip(spans_closed[:-1], spans_closed[1:])]
+            return N - max(spans_delta)
+        else:
+            return max(spans) - min(spans)
+
+    def get_polar(self, enharmonic=False):
+        spans = [note.get_span() for note in self._notes]
+        if enharmonic:
+            spans_original = [span % N for span in spans]
+            spans = sorted(unique(spans_original))
+            spans_closed = [*spans, spans[0] + N]
+            spans_delta = [j - i for i, j in zip(spans_closed[:-1], spans_closed[1:])]
+
+            indices_max = []
+            for idx, span in enumerate(spans_delta):
+                if span == max(spans_delta):
+                    indices_max.append(idx)
+            indices_min = [s + 1 for s in indices_max]
+
+            max_polar_spans = [spans_closed[idx] for idx in indices_max]
+            min_polar_spans = [spans_closed[idx] for idx in indices_min]
+
+            indices_min = [spans_original.index(span % N) for span in max_polar_spans]
+            indices_max = [spans_original.index(span % N) for span in min_polar_spans]
+
+            return [(self._notes[idx_min], self._notes[idx_max]) for idx_min, idx_max in zip(indices_max, indices_min)]
+        else:
+            idx_min = spans.index(min(spans))
+            idx_max = spans.index(max(spans))
+
+            return [(self._notes[idx_min], self._notes[idx_max])]
+
+    def get_color(self, use_fraction=True):
+        spans = [note.get_span() for note in self._notes]
+        if use_fraction:
+            return MyFraction(sum(spans), len(spans))
+        else:
+            return sum(spans) / len(spans)
 
 
 ''' ----------------------------------------------------------------------------------------- '''

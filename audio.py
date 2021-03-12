@@ -1,5 +1,8 @@
+# 3rd-party libs
 import numpy as np
 import scipy.signal as ss
+
+# project libs
 from theories import *
 
 

@@ -1,6 +1,8 @@
+# 3rd-party libs
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
+# project libs
 from theories import *
 from utils import *
 
@@ -688,10 +690,8 @@ class Piano(_NoteList):
 
         return min(notes), max(notes) + 1
 
+    @ngs_checker(['12.7.5'])
     def plot_old(self, note_range=None, color_style='note', ax=None, title=None):
-        if NGS != '12.7.5':
-            raise ValueError('`Piano.plot_old` works properly only when NGS == 12.7.5!')
-
         # get note colors
         self._get_note_color(color_style)
 
@@ -1113,7 +1113,7 @@ class GenLine(_NoteList):
             notes_bg = [Note().set_vector(named_nnrel=NAMED_NNREL_GEN[x % M], accidental=x // M) for x in range(min(xs), max(xs) + 1)]
 
             for note in notes_bg:
-                if NGS == '12.7.5' and tds_on:
+                if tds_on and NGS == '12.7.5':
                     tds = ['T', 'D', 'S'][int(note - key_note) % 3]
                     note.set_message(face_color=tds_colors(tds))
                 else:

@@ -1,11 +1,15 @@
+# built-in libs
 from pathlib import Path
 from itertools import cycle
 from copy import copy, deepcopy
+
+# 3rd-party libs
 from mido import MidiFile, MidiTrack
 from mido import Message, MetaMessage
 from mido import bpm2tempo, tempo2bpm, tick2second, second2tick
 import matplotlib.pyplot as plt
 
+# project libs
 from consts import *
 from utils import *
 

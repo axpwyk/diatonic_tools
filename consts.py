@@ -1,4 +1,5 @@
-from ast import literal_eval
+# built-in libs
+from functools import wraps
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -117,6 +118,19 @@ def middle(a, b):
 # a handy if x \in [a, b) function
 def within(x, a, b):
     return a <= x < b
+
+
+# a handy ngs checker (decorator)
+class ngs_checker(object):
+    def __init__(self, ngs_list):
+        self._ngs_list = ngs_list
+
+    def __call__(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            assert NGS in self._ngs_list, f'`{func.__name__}` works properly only when NGS in {self._ngs_list}!'
+            return func(*args, **kwargs)
+        return wrapper
 
 
 ''' ----------------------------------------------------------------------------------------- '''
