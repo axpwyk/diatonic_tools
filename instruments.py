@@ -212,8 +212,6 @@ class Guitar(_NoteList):
         # default params
         if open_string_notes is None and NGS == '12.7.5':
             open_string_notes = [Note('E1'), Note('A1'), Note('D2'), Note('G2'), Note('B2'), Note('E3')]
-        else:
-            open_string_notes = [Note()]
 
         # prepare useful ndarrays
         open_string_nnabs = np.expand_dims(np.array([int(note) for note in open_string_notes]), axis=0)  # shape = [1, n_strings]

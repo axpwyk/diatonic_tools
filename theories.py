@@ -1403,6 +1403,7 @@ class Chord(object):
                 whitespace = ' '
             return f"{self._body[0].get_name(show_register=self._printoptions['show_register'])}{whitespace}{chord_type}"
 
+    # TODO: review `Chord.get_scale` method
     def get_scale(self, use_bass=True, max_order=2, ns=DEFAULT_ALTERED_DIATONIC_SCALE_NS):
         """
         get all possible background scale of current chord, e.g.
@@ -1609,7 +1610,7 @@ class ChordProgression(object):
 
 
 ''' ----------------------------------------------------------------------------------------- '''
-''' ************************************* Secai Hesheng ************************************* '''
+''' ************************************* secai hesheng ************************************* '''
 ''' ----------------------------------------------------------------------------------------- '''
 
 
@@ -1712,6 +1713,18 @@ def get_functions(notes):
     return ['T' if s == 0 else 'S' * abs(s) if s < 0 else 'D' * s for s in spans_delta]
 
 
+# TODO: `get_functions_v2()` review
+@ngs_checker(['12.7.5'])
+def get_functions_v2(notes, major_tonic=Note(), minor_tonic=Note()):
+    major_tendencies = [[0], [-1], [2, -2], [1], [0], [-1, 2], [1, -2], [0], [-1], [-2], [2], [1]]
+    minor_tendencies = [[0], [-1, 2], [1, -2], [0], [-1], [2, -2], [1], [0], [-1], [-2], [2], [1]]
+
+    major_delta_nnabs = [int(note - major_tonic) % 12 for note in notes]
+    minor_delta_nnabs = [int(note - minor_tonic) % 12 for note in notes]
+
+    print([major_tendencies[dn] for dn in major_delta_nnabs], '\n', [minor_tendencies[dn] for dn in minor_delta_nnabs])
+
+
 # TODO: `get_sorted_chords()` method review
 @ngs_checker(['12.7.5'])
 def get_sorted_chords(ads):
@@ -1746,7 +1759,7 @@ def get_sorted_chords(ads):
 
 
 ''' ----------------------------------------------------------------------------------------- '''
-''' *************************************** Deprecated ************************************** '''
+''' *************************************** deprecated ************************************** '''
 ''' ----------------------------------------------------------------------------------------- '''
 
 
