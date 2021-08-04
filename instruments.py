@@ -53,7 +53,7 @@ def note_colors(i, n_notes, mode='face'):
     return rgb_shader(i * n_notes / (n_notes - 1), 0, n_notes, color1=colors_lr[0], color2=colors_lr[1])
 
 
-def br357t_colors(br357t, step_length=CHORD_STEP_LIN, mode='face'):
+def br357t_colors(br357t, step_length=STEP_CHD_LIN, mode='face'):
     if mode == 'face':
         colors = BR357T_FACE_COLORS
     elif mode == 'edge':
@@ -187,9 +187,9 @@ class _NoteList(object):
                 note.set_message(text_color=note_colors(i, len(self._notes), 'text'))
         elif color_style == 'br357t':
             for note in self._notes:
-                note.set_message(face_color=br357t_colors(note.get_message('br357t'), CHORD_STEP_LIN, 'face'))
-                note.set_message(edge_color=br357t_colors(note.get_message('br357t'), CHORD_STEP_LIN, 'edge'))
-                note.set_message(text_color=br357t_colors(note.get_message('br357t'), CHORD_STEP_LIN, 'text'))
+                note.set_message(face_color=br357t_colors(note.get_message('br357t'), STEP_CHD_LIN, 'face'))
+                note.set_message(edge_color=br357t_colors(note.get_message('br357t'), STEP_CHD_LIN, 'edge'))
+                note.set_message(text_color=br357t_colors(note.get_message('br357t'), STEP_CHD_LIN, 'text'))
         elif color_style == 'degree':
             for i, note in enumerate(self._notes):
                 note.set_message(face_color=degree_colors(note.get_message('degree'), len(self._notes), 'face'))
@@ -1222,7 +1222,7 @@ class Tonnetz(_NoteList):
 
         # constants
         itv_gen = (Note(NAMED_STR_GEN[1]) - Note(NAMED_STR_GEN[0])).normalize()
-        itv_major = (Note(NAMED_STR_LIN[CHORD_STEP_LIN]) - Note(NAMED_STR_LIN[0])).normalize()
+        itv_major = (Note(NAMED_STR_LIN[STEP_CHD_LIN]) - Note(NAMED_STR_LIN[0])).normalize()
         itv_minor = itv_gen - itv_major
 
         step_x = 3

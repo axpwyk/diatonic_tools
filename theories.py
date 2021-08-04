@@ -167,7 +167,7 @@ class Note(object):
     def __int__(self):
         """
         return absolute note number
-        (in [12, 7, 5] diatonic scale) 'Bb2' = (11, -1, 2) = 11 + (-1) + 2 * 12 = 34
+        (in '12.7.5' diatonic scale) 'Bb2' = (11, -1, 2) = 11 + (-1) + 2 * 12 = 34
 
         :return: absolute note number, integer in (-\infty, \infty)
         """
@@ -294,7 +294,7 @@ class Note(object):
         return self._register
 
     def get_span(self):
-        return ((self._named_nnrel - S) * M) % N + self._accidental * M - SPAN_OFFSET
+        return ((self._named_nnrel - S) * M) % N + self._accidental * M + SPAN_S_OFFSET
 
     def get_name(self, show_register=True):
         # get name of `Note`, e.g. Note('C0').get_name() = 'C0', Note('C0').get_name(show_register=False) = 'C', etc.
@@ -309,8 +309,8 @@ class Note(object):
 
     def add_generator(self, n=0):
         span = self.get_span() + n
-        accidental = (span + SPAN_OFFSET) // M
-        named_nnrel = (G * (span + SPAN_OFFSET - accidental * M) + S) % N
+        accidental = (span - SPAN_S_OFFSET) // M
+        named_nnrel = (G * (span - SPAN_S_OFFSET - accidental * M) + S) % N
         self._accidental = accidental
         self._named_nnrel = named_nnrel
         return self
@@ -346,13 +346,13 @@ class Note(object):
         """
         change a note to its enharmonic note, e.g.
 
-        (in [12, 7, 5] diatonic scale) [C, _, D, _, E, F, _, G, _, A, _, B]
+        (in '12.7.5' diatonic scale) [C, _, D, _, E, F, _, G, _, A, _, B]
         C#0 -> Db0; C##0 -> D0; D0 -> D0, etc.
 
-        (in [12, 5, 4] diatonic scale) [C, _, D, _, E, _, _, G, _, A, _, _]
+        (in '12.5.4' diatonic scale) [C, _, D, _, E, _, _, G, _, A, _, _]
         C#0 -> Db0; E#0 -> Gbb0; E##0 -> Gb0; E###0 -> G0; G0 -> G0, etc.
 
-        (in [19, 11, 8] diatonic scale) [C, _, _, D, _, _, E, _, F, _, _, G, _, _, A, _, _, B, _]
+        (in '19.11.8' diatonic scale) [C, _, _, D, _, _, E, _, F, _, _, G, _, _, A, _, _, B, _]
         C#0 -> Dbb0; C##0 -> Db0; C###0 -> D0; D0 -> D0, etc.
 
         :param direction: direction of delta step
@@ -383,11 +383,11 @@ class Interval(object):
     @staticmethod
     def interval_name_to_interval_vector(interval_name, ns=-1):
         """
-        when [N, G, S] == [12, 7, 5], will choose naming scheme according to `DELTA_STEP_TO_NS`
-        when [N, G, S] != [12, 7, 5], will use naming scheme 2
+        when NGS in `DELTA_STEP_TO_NS.keys()`, will choose naming scheme according to `DELTA_STEP_TO_NS`
+        when NGS not in `DELTA_STEP_TO_NS.keys()`, will use naming scheme 0
 
         :param interval_name: interval name, e.g. 'P1', 'M2', etc.
-        :param ns: interval naming scheme, 0 = auto, 1 = dPA, 2 = dmMA
+        :param ns: interval naming scheme, -1 = auto, 0 = dmMA, 1 = dPA
         """
         par = interval_name_parser(interval_name)
 
@@ -405,16 +405,15 @@ class Interval(object):
 
         # get naming scheme automatically
         if ns == -1:
-            ns = DELTA_STEP_TO_NS.get(NGS, [1] * M)[delta_step % M]
+            ns = DELTA_STEP_TO_NS.get(NGS, [1] + [0] * (M - 1))[delta_step % M]
 
-        # calculate `delta_group`
         if ns == 0:
-            delta_group = interval_type.count('A') - interval_type.count('d')
-        elif ns == 1:
             if 'd' in interval_type:
-                delta_group = interval_type.count('A') - interval_type.count('m') - interval_type.count('d') - 1
+                delta_nnrel_0 = interval_type.count('A') - interval_type.count('d') - 1
             else:
-                delta_group = interval_type.count('A') - interval_type.count('m')
+                delta_nnrel_0 = interval_type.count('A') - interval_type.count('m')
+        elif ns == 1:
+            delta_nnrel_0 = interval_type.count('A') - interval_type.count('d')
         else:
             raise ValueError(f'No naming scheme {ns}! Please choose from [0, 1]!')
 
@@ -422,8 +421,8 @@ class Interval(object):
         delta_step_rel = delta_step % M
         delta_register = delta_step // M
 
-        named_nnrel = NAMED_NNREL_LIN[delta_step_rel]
-        delta_nnabs = delta_group + named_nnrel + N * delta_register
+        delta_nnrel = DELTA_NNREL_MAJOR[delta_step_rel] + DELTA_NNREL_OFFSET.get(NGS, [0] * M)[delta_step_rel]
+        delta_nnabs = delta_nnrel_0 + delta_nnrel + N * delta_register
 
         # get interval vector
         return sgn * delta_nnabs, sgn * delta_step
@@ -431,13 +430,25 @@ class Interval(object):
     @staticmethod
     def interval_vector_to_interval_name(delta_nnabs, delta_step, ns=-1):
         """
-        it only exists 2 types of intervals that contain same number of named notes in diatonic scale
+        there only exists 2 types of interval that contain same number of named notes in diatonic scale
 
-        we call the larger interval P (Perfect), and the smaller interval d (diminished):
+        we call the larger interval M (major), and the smaller interval m (minor):
+        ... < dd < d < m < M < A < AA < AAA < ... (naming scheme 0, `ns`=0)
+
+        for example, when `NGS` == '12.7.x', we can build a Lydian scale from 0:
+        [0, 7, 2, 9, 4, 11, 6] --sort--> [0, 2, 4, 6, 7, 9, 11]
+        this gives us all major interval delta nnrels:
+        P1 = 0, M2 = 2, M3 = 4, M4 = 6, M5 = 7, M6 = 9, M7 = 11
+        then we have:
+        P1 = 0, m2 = 1, m3 = 3, m4 = 5, m6 = 6, m6 = 8, m7 = 10
+        [0, 1, 3, 5, 6, 8, 10] is Locrian scale from 0
+
+        we also call the larger interval P (Perfect), and the smaller interval d (diminished):
         ... < ddd < dd < d < P < A < AA < AAA < ... (naming scheme 1, `ns`=1)
 
-        we can also call the larger interval M (major), and the smaller interval m (minor):
-        ... < dd < d < m < M < A < AA < AAA < ... (naming scheme 2, `ns`=2)
+        sometimes, we may call the smaller interval P (Perfect), and the larger interval A (Augmented)
+        for example, when `NGS` == '12.7.5', P4 is actually the smaller one of 2 kinds of diatonic 4th intervals
+        so `DELTA_NNREL_OFFSET` was given for such irregularities
 
         * notice: '-M2' and 'M-2' are different, we will use the former one when `delta_step` < 0
 
@@ -451,29 +462,29 @@ class Interval(object):
         delta_step_rel = delta_step % M
         delta_register = delta_step // M
 
-        named_nnrel = NAMED_NNREL_LIN[delta_step_rel]
-        delta_group = delta_nnabs - N * delta_register - named_nnrel
+        delta_nnrel = DELTA_NNREL_MAJOR[delta_step_rel] + DELTA_NNREL_OFFSET.get(NGS, [0] * M)[delta_step_rel]
+        delta_nnrel_0 = delta_nnabs - N * delta_register - delta_nnrel
 
         # get naming scheme automatically
         if ns == -1:
-            ns = DELTA_STEP_TO_NS.get(NGS, [1] * M)[delta_step % M]
+            ns = DELTA_STEP_TO_NS.get(NGS, [1] + [0] * (M - 1))[delta_step % M]
 
         if ns == 0:
-            if delta_group > 0:
-                itv_type = 'A' * delta_group
-            elif delta_group == 0:
-                itv_type = 'P'
-            else:
-                itv_type = 'd' * abs(delta_group)
-        elif ns == 1:
-            if delta_group > 0:
-                itv_type = 'A' * delta_group
-            elif delta_group == 0:
+            if delta_nnrel_0 > 0:
+                itv_type = 'A' * delta_nnrel_0
+            elif delta_nnrel_0 == 0:
                 itv_type = 'M'
-            elif delta_group == -1:
+            elif delta_nnrel_0 == -1:
                 itv_type = 'm'
             else:
-                itv_type = 'd' * (abs(delta_group) - 1)
+                itv_type = 'd' * (abs(delta_nnrel_0) - 1)
+        elif ns == 1:
+            if delta_nnrel_0 > 0:
+                itv_type = 'A' * delta_nnrel_0
+            elif delta_nnrel_0 == 0:
+                itv_type = 'P'
+            else:
+                itv_type = 'd' * abs(delta_nnrel_0)
         else:
             raise ValueError(f'No naming scheme {ns}! Please choose from [0, 1]!')
 
@@ -615,7 +626,7 @@ class Interval(object):
 
     def get_r357t(self):
         # (when `NGS` == '12.7.5') P2 -> 2, d2 -> b2, A2 -> #2, etc.
-        r357t = self.interval_vector_to_interval_name(self._delta_nnabs, self._delta_step, ns=0)
+        r357t = self.interval_vector_to_interval_name(self._delta_nnabs, self._delta_step, ns=1)
         r357t = r357t.replace('P', '').replace('d', 'b').replace('A', '#')
         r357t = 'R' if r357t == '1' else r357t
 
@@ -628,14 +639,14 @@ class Interval(object):
             return self
         else:
             interval_name = 'P' + r357t.replace('b', 'd').replace('#', 'A')
-            self._delta_nnabs, self._delta_step = self.interval_name_to_interval_vector(interval_name, ns=0)
+            self._delta_nnabs, self._delta_step = self.interval_name_to_interval_vector(interval_name, ns=1)
 
         return self
 
     def normalize(self):
-        delta_group = self._delta_step // M
+        delta_register = self._delta_step // M
         self._delta_step = self._delta_step % M
-        self._delta_nnabs = self._delta_nnabs - N * delta_group
+        self._delta_nnabs = self._delta_nnabs - N * delta_register
         return self
 
 
@@ -686,10 +697,10 @@ class DiatonicScale(object):
 
     def __getitem__(self, item):
         """
-        a linear view of `self._meta_notes` (remember that `self._meta_notes` is of generative order)
+        linear view of `self._meta_notes` (remember that `self._meta_notes` is of generative order)
         changes will affect `self._meta_notes`
         """
-        return [self._meta_notes[(self._st_step_gen + M2_STEP_GEN * k) % M] for k in range(M)][item]
+        return [self._meta_notes[(self._st_step_gen + STEP_2ND_GEN * k) % M] for k in range(M)][item]
 
     def __str__(self):
         note_names = [note.get_name(self._printoptions['show_register']) for note in self]
@@ -718,7 +729,7 @@ class DiatonicScale(object):
     def get_nnabs_list(self):
         """
         return a list of absolute note numbers `nnabs` of current scale in linear order
-        e.g. (in [12, 7, 5] diatonic scale) [C0, D0, E0, F0, G0, A0, B0] = [0, 2, 4, 5, 7, 9, 11]
+        e.g. (in '12.7.5' diatonic scale) [C0, D0, E0, F0, G0, A0, B0] = [0, 2, 4, 5, 7, 9, 11]
         """
         return [int(note) for note in self]
 
@@ -815,7 +826,7 @@ class DiatonicScale(object):
             note.add_register(n)
         return self
 
-    def get_chord(self, root_degree, n_notes, n_step_length=CHORD_STEP_LIN):
+    def get_chord(self, root_degree, n_notes, n_step_length=STEP_CHD_LIN):
         """
         notice: this method will return copies of `self._meta_notes` elements
         """
@@ -1242,7 +1253,7 @@ class ChordScale(AlteredDiatonicScale):
         return color
 
 
-# TODO: `Chord` generated from name in other NGS
+# TODO: `Chord` generated from name in other NGS (other than '12.7.5')
 class Chord(object):
     @staticmethod
     def chord_name_to_notes(chord_name):
@@ -1712,7 +1723,7 @@ def get_functions(notes):
     return ['T' if s == 0 else 'S' * abs(s) if s < 0 else 'D' * s for s in spans_delta]
 
 
-# TODO: `get_sorted_chords()` method review
+# TODO: `get_sorted_chords()` review
 @ngs_checker(['12.7.5'])
 def get_sorted_chords(ads):
     c_note = get_characteristic_note(ads)

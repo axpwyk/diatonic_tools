@@ -5,22 +5,23 @@ from functools import wraps
 ''' ----------------------------------------------------------------------------------------- '''
 ''' *********************************** for `theories.py` *********************************** '''
 ''' ----------------------------------------------------------------------------------------- '''
-''' NN = note number, ABS = absolute, REL = relative, NNREL/NNABS = int type                  '''
-''' STR = str type, LST = list type, LIN = linear, GEN = generative                           '''
+''' [terms used in this library]                                                              '''
 '''                                                                                           '''
-''' * we call [index of `NAMED_NNREL_LIN`] `step`                                             '''
-''' * we call [index of `NAMED_NNREL_GEN`] `span`                                             '''
-''' * we call [index of a scale] or [number of notes contained in an interval] `degree`       '''
+''' NN = note number, ABS = absolute, REL = relative                                          '''
+''' NNREL/NNABS = int type, STR = str type, LST = list type, LIN = linear, GEN = generative   '''
 '''                                                                                           '''
-''' * WARNING: Changing `S` will lead to different interval naming scheme                     '''
-'''            A4 in [N, G, S] = [12, 7, 5] is P4 (M4) in [N, G, S] = [12, 7, 0]              '''
+''' * we call [index of element in `NAMED_NNREL_LIN` or `NAMED_NNREL_GEN`] `step`             '''
+'''   `step` is short for `step_lin`, while `step_gen` always comes with `_gen` appendix      '''
+''' * we call [distance of 0 and another note in generative sequence] `span`                  '''
+''' * we call [number of notes contained in an interval] `degree`                             '''
+''' * we call [index of element in a scale + 1] also `degree`                                 '''
 ''' ----------------------------------------------------------------------------------------- '''
 
 
 # most basic constants (generate named nnrels from starting point `S` using step length `G` modulo `N`)
-N = 12  # int(input('N: '))  # `N`-tone equal temperament (`N`-TET)
-G = 7   # int(input('G: '))  # generator (step length)
-S = 5   # int(input('S: '))  # starter (starting point)
+N = 12  # `N`-tone equal temperament (`N`-TET)
+G = 7   # generator (step length)
+S = 5   # starter (starting point)
 
 # most basic calculations
 M = pow(G, -1, N)                            # number of tones in diatonic scale
@@ -28,13 +29,14 @@ T = 2 ** (1 / N)                             # ratio of semi-tone frequencies
 C3 = 440 * (T ** (36 - 45))                  # frequency of C3
 NGS = '.'.join([str(k) for k in [N, G, S]])  # NGS for dict indexing
 
-# define named notes (basic notes) in linear order
+# define named note names in linear order, e.g. '12.7.5' -> 'CDEFGAB' | fallback: greek letters
 NAMED_STR_LIN = {
-    '12.7.5': 'CDEFGAB',
-    '19.11.8': 'CDEFGAB',
-    '12.7.0': 'cdeFgab',  # F == f#
-    '19.11.0': 'cdeFgab',  # F == f#
     '12.5.4': 'CDEGA',
+    '12.7.0': 'cdeFgab',  # F == f#
+    '12.7.5': 'CDEFGAB',
+    '12.7.7': 'CdeFgab',  # F == f#, C == c#
+    '19.11.0': 'cdeFgab',  # F == f#
+    '19.11.8': 'CDEFGAB',
     '53.31.22': 'cCdDefFgGaAb',  # C == c#, D == d#, F == f#, G == g#, A == a#
     '97.56.0': str().join([chr(ord('A')+j) for j in range(M)]),  # 26-tone diatonic scale
 }.get(NGS, str().join([chr(int('03B1', 16)+j) for j in range(M)]))
@@ -42,24 +44,24 @@ NAMED_STR_LIN = {
 # relative note numbers (nnrels) in generative order, e.g. [5, 0, 7, 2, 9, 4, 11]
 NAMED_NNREL_GEN = [(S + i * G) % N for i in range(M)]
 
-# NAMED_NNREL_GEN.index(0)
-SPAN_OFFSET = (-S * M) % N
-
 # relative note numbers (nnrels) in linear order, e.g. [0, 2, 4, 5, 7, 9, 11]
 NAMED_NNREL_LIN = sorted(NAMED_NNREL_GEN)
 
-# nnrel/str convertors
+# nnrel/str convertors, e.g. [0, 2, 4, 5, 7, 9, 11] -> 'CDEFGAB'
 NNREL_TO_STR = {nnrel: NAMED_STR_LIN[i] for i, nnrel in enumerate(NAMED_NNREL_LIN)}
 STR_TO_NNREL = dict((v, k) for k, v in NNREL_TO_STR.items())
 
 # change `NAMED_STR_LIN` into generative order, e.g. 'CDEFGAB' -> 'FCGDAEB'
 NAMED_STR_GEN = ''.join([NNREL_TO_STR[k] for k in NAMED_NNREL_GEN])
 
-# step length of M2 interval in generative sequence
-M2_STEP_GEN = NAMED_NNREL_GEN.index(S + NAMED_NNREL_LIN[1])
+# span of starter note `S` (from center)
+SPAN_S_OFFSET = 0
 
-# a reasonable step length of stacked notes in linear sequence (not good)
-CHORD_STEP_LIN = [nnrel - NAMED_NNREL_LIN[0] for nnrel in NAMED_NNREL_LIN].index(G) // 2
+# generative step length of 2nd interval TODO: not satisfied with this
+STEP_2ND_GEN = [(i * G) % N for i in range(M)].index(min([(i * G) % N for i in range(1, M)]))
+
+# linear step length of stacked chord notes
+STEP_CHD_LIN = 2
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -135,15 +137,24 @@ class ngs_checker(object):
 
 ''' ----------------------------------------------------------------------------------------- '''
 ''' ********************************** for `Interval` Class ********************************* '''
-''' naming scheme 0: ..., dd, d, P, A, AA, ...                                                '''
-''' naming scheme 1: ..., dd, d, m, M, A, AA, ...                                             '''
+''' naming scheme 0 (NS0): ..., dd, d, m, M, A, AA, ...                                       '''
+''' naming scheme 1 (NS1): ..., dd, d, P, A, AA, ...                                          '''
 ''' ----------------------------------------------------------------------------------------- '''
 
 
 # convert delta step to naming scheme 0 or 1
 DELTA_STEP_TO_NS = {
-    '12.7.5': [0, 1, 1, 0, 0, 1, 1],
-    '19.11.8': [0, 1, 1, 0, 0, 1, 1]
+    '12.7.5': [1, 0, 0, 1, 1, 0, 0],
+    '19.11.8': [1, 0, 0, 1, 1, 0, 0]
+}
+
+# major delta nnrels for interval
+DELTA_NNREL_MAJOR = sorted([(i * G) % N for i in range(M)])
+
+# for the sake of perfect 4th
+DELTA_NNREL_OFFSET = {
+    '12.7.5': [0, 0, 0, -1, 0, 0, 0],
+    '19.11.8': [0, 0, 0, -1, 0, 0, 0]
 }
 
 
@@ -190,7 +201,7 @@ DEFAULT_DIATONIC_SCALE_NS = 1
 ''' naming scheme 1 (NS1): Phrygian(#3), Lydian(b7), ...                                      '''
 ''' naming scheme 2 (NS2): Phrygian Dominant, Lydian Dominant, ...                            '''
 '''                                                                                           '''
-''' Class xx: starting from Lydian, add sharp to every degree then flat iteratively           '''
+''' Class xx: starting from Lydian, add sharp to every scale degree then flat iteratively     '''
 '''           e.g. Lydian - [x]Lydian(#1) - Lydian(#2) - ... - [x]Lydian(#7) - [x]Lydian(b1)  '''
 '''                Lydian(b2) - ... [x]Lydian(#1, #1) - Lydian(#1, #2) - ...                  '''
 ''' ----------------------------------------------------------------------------------------- '''
@@ -438,7 +449,7 @@ ALL_SCALE_TYPES = {
 
 ''' ----------------------------------------------------------------------------------------- '''
 ''' *********************************** for `Chord` Class *********************************** '''
-''' naming scheme 0 (NS0): 1.3.5.7, 1.b3.5.b7, ...                                            '''
+''' naming scheme 0 (NS0): R.3.5.7, R.b3.5.b7, ...                                            '''
 ''' naming scheme 1 (NS1): M7, m7, ...                                                        '''
 ''' ----------------------------------------------------------------------------------------- '''
 
@@ -447,6 +458,10 @@ ALL_SCALE_TYPES = {
 CHORD_TYPE_NS0_TO_NS1 = {
     '12.7.5': {
         # 5**
+        'R.#4.#7': ['aug4'],
+        'R.#4.7': ['4'],
+        'R.4.7': ['m4'],
+        'R.4.b7': ['dim4'],
         'R.4.#5.7': ['augM7sus4', 'M7+5sus4'],
         'R.4.5.7': ['M7sus4'],
         'R.4.5': ['sus4'],
@@ -497,6 +512,10 @@ CHORD_TYPE_NS0_TO_NS1 = {
     },
     '19.11.8': {
         # 5**
+        'R.#4.#7': ['aug4'],
+        'R.#4.7': ['4'],
+        'R.4.7': ['m4'],
+        'R.4.b7': ['dim4'],
         'R.4.#5.7': ['augM7sus4', 'M7+5sus4'],
         'R.4.5.7': ['M7sus4'],
         'R.4.5': ['sus4'],
