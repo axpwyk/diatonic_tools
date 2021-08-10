@@ -21,7 +21,7 @@ from functools import wraps
 # most basic constants (generate named nnrels from starting point `S` using step length `G` modulo `N`)
 N = 12  # `N`-tone equal temperament (`N`-TET)
 G = 7   # generator (step length)
-S = 5   # starter (starting point)
+S = 7   # starter (starting point)
 
 # most basic calculations
 M = pow(G, -1, N)                            # number of tones in diatonic scale
@@ -191,7 +191,10 @@ SCALE_TYPE_NS0_TO_NS1 = {
 SCALE_TYPE_NS1_TO_NS0 = dict((ngs, dict((v, k) for k, vs in d.items() for v in vs)) for ngs, d in SCALE_TYPE_NS0_TO_NS1.items())
 
 # default diatonic scale ns
-DEFAULT_DIATONIC_SCALE_NS = 1
+DEFAULT_DIATONIC_SCALE_NS = {
+    '12.7.5': 1,
+    '19.11.8': 1,
+}.get(NGS, 0)
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -345,7 +348,10 @@ SCALE_TYPE_NS0_TO_NS2 = {
 SCALE_TYPE_NS2_TO_NS0 = dict((ngs, dict((v, k) for k, vs in d.items() for v in vs)) for ngs, d in SCALE_TYPE_NS0_TO_NS2.items())
 
 # default altered diatonic scale ns
-DEFAULT_ALTERED_DIATONIC_SCALE_NS = 2
+DEFAULT_ALTERED_DIATONIC_SCALE_NS = {
+    '12.7.5': 2,
+    '19.11.8': 2,
+}.get(NGS, 0)
 
 
 def scale_type_convertor(scale_type, ns_old, ns_new):
@@ -570,7 +576,10 @@ CHORD_TYPE_NS0_TO_NS1 = {
 CHORD_TYPE_NS1_TO_NS0 = dict((ngs, dict((v, k) for k, vs in d.items() for v in vs)) for ngs, d in CHORD_TYPE_NS0_TO_NS1.items())
 
 # default chord ns
-DEFAULT_CHORD_NS = 1
+DEFAULT_CHORD_NS = {
+    '12.7.5': 1,
+    '19.11.8': 1,
+}.get(NGS, 0)
 
 
 def chord_type_convertor(chord_type, ns_old, ns_new):

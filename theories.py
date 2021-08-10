@@ -1114,146 +1114,6 @@ class AlteredDiatonicScale(DiatonicScale):
         return unique(scale_names)
 
 
-class ChordScale(AlteredDiatonicScale):
-    @ngs_checker(['12.7.5'])
-    def __init__(self, scale_name):
-        super().__init__(scale_name)
-
-        self._chord_notes = [0, 2, 4, 6]
-        self._tension_notes = [k for k in range(7) if k not in self._chord_notes]
-
-        self._refresh()
-
-    def __repr__(self):
-        return '\n'.join([f"ChordScale('{scale_name}')" for scale_name in self.get_name()])
-
-    def _get_info(self):
-        # [D, E, F, G, A, B, C]
-        itvs = [n - self[0] for n in self]  # [P1, M2, m3, P4, P5, M6, m7]
-        itvs_abs = [int(i) for i in itvs]  # [0, 2, 3, 5, 7, 9, 10]
-        itvs_rel = [i % 12 for i in itvs_abs]  # [0, 2, 3, 5, 7, 9, 10] (?)
-        r357ts = [i.get_r357t() for i in itvs]
-        labels = [''] * len(r357ts)
-        fake_dom7 = False
-        fake_m7 = False
-
-        # add "[CN]" to every base chord note
-        for i in self._chord_notes:
-            labels[i] = '[CN]'
-
-        # add "[TN]" to every tension note
-        for i in self._tension_notes:
-            labels[i] = '[TN]'
-
-        # if it contains dom7 chord (include enharmonic equivalents)
-        if all([na in itvs_rel for na in [4, 10]]):
-            # if it contains real dom7 chord
-            if '3' in r357ts and 'b7' in r357ts:
-                # half tone above base chord note, but available because of dom7 base chord
-                for idx in range(1, len(itvs_abs)):
-                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
-                        labels[idx] = '[OK]'
-                # avoid_type_0: tonic note in dom7 chord
-                if 5 in itvs_rel:
-                    idx = itvs_rel.index(5)
-                    labels[idx] = '[A0]'
-
-            # if it contains fake dom7 chord
-            else:
-                fake_dom7 = True
-                for idx in range(1, len(itvs_abs)):
-                    # avoid_type_1: half tone above base chord note
-                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
-                        labels[idx] = '[A1]'
-                    # avoid_type_1: half tone below M7
-                    if '7' in r357ts:
-                        idx_maj7 = r357ts.index('7')
-                        if itvs_abs[idx_maj7] - itvs_abs[idx] == 1:
-                            labels[idx] = '[A1]'
-
-        # if it contains m7 / m7-5 chord (include enharmonic equivalents)
-        if all([na in itvs_rel for na in [3, 10]]):
-            # if it contains real m7 / m7-5 chord
-            if 'b3' in r357ts and 'b7' in r357ts:
-                # avoid_type_1: half tone above base chord note
-                for idx in range(1, len(itvs_abs)):
-                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
-                        labels[idx] = '[A1]'
-                # avoid_type_2: dorian / locrian 13th
-                if 9 in itvs_rel:
-                    idx = itvs_rel.index(9)
-                    labels[idx] = '[A2]'
-
-            # if it contains fake m7 / m7-5 chord
-            else:
-                fake_m7 = True
-                for idx in range(1, len(itvs_abs)):
-                    # avoid_type_1: half tone above 7th chord note
-                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
-                        labels[idx] = '[A1]'
-                    # avoid_type_1: half tone below M7
-                    if '7' in r357ts:
-                        idx_maj7 = r357ts.index('7')
-                        if itvs_abs[idx_maj7] - itvs_abs[idx] == 1:
-                            labels[idx] = '[A1]'
-
-        # if it not contain dom7, m7 and m7-5
-        if not (all([na in itvs_rel for na in [4, 10]]) or all([na in itvs_rel for na in [3, 10]])):
-            # avoid_type_1: half tone above 7th chord note
-            for idx in range(1, len(itvs_abs)):
-                if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
-                    labels[idx] = '[A1]'
-                # avoid_type_1: half tone below M7
-                if '7' in r357ts:
-                    idx_maj7 = r357ts.index('7')
-                    if itvs_abs[idx_maj7] - itvs_abs[idx] == 1:
-                        labels[idx] = '[A1]'
-
-        long_list = ['x'] * 12
-        for i, n in enumerate(itvs_rel):
-            long_list[n] = labels[i] + ' ' + r357ts[i]
-
-        return labels, long_list, fake_dom7, fake_m7
-
-    def _refresh(self):
-        labels, long_list, fake_dom7, fake_m7 = self._get_info()
-
-        for note, label in zip(self, labels):
-            note.set_message(avoid=label)
-
-        self._long_list = long_list
-        self._fake_dom7 = fake_dom7
-        self._fake_m7 = fake_m7
-
-    def set_chord_notes(self, chord_notes=(0, 2, 4, 6)):
-        self._chord_notes = chord_notes
-        self._tension_notes = [k for k in range(7) if k not in self._chord_notes]
-        self._refresh()
-
-        return self
-
-    def get_long_list(self):
-        return self._long_list
-
-    def if_fake_dom7(self):
-        return self._fake_dom7
-
-    def if_fake_m7(self):
-        return self._fake_m7
-
-    def get_color(self):
-        color = '#'
-        for i in self._chord_notes + self._tension_notes:
-            if i == 0:
-                continue
-
-            itv = self[i] - self[0]
-            color = color + f'{hex(int(itv))}'[2:]
-
-        return color
-
-
-# TODO: `Chord` generated from name in other NGS (other than '12.7.5')
 class Chord(object):
     @staticmethod
     def chord_name_to_notes(chord_name):
@@ -1617,6 +1477,150 @@ class ChordProgression(object):
         type_prev = self._prev.get_name(type_only=True)
         type_next = self._next.get_name(type_only=True)
         return root_movement, type_prev, type_next
+
+
+''' ----------------------------------------------------------------------------------------- '''
+''' ************************************** jazz harmony ************************************* '''
+''' ----------------------------------------------------------------------------------------- '''
+
+
+class ChordScale(AlteredDiatonicScale):
+    @ngs_checker(['12.7.5'])
+    def __init__(self, scale_name):
+        super().__init__(scale_name)
+
+        self._chord_notes = [0, 2, 4, 6]
+        self._tension_notes = [k for k in range(7) if k not in self._chord_notes]
+
+        self._refresh()
+
+    def __repr__(self):
+        return '\n'.join([f"ChordScale('{scale_name}')" for scale_name in self.get_name()])
+
+    def _get_info(self):
+        # [D, E, F, G, A, B, C]
+        itvs = [n - self[0] for n in self]  # [P1, M2, m3, P4, P5, M6, m7]
+        itvs_abs = [int(i) for i in itvs]  # [0, 2, 3, 5, 7, 9, 10]
+        itvs_rel = [i % 12 for i in itvs_abs]  # [0, 2, 3, 5, 7, 9, 10] (?)
+        r357ts = [i.get_r357t() for i in itvs]
+        labels = [''] * len(r357ts)
+        fake_dom7 = False
+        fake_m7 = False
+
+        # add "[CN]" to every base chord note
+        for i in self._chord_notes:
+            labels[i] = '[CN]'
+
+        # add "[TN]" to every tension note
+        for i in self._tension_notes:
+            labels[i] = '[TN]'
+
+        # if it contains dom7 chord (include enharmonic equivalents)
+        if all([na in itvs_rel for na in [4, 10]]):
+            # if it contains real dom7 chord
+            if '3' in r357ts and 'b7' in r357ts:
+                # half tone above base chord note, but available because of dom7 base chord
+                for idx in range(1, len(itvs_abs)):
+                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
+                        labels[idx] = '[OK]'
+                # avoid_type_0: tonic note in dom7 chord
+                if 5 in itvs_rel:
+                    idx = itvs_rel.index(5)
+                    labels[idx] = '[A0]'
+
+            # if it contains fake dom7 chord
+            else:
+                fake_dom7 = True
+                for idx in range(1, len(itvs_abs)):
+                    # avoid_type_1: half tone above base chord note
+                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
+                        labels[idx] = '[A1]'
+                    # avoid_type_1: half tone below M7
+                    if '7' in r357ts:
+                        idx_maj7 = r357ts.index('7')
+                        if itvs_abs[idx_maj7] - itvs_abs[idx] == 1:
+                            labels[idx] = '[A1]'
+
+        # if it contains m7 / m7-5 chord (include enharmonic equivalents)
+        if all([na in itvs_rel for na in [3, 10]]):
+            # if it contains real m7 / m7-5 chord
+            if 'b3' in r357ts and 'b7' in r357ts:
+                # avoid_type_1: half tone above base chord note
+                for idx in range(1, len(itvs_abs)):
+                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
+                        labels[idx] = '[A1]'
+                # avoid_type_2: dorian / locrian 13th
+                if 9 in itvs_rel:
+                    idx = itvs_rel.index(9)
+                    labels[idx] = '[A2]'
+
+            # if it contains fake m7 / m7-5 chord
+            else:
+                fake_m7 = True
+                for idx in range(1, len(itvs_abs)):
+                    # avoid_type_1: half tone above 7th chord note
+                    if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
+                        labels[idx] = '[A1]'
+                    # avoid_type_1: half tone below M7
+                    if '7' in r357ts:
+                        idx_maj7 = r357ts.index('7')
+                        if itvs_abs[idx_maj7] - itvs_abs[idx] == 1:
+                            labels[idx] = '[A1]'
+
+        # if it not contain dom7, m7 and m7-5
+        if not (all([na in itvs_rel for na in [4, 10]]) or all([na in itvs_rel for na in [3, 10]])):
+            # avoid_type_1: half tone above 7th chord note
+            for idx in range(1, len(itvs_abs)):
+                if any([itvs_abs[idx] - itvs_abs[j] == 1 for j in self._chord_notes]):
+                    labels[idx] = '[A1]'
+                # avoid_type_1: half tone below M7
+                if '7' in r357ts:
+                    idx_maj7 = r357ts.index('7')
+                    if itvs_abs[idx_maj7] - itvs_abs[idx] == 1:
+                        labels[idx] = '[A1]'
+
+        long_list = ['x'] * 12
+        for i, n in enumerate(itvs_rel):
+            long_list[n] = labels[i] + ' ' + r357ts[i]
+
+        return labels, long_list, fake_dom7, fake_m7
+
+    def _refresh(self):
+        labels, long_list, fake_dom7, fake_m7 = self._get_info()
+
+        for note, label in zip(self, labels):
+            note.set_message(avoid=label)
+
+        self._long_list = long_list
+        self._fake_dom7 = fake_dom7
+        self._fake_m7 = fake_m7
+
+    def set_chord_notes(self, chord_notes=(0, 2, 4, 6)):
+        self._chord_notes = chord_notes
+        self._tension_notes = [k for k in range(7) if k not in self._chord_notes]
+        self._refresh()
+
+        return self
+
+    def get_long_list(self):
+        return self._long_list
+
+    def if_fake_dom7(self):
+        return self._fake_dom7
+
+    def if_fake_m7(self):
+        return self._fake_m7
+
+    def get_color(self):
+        color = '#'
+        for i in self._chord_notes + self._tension_notes:
+            if i == 0:
+                continue
+
+            itv = self[i] - self[0]
+            color = color + f'{hex(int(itv))}'[2:]
+
+        return color
 
 
 ''' ----------------------------------------------------------------------------------------- '''
