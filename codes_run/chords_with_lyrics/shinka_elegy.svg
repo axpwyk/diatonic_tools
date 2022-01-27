@@ -1,0 +1,1982 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="371.52pt" height="798.663529pt" viewBox="0 0 371.52 798.663529" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2022-01-27T17:45:40.619425</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.5.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 798.663529 
+L 371.52 798.663529 
+L 371.52 -0 
+L 0 -0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 28.207059 41.878319 
+C 29.975674 41.878319 31.672089 41.175641 32.922689 39.925042 
+C 34.173288 38.674442 34.875966 36.978027 34.875966 35.209412 
+C 34.875966 33.440797 34.173288 31.744382 32.922689 30.493782 
+C 31.672089 29.243182 29.975674 28.540504 28.207059 28.540504 
+C 26.438444 28.540504 24.742029 29.243182 23.491429 30.493782 
+C 22.240829 31.744382 21.538151 33.440797 21.538151 35.209412 
+C 21.538151 36.978027 22.240829 38.674442 23.491429 39.925042 
+C 24.742029 41.175641 26.438444 41.878319 28.207059 41.878319 
+z
+" clip-path="url(#p1c7a9bd8c2)" style="fill: #6a5acd; opacity: 0.25"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 154.249412 41.878319 
+C 156.018027 41.878319 157.714442 41.175641 158.965042 39.925042 
+C 160.215641 38.674442 160.918319 36.978027 160.918319 35.209412 
+C 160.918319 33.440797 160.215641 31.744382 158.965042 30.493782 
+C 157.714442 29.243182 156.018027 28.540504 154.249412 28.540504 
+C 152.480797 28.540504 150.784382 29.243182 149.533782 30.493782 
+C 148.283182 31.744382 147.580504 33.440797 147.580504 35.209412 
+C 147.580504 36.978027 148.283182 38.674442 149.533782 39.925042 
+C 150.784382 41.175641 152.480797 41.878319 154.249412 41.878319 
+z
+" clip-path="url(#p1c7a9bd8c2)" style="fill: #6a5acd; opacity: 0.25"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 63.218824 62.885378 
+C 64.987438 62.885378 66.683854 62.1827 67.934453 60.9321 
+C 69.185053 59.681501 69.887731 57.985086 69.887731 56.216471 
+C 69.887731 54.447856 69.185053 52.75144 67.934453 51.500841 
+C 66.683854 50.250241 64.987438 49.547563 63.218824 49.547563 
+C 61.450209 49.547563 59.753793 50.250241 58.503194 51.500841 
+C 57.252594 52.75144 56.549916 54.447856 56.549916 56.216471 
+C 56.549916 57.985086 57.252594 59.681501 58.503194 60.9321 
+C 59.753793 62.1827 61.450209 62.885378 63.218824 62.885378 
+z
+" clip-path="url(#p1c7a9bd8c2)" style="fill: #6a5acd; opacity: 0.25"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 259.284706 62.885378 
+C 261.053321 62.885378 262.749736 62.1827 264.000336 60.9321 
+C 265.250935 59.681501 265.953613 57.985086 265.953613 56.216471 
+C 265.953613 54.447856 265.250935 52.75144 264.000336 51.500841 
+C 262.749736 50.250241 261.053321 49.547563 259.284706 49.547563 
+C 257.516091 49.547563 255.819676 50.250241 254.569076 51.500841 
+C 253.318476 52.75144 252.615798 54.447856 252.615798 56.216471 
+C 252.615798 57.985086 253.318476 59.681501 254.569076 60.9321 
+C 255.819676 62.1827 257.516091 62.885378 259.284706 62.885378 
+z
+" clip-path="url(#p1c7a9bd8c2)" style="fill: #6a5acd; opacity: 0.25"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 329.308235 62.885378 
+C 331.07685 62.885378 332.773265 62.1827 334.023865 60.9321 
+C 335.274465 59.681501 335.977143 57.985086 335.977143 56.216471 
+C 335.977143 54.447856 335.274465 52.75144 334.023865 51.500841 
+C 332.773265 50.250241 331.07685 49.547563 329.308235 49.547563 
+C 327.53962 49.547563 325.843205 50.250241 324.592606 51.500841 
+C 323.342006 52.75144 322.639328 54.447856 322.639328 56.216471 
+C 322.639328 57.985086 323.342006 59.681501 324.592606 60.9321 
+C 325.843205 62.1827 327.53962 62.885378 329.308235 62.885378 
+z
+" clip-path="url(#p1c7a9bd8c2)" style="fill: #6a5acd; opacity: 0.25"/>
+   </g>
+   <g id="text_1">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="37.629412" transform="rotate(-0, 14.202353, 37.629412)">は</text>
+   </g>
+   <g id="text_2">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="37.629412" transform="rotate(-0, 28.207059, 37.629412)">じ</text>
+   </g>
+   <g id="text_3">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="37.629412" transform="rotate(-0, 42.211765, 37.629412)">ま</text>
+   </g>
+   <g id="text_4">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="37.629412" transform="rotate(-0, 56.216471, 37.629412)">り</text>
+   </g>
+   <g id="text_5">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="37.629412" transform="rotate(-0, 70.221176, 37.629412)">の</text>
+   </g>
+   <g id="text_6">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="37.629412" transform="rotate(-0, 84.225882, 37.629412)">暁</text>
+   </g>
+   <g id="text_7">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="37.629412" transform="rotate(-0, 98.230588, 37.629412)">　</text>
+   </g>
+   <g id="text_8">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="37.629412" transform="rotate(-0, 112.235294, 37.629412)">始</text>
+   </g>
+   <g id="text_9">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="37.806912" transform="rotate(-0, 126.24, 37.806912)">（</text>
+   </g>
+   <g id="text_10">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="37.629412" transform="rotate(-0, 140.244706, 37.629412)">は</text>
+   </g>
+   <g id="text_11">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="37.629412" transform="rotate(-0, 154.249412, 37.629412)">じ</text>
+   </g>
+   <g id="text_12">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="37.629412" transform="rotate(-0, 168.254118, 37.629412)">ま</text>
+   </g>
+   <g id="text_13">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="37.806912" transform="rotate(-0, 182.258824, 37.806912)">）</text>
+   </g>
+   <g id="text_14">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="37.629412" transform="rotate(-0, 196.263529, 37.629412)">り</text>
+   </g>
+   <g id="text_15">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="37.629412" transform="rotate(-0, 210.268235, 37.629412)">の</text>
+   </g>
+   <g id="text_16">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="37.629412" transform="rotate(-0, 224.272941, 37.629412)">海</text>
+   </g>
+   <g id="text_17">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="238.277647" y="37.629412" transform="rotate(-0, 238.277647, 37.629412)">辺</text>
+   </g>
+   <g id="text_18">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="252.282353" y="37.629412" transform="rotate(-0, 252.282353, 37.629412)">で</text>
+   </g>
+   <g id="text_19">
+    <text style="fill: #6a5acd; font: 4px 'sans-serif'; text-anchor: middle" x="28.207059" y="27.082941" transform="rotate(-0, 28.207059, 27.082941)">VIm9</text>
+   </g>
+   <g id="text_20">
+    <text style="fill: #6a5acd; font: 4px 'sans-serif'; text-anchor: middle" x="154.249412" y="27.082941" transform="rotate(-0, 154.249412, 27.082941)">VIIm7/III</text>
+   </g>
+   <g id="text_21">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="58.636471" transform="rotate(-0, 14.202353, 58.636471)">微</text>
+   </g>
+   <g id="text_22">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="58.636471" transform="rotate(-0, 28.207059, 58.636471)">睡</text>
+   </g>
+   <g id="text_23">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="35.209412" y="58.817721" transform="rotate(-0, 35.209412, 58.817721)">(</text>
+   </g>
+   <g id="text_24">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="49.214118" y="58.636471" transform="rotate(-0, 49.214118, 58.636471)">ま</text>
+   </g>
+   <g id="text_25">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="63.218824" y="58.636471" transform="rotate(-0, 63.218824, 58.636471)">ど</text>
+   </g>
+   <g id="text_26">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="77.223529" y="58.636471" transform="rotate(-0, 77.223529, 58.636471)">ろ</text>
+   </g>
+   <g id="text_27">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="91.228235" y="58.813971" transform="rotate(-0, 91.228235, 58.813971)">）</text>
+   </g>
+   <g id="text_28">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="105.232941" y="58.636471" transform="rotate(-0, 105.232941, 58.636471)">み</text>
+   </g>
+   <g id="text_29">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="119.237647" y="58.636471" transform="rotate(-0, 119.237647, 58.636471)">の</text>
+   </g>
+   <g id="text_30">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="133.242353" y="58.636471" transform="rotate(-0, 133.242353, 58.636471)">さ</text>
+   </g>
+   <g id="text_31">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="147.247059" y="58.636471" transform="rotate(-0, 147.247059, 58.636471)">な</text>
+   </g>
+   <g id="text_32">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="161.251765" y="58.636471" transform="rotate(-0, 161.251765, 58.636471)">か</text>
+   </g>
+   <g id="text_33">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="175.256471" y="58.636471" transform="rotate(-0, 175.256471, 58.636471)">に</text>
+   </g>
+   <g id="text_34">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="189.261176" y="58.636471" transform="rotate(-0, 189.261176, 58.636471)">　</text>
+   </g>
+   <g id="text_35">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="203.265882" y="58.636471" transform="rotate(-0, 203.265882, 58.636471)">寝</text>
+   </g>
+   <g id="text_36">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="217.270588" y="58.636471" transform="rotate(-0, 217.270588, 58.636471)">息</text>
+   </g>
+   <g id="text_37">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="231.275294" y="58.813971" transform="rotate(-0, 231.275294, 58.813971)">（</text>
+   </g>
+   <g id="text_38">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="245.28" y="58.636471" transform="rotate(-0, 245.28, 58.636471)">ね</text>
+   </g>
+   <g id="text_39">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="259.284706" y="58.636471" transform="rotate(-0, 259.284706, 58.636471)">い</text>
+   </g>
+   <g id="text_40">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="273.289412" y="58.636471" transform="rotate(-0, 273.289412, 58.636471)">き</text>
+   </g>
+   <g id="text_41">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="287.294118" y="58.813971" transform="rotate(-0, 287.294118, 58.813971)">）</text>
+   </g>
+   <g id="text_42">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="301.298824" y="58.636471" transform="rotate(-0, 301.298824, 58.636471)">を</text>
+   </g>
+   <g id="text_43">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="315.303529" y="58.636471" transform="rotate(-0, 315.303529, 58.636471)">立</text>
+   </g>
+   <g id="text_44">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="329.308235" y="58.636471" transform="rotate(-0, 329.308235, 58.636471)">て</text>
+   </g>
+   <g id="text_45">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="343.312941" y="58.636471" transform="rotate(-0, 343.312941, 58.636471)">る</text>
+   </g>
+   <g id="text_46">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="357.317647" y="58.636471" transform="rotate(-0, 357.317647, 58.636471)">君</text>
+   </g>
+   <g id="text_47">
+    <text style="fill: #6a5acd; font: 4px 'sans-serif'; text-anchor: middle" x="63.218824" y="48.180625" transform="rotate(-0, 63.218824, 48.180625)">IV(9)</text>
+   </g>
+   <g id="text_48">
+    <text style="fill: #6a5acd; font: 4px 'sans-serif'; text-anchor: middle" x="259.284706" y="48.231562" transform="rotate(-0, 259.284706, 48.231562)">Isus2maj7/V</text>
+   </g>
+   <g id="text_49">
+    <text style="fill: #6a5acd; font: 4px 'sans-serif'; text-anchor: middle" x="329.308235" y="48.09" transform="rotate(-0, 329.308235, 48.09)">IIIm7</text>
+   </g>
+   <g id="text_50">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="72.641176" transform="rotate(-0, 14.202353, 72.641176)">轟</text>
+   </g>
+   <g id="text_51">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="72.641176" transform="rotate(-0, 28.207059, 72.641176)">き</text>
+   </g>
+   <g id="text_52">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="72.641176" transform="rotate(-0, 42.211765, 72.641176)">出</text>
+   </g>
+   <g id="text_53">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="72.641176" transform="rotate(-0, 56.216471, 72.641176)">す</text>
+   </g>
+   <g id="text_54">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="72.641176" transform="rotate(-0, 70.221176, 72.641176)">世</text>
+   </g>
+   <g id="text_55">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="72.641176" transform="rotate(-0, 84.225882, 72.641176)">界</text>
+   </g>
+   <g id="text_56">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="72.641176" transform="rotate(-0, 98.230588, 72.641176)">　</text>
+   </g>
+   <g id="text_57">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="72.641176" transform="rotate(-0, 112.235294, 72.641176)">頬</text>
+   </g>
+   <g id="text_58">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="72.641176" transform="rotate(-0, 126.24, 72.641176)">を</text>
+   </g>
+   <g id="text_59">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="72.641176" transform="rotate(-0, 140.244706, 72.641176)">伝</text>
+   </g>
+   <g id="text_60">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="72.641176" transform="rotate(-0, 154.249412, 72.641176)">う</text>
+   </g>
+   <g id="text_61">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="72.641176" transform="rotate(-0, 168.254118, 72.641176)">雫</text>
+   </g>
+   <g id="text_62">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="86.645882" transform="rotate(-0, 14.202353, 86.645882)">気</text>
+   </g>
+   <g id="text_63">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="86.645882" transform="rotate(-0, 28.207059, 86.645882)">付</text>
+   </g>
+   <g id="text_64">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="86.645882" transform="rotate(-0, 42.211765, 86.645882)">く</text>
+   </g>
+   <g id="text_65">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="86.645882" transform="rotate(-0, 56.216471, 86.645882)">と</text>
+   </g>
+   <g id="text_66">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="86.645882" transform="rotate(-0, 70.221176, 86.645882)">燃</text>
+   </g>
+   <g id="text_67">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="86.645882" transform="rotate(-0, 84.225882, 86.645882)">え</text>
+   </g>
+   <g id="text_68">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="86.645882" transform="rotate(-0, 98.230588, 86.645882)">上</text>
+   </g>
+   <g id="text_69">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="86.645882" transform="rotate(-0, 112.235294, 86.645882)">が</text>
+   </g>
+   <g id="text_70">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="86.645882" transform="rotate(-0, 126.24, 86.645882)">る</text>
+   </g>
+   <g id="text_71">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="86.645882" transform="rotate(-0, 140.244706, 86.645882)">　</text>
+   </g>
+   <g id="text_72">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="86.645882" transform="rotate(-0, 154.249412, 86.645882)">両</text>
+   </g>
+   <g id="text_73">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="86.645882" transform="rotate(-0, 168.254118, 86.645882)">目</text>
+   </g>
+   <g id="text_74">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="86.645882" transform="rotate(-0, 182.258824, 86.645882)">を</text>
+   </g>
+   <g id="text_75">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="86.645882" transform="rotate(-0, 196.263529, 86.645882)">閉</text>
+   </g>
+   <g id="text_76">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="86.645882" transform="rotate(-0, 210.268235, 86.645882)">じ</text>
+   </g>
+   <g id="text_77">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="86.645882" transform="rotate(-0, 224.272941, 86.645882)">た</text>
+   </g>
+   <g id="text_78">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="238.277647" y="86.645882" transform="rotate(-0, 238.277647, 86.645882)">ま</text>
+   </g>
+   <g id="text_79">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="252.282353" y="86.645882" transform="rotate(-0, 252.282353, 86.645882)">ま</text>
+   </g>
+   <g id="text_80">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="100.650588" transform="rotate(-0, 14.202353, 100.650588)">さ</text>
+   </g>
+   <g id="text_81">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="100.650588" transform="rotate(-0, 28.207059, 100.650588)">よ</text>
+   </g>
+   <g id="text_82">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="100.650588" transform="rotate(-0, 42.211765, 100.650588)">う</text>
+   </g>
+   <g id="text_83">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="100.650588" transform="rotate(-0, 56.216471, 100.650588)">な</text>
+   </g>
+   <g id="text_84">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="100.650588" transform="rotate(-0, 70.221176, 100.650588)">ら</text>
+   </g>
+   <g id="text_85">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="100.650588" transform="rotate(-0, 84.225882, 100.650588)">世</text>
+   </g>
+   <g id="text_86">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="100.650588" transform="rotate(-0, 98.230588, 100.650588)">界</text>
+   </g>
+   <g id="text_87">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="100.650588" transform="rotate(-0, 112.235294, 100.650588)">と</text>
+   </g>
+   <g id="text_88">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="100.650588" transform="rotate(-0, 126.24, 100.650588)">　</text>
+   </g>
+   <g id="text_89">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="100.650588" transform="rotate(-0, 140.244706, 100.650588)">声</text>
+   </g>
+   <g id="text_90">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="100.650588" transform="rotate(-0, 154.249412, 100.650588)">高</text>
+   </g>
+   <g id="text_91">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="100.650588" transform="rotate(-0, 168.254118, 100.650588)">に</text>
+   </g>
+   <g id="text_92">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="100.650588" transform="rotate(-0, 182.258824, 100.650588)">叫</text>
+   </g>
+   <g id="text_93">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="100.650588" transform="rotate(-0, 196.263529, 100.650588)">ん</text>
+   </g>
+   <g id="text_94">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="100.650588" transform="rotate(-0, 210.268235, 100.650588)">だ</text>
+   </g>
+   <g id="text_95">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="128.66" transform="rotate(-0, 14.202353, 128.66)">「</text>
+   </g>
+   <g id="text_96">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="128.66" transform="rotate(-0, 28.207059, 128.66)">進</text>
+   </g>
+   <g id="text_97">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="128.66" transform="rotate(-0, 42.211765, 128.66)">化</text>
+   </g>
+   <g id="text_98">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="128.66" transform="rotate(-0, 56.216471, 128.66)">エ</text>
+   </g>
+   <g id="text_99">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="128.66" transform="rotate(-0, 70.221176, 128.66)">レ</text>
+   </g>
+   <g id="text_100">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="128.66" transform="rotate(-0, 84.225882, 128.66)">ジ</text>
+   </g>
+   <g id="text_101">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="128.66" transform="rotate(-0, 98.230588, 128.66)">ー</text>
+   </g>
+   <g id="text_102">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="105.232941" y="128.66" transform="rotate(-0, 105.232941, 128.66)"> </text>
+   </g>
+   <g id="text_103">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="128.66" transform="rotate(-0, 112.235294, 128.66)">-</text>
+   </g>
+   <g id="text_104">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="119.237647" y="128.66" transform="rotate(-0, 119.237647, 128.66)">r</text>
+   </g>
+   <g id="text_105">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="128.66" transform="rotate(-0, 126.24, 128.66)">e</text>
+   </g>
+   <g id="text_106">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="133.242353" y="128.66" transform="rotate(-0, 133.242353, 128.66)">t</text>
+   </g>
+   <g id="text_107">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="128.66" transform="rotate(-0, 140.244706, 128.66)">a</text>
+   </g>
+   <g id="text_108">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="147.247059" y="128.66" transform="rotate(-0, 147.247059, 128.66)">k</text>
+   </g>
+   <g id="text_109">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="128.66" transform="rotate(-0, 154.249412, 128.66)">e</text>
+   </g>
+   <g id="text_110">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="161.251765" y="128.66" transform="rotate(-0, 161.251765, 128.66)">-</text>
+   </g>
+   <g id="text_111">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="175.256471" y="128.66" transform="rotate(-0, 175.256471, 128.66)">」</text>
+   </g>
+   <g id="text_112">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="156.669412" transform="rotate(-0, 14.202353, 156.669412)">作</text>
+   </g>
+   <g id="text_113">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="156.669412" transform="rotate(-0, 28.207059, 156.669412)">詞</text>
+   </g>
+   <g id="text_114">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="156.669412" transform="rotate(-0, 42.211765, 156.669412)">　</text>
+   </g>
+   <g id="text_115">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="156.669412" transform="rotate(-0, 56.216471, 156.669412)">　</text>
+   </g>
+   <g id="text_116">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="63.218824" y="156.669412" transform="rotate(-0, 63.218824, 156.669412)">s</text>
+   </g>
+   <g id="text_117">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="156.669412" transform="rotate(-0, 70.221176, 156.669412)">i</text>
+   </g>
+   <g id="text_118">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="77.223529" y="156.669412" transform="rotate(-0, 77.223529, 156.669412)">s</text>
+   </g>
+   <g id="text_119">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="156.669412" transform="rotate(-0, 84.225882, 156.669412)">o</text>
+   </g>
+   <g id="text_120">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="91.228235" y="156.669412" transform="rotate(-0, 91.228235, 156.669412)">u</text>
+   </g>
+   <g id="text_121">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="156.669412" transform="rotate(-0, 98.230588, 156.669412)">j</text>
+   </g>
+   <g id="text_122">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="105.232941" y="156.669412" transform="rotate(-0, 105.232941, 156.669412)">a</text>
+   </g>
+   <g id="text_123">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="170.674118" transform="rotate(-0, 14.202353, 170.674118)">作</text>
+   </g>
+   <g id="text_124">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="170.674118" transform="rotate(-0, 28.207059, 170.674118)">曲</text>
+   </g>
+   <g id="text_125">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="170.674118" transform="rotate(-0, 42.211765, 170.674118)">　</text>
+   </g>
+   <g id="text_126">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="170.674118" transform="rotate(-0, 56.216471, 170.674118)">　</text>
+   </g>
+   <g id="text_127">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="63.218824" y="170.674118" transform="rotate(-0, 63.218824, 170.674118)">y</text>
+   </g>
+   <g id="text_128">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="170.674118" transform="rotate(-0, 70.221176, 170.674118)">k</text>
+   </g>
+   <g id="text_129">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="77.223529" y="170.674118" transform="rotate(-0, 77.223529, 170.674118)">y</text>
+   </g>
+   <g id="text_130">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="170.674118" transform="rotate(-0, 84.225882, 170.674118)">k</text>
+   </g>
+   <g id="text_131">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="91.228235" y="170.674118" transform="rotate(-0, 91.228235, 170.674118)">y</text>
+   </g>
+   <g id="text_132">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="170.674118" transform="rotate(-0, 98.230588, 170.674118)">u</text>
+   </g>
+   <g id="text_133">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="105.232941" y="170.674118" transform="rotate(-0, 105.232941, 170.674118)">k</text>
+   </g>
+   <g id="text_134">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="170.674118" transform="rotate(-0, 112.235294, 170.674118)">a</text>
+   </g>
+   <g id="text_135">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="119.237647" y="170.674118" transform="rotate(-0, 119.237647, 170.674118)">i</text>
+   </g>
+   <g id="text_136">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="184.678824" transform="rotate(-0, 14.202353, 184.678824)">編</text>
+   </g>
+   <g id="text_137">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="184.678824" transform="rotate(-0, 28.207059, 184.678824)">曲</text>
+   </g>
+   <g id="text_138">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="184.678824" transform="rotate(-0, 42.211765, 184.678824)">　</text>
+   </g>
+   <g id="text_139">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="184.678824" transform="rotate(-0, 56.216471, 184.678824)">　</text>
+   </g>
+   <g id="text_140">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="63.218824" y="184.678824" transform="rotate(-0, 63.218824, 184.678824)">y</text>
+   </g>
+   <g id="text_141">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="184.678824" transform="rotate(-0, 70.221176, 184.678824)">k</text>
+   </g>
+   <g id="text_142">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="77.223529" y="184.678824" transform="rotate(-0, 77.223529, 184.678824)">y</text>
+   </g>
+   <g id="text_143">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="184.678824" transform="rotate(-0, 84.225882, 184.678824)">k</text>
+   </g>
+   <g id="text_144">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="91.228235" y="184.678824" transform="rotate(-0, 91.228235, 184.678824)">y</text>
+   </g>
+   <g id="text_145">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="184.678824" transform="rotate(-0, 98.230588, 184.678824)">u</text>
+   </g>
+   <g id="text_146">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="105.232941" y="184.678824" transform="rotate(-0, 105.232941, 184.678824)">k</text>
+   </g>
+   <g id="text_147">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="184.678824" transform="rotate(-0, 112.235294, 184.678824)">a</text>
+   </g>
+   <g id="text_148">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="119.237647" y="184.678824" transform="rotate(-0, 119.237647, 184.678824)">i</text>
+   </g>
+   <g id="text_149">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="198.683529" transform="rotate(-0, 14.202353, 198.683529)">歌</text>
+   </g>
+   <g id="text_150">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="198.683529" transform="rotate(-0, 28.207059, 198.683529)">　</text>
+   </g>
+   <g id="text_151">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="198.683529" transform="rotate(-0, 42.211765, 198.683529)">　</text>
+   </g>
+   <g id="text_152">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="198.683529" transform="rotate(-0, 56.216471, 198.683529)">　</text>
+   </g>
+   <g id="text_153">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="198.683529" transform="rotate(-0, 70.221176, 198.683529)">初</text>
+   </g>
+   <g id="text_154">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="198.683529" transform="rotate(-0, 84.225882, 198.683529)">音</text>
+   </g>
+   <g id="text_155">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="198.683529" transform="rotate(-0, 98.230588, 198.683529)">ミ</text>
+   </g>
+   <g id="text_156">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="198.683529" transform="rotate(-0, 112.235294, 198.683529)">ク</text>
+   </g>
+   <g id="text_157">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="226.692941" transform="rotate(-0, 14.202353, 226.692941)">そ</text>
+   </g>
+   <g id="text_158">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="226.692941" transform="rotate(-0, 28.207059, 226.692941)">の</text>
+   </g>
+   <g id="text_159">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="226.692941" transform="rotate(-0, 42.211765, 226.692941)">手</text>
+   </g>
+   <g id="text_160">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="226.692941" transform="rotate(-0, 56.216471, 226.692941)">を</text>
+   </g>
+   <g id="text_161">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="226.692941" transform="rotate(-0, 70.221176, 226.692941)">掴</text>
+   </g>
+   <g id="text_162">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="226.692941" transform="rotate(-0, 84.225882, 226.692941)">も</text>
+   </g>
+   <g id="text_163">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="226.692941" transform="rotate(-0, 98.230588, 226.692941)">う</text>
+   </g>
+   <g id="text_164">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="226.692941" transform="rotate(-0, 112.235294, 226.692941)">と</text>
+   </g>
+   <g id="text_165">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="226.692941" transform="rotate(-0, 126.24, 226.692941)">　</text>
+   </g>
+   <g id="text_166">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="226.692941" transform="rotate(-0, 140.244706, 226.692941)">両</text>
+   </g>
+   <g id="text_167">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="226.692941" transform="rotate(-0, 154.249412, 226.692941)">手</text>
+   </g>
+   <g id="text_168">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="226.692941" transform="rotate(-0, 168.254118, 226.692941)">を</text>
+   </g>
+   <g id="text_169">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="226.692941" transform="rotate(-0, 182.258824, 226.692941)">欲</text>
+   </g>
+   <g id="text_170">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="226.692941" transform="rotate(-0, 196.263529, 226.692941)">す</text>
+   </g>
+   <g id="text_171">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="226.692941" transform="rotate(-0, 210.268235, 226.692941)">る</text>
+   </g>
+   <g id="text_172">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="240.697647" transform="rotate(-0, 14.202353, 240.697647)">君</text>
+   </g>
+   <g id="text_173">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="240.697647" transform="rotate(-0, 28.207059, 240.697647)">に</text>
+   </g>
+   <g id="text_174">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="240.697647" transform="rotate(-0, 42.211765, 240.697647)">近</text>
+   </g>
+   <g id="text_175">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="240.697647" transform="rotate(-0, 56.216471, 240.697647)">づ</text>
+   </g>
+   <g id="text_176">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="240.697647" transform="rotate(-0, 70.221176, 240.697647)">こ</text>
+   </g>
+   <g id="text_177">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="240.697647" transform="rotate(-0, 84.225882, 240.697647)">う</text>
+   </g>
+   <g id="text_178">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="240.697647" transform="rotate(-0, 98.230588, 240.697647)">と</text>
+   </g>
+   <g id="text_179">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="240.697647" transform="rotate(-0, 112.235294, 240.697647)">　</text>
+   </g>
+   <g id="text_180">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="240.697647" transform="rotate(-0, 126.24, 240.697647)">両</text>
+   </g>
+   <g id="text_181">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="240.697647" transform="rotate(-0, 140.244706, 240.697647)">足</text>
+   </g>
+   <g id="text_182">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="240.697647" transform="rotate(-0, 154.249412, 240.697647)">を</text>
+   </g>
+   <g id="text_183">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="240.697647" transform="rotate(-0, 168.254118, 240.697647)">欲</text>
+   </g>
+   <g id="text_184">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="240.697647" transform="rotate(-0, 182.258824, 240.697647)">す</text>
+   </g>
+   <g id="text_185">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="240.697647" transform="rotate(-0, 196.263529, 240.697647)">る</text>
+   </g>
+   <g id="text_186">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="254.702353" transform="rotate(-0, 14.202353, 254.702353)">躰</text>
+   </g>
+   <g id="text_187">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="254.702353" transform="rotate(-0, 28.207059, 254.702353)">を</text>
+   </g>
+   <g id="text_188">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="254.702353" transform="rotate(-0, 42.211765, 254.702353)">焼</text>
+   </g>
+   <g id="text_189">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="254.702353" transform="rotate(-0, 56.216471, 254.702353)">か</text>
+   </g>
+   <g id="text_190">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="254.702353" transform="rotate(-0, 70.221176, 254.702353)">れ</text>
+   </g>
+   <g id="text_191">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="254.702353" transform="rotate(-0, 84.225882, 254.702353)">る</text>
+   </g>
+   <g id="text_192">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="254.702353" transform="rotate(-0, 98.230588, 254.702353)">痛</text>
+   </g>
+   <g id="text_193">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="254.702353" transform="rotate(-0, 112.235294, 254.702353)">み</text>
+   </g>
+   <g id="text_194">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="254.702353" transform="rotate(-0, 126.24, 254.702353)">　</text>
+   </g>
+   <g id="text_195">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="254.702353" transform="rotate(-0, 140.244706, 254.702353)">泣</text>
+   </g>
+   <g id="text_196">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="254.702353" transform="rotate(-0, 154.249412, 254.702353)">き</text>
+   </g>
+   <g id="text_197">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="254.702353" transform="rotate(-0, 168.254118, 254.702353)">叫</text>
+   </g>
+   <g id="text_198">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="254.702353" transform="rotate(-0, 182.258824, 254.702353)">ぶ</text>
+   </g>
+   <g id="text_199">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="254.702353" transform="rotate(-0, 196.263529, 254.702353)">悲</text>
+   </g>
+   <g id="text_200">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="254.702353" transform="rotate(-0, 210.268235, 254.702353)">し</text>
+   </g>
+   <g id="text_201">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="254.702353" transform="rotate(-0, 224.272941, 254.702353)">み</text>
+   </g>
+   <g id="text_202">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="268.707059" transform="rotate(-0, 14.202353, 268.707059)">全</text>
+   </g>
+   <g id="text_203">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="268.707059" transform="rotate(-0, 28.207059, 268.707059)">て</text>
+   </g>
+   <g id="text_204">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="268.707059" transform="rotate(-0, 42.211765, 268.707059)">を</text>
+   </g>
+   <g id="text_205">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="268.707059" transform="rotate(-0, 56.216471, 268.707059)">希</text>
+   </g>
+   <g id="text_206">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="268.707059" transform="rotate(-0, 70.221176, 268.707059)">い</text>
+   </g>
+   <g id="text_207">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="268.707059" transform="rotate(-0, 84.225882, 268.707059)">　</text>
+   </g>
+   <g id="text_208">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="268.707059" transform="rotate(-0, 98.230588, 268.707059)">全</text>
+   </g>
+   <g id="text_209">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="268.707059" transform="rotate(-0, 112.235294, 268.707059)">て</text>
+   </g>
+   <g id="text_210">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="268.707059" transform="rotate(-0, 126.24, 268.707059)">を</text>
+   </g>
+   <g id="text_211">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="268.707059" transform="rotate(-0, 140.244706, 268.707059)">投</text>
+   </g>
+   <g id="text_212">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="268.707059" transform="rotate(-0, 154.249412, 268.707059)">げ</text>
+   </g>
+   <g id="text_213">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="268.707059" transform="rotate(-0, 168.254118, 268.707059)">捨</text>
+   </g>
+   <g id="text_214">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="268.707059" transform="rotate(-0, 182.258824, 268.707059)">て</text>
+   </g>
+   <g id="text_215">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="268.707059" transform="rotate(-0, 196.263529, 268.707059)">た</text>
+   </g>
+   <g id="text_216">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="282.711765" transform="rotate(-0, 14.202353, 282.711765)">僕</text>
+   </g>
+   <g id="text_217">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="282.711765" transform="rotate(-0, 28.207059, 282.711765)">ら</text>
+   </g>
+   <g id="text_218">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="282.711765" transform="rotate(-0, 42.211765, 282.711765)">は</text>
+   </g>
+   <g id="text_219">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="282.711765" transform="rotate(-0, 56.216471, 282.711765)">サ</text>
+   </g>
+   <g id="text_220">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="282.711765" transform="rotate(-0, 70.221176, 282.711765)">イ</text>
+   </g>
+   <g id="text_221">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="282.711765" transform="rotate(-0, 84.225882, 282.711765)">ク</text>
+   </g>
+   <g id="text_222">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="282.711765" transform="rotate(-0, 98.230588, 282.711765)">ル</text>
+   </g>
+   <g id="text_223">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="282.711765" transform="rotate(-0, 112.235294, 282.711765)">に</text>
+   </g>
+   <g id="text_224">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="282.711765" transform="rotate(-0, 126.24, 282.711765)">　</text>
+   </g>
+   <g id="text_225">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="282.711765" transform="rotate(-0, 140.244706, 282.711765)">進</text>
+   </g>
+   <g id="text_226">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="282.711765" transform="rotate(-0, 154.249412, 282.711765)">化</text>
+   </g>
+   <g id="text_227">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="282.711765" transform="rotate(-0, 168.254118, 282.711765)">の</text>
+   </g>
+   <g id="text_228">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="282.711765" transform="rotate(-0, 182.258824, 282.711765)">悲</text>
+   </g>
+   <g id="text_229">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="282.711765" transform="rotate(-0, 196.263529, 282.711765)">歌</text>
+   </g>
+   <g id="text_230">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="282.711765" transform="rotate(-0, 210.268235, 282.711765)">を</text>
+   </g>
+   <g id="text_231">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="282.711765" transform="rotate(-0, 224.272941, 282.711765)">歌</text>
+   </g>
+   <g id="text_232">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="238.277647" y="282.711765" transform="rotate(-0, 238.277647, 282.711765)">う</text>
+   </g>
+   <g id="text_233">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="310.721176" transform="rotate(-0, 14.202353, 310.721176)">ア</text>
+   </g>
+   <g id="text_234">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="310.721176" transform="rotate(-0, 28.207059, 310.721176)">ル</text>
+   </g>
+   <g id="text_235">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="310.721176" transform="rotate(-0, 42.211765, 310.721176)">カ</text>
+   </g>
+   <g id="text_236">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="310.721176" transform="rotate(-0, 56.216471, 310.721176)">エ</text>
+   </g>
+   <g id="text_237">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="310.721176" transform="rotate(-0, 70.221176, 310.721176)">オ</text>
+   </g>
+   <g id="text_238">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="310.721176" transform="rotate(-0, 84.225882, 310.721176)">プ</text>
+   </g>
+   <g id="text_239">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="310.721176" transform="rotate(-0, 98.230588, 310.721176)">テ</text>
+   </g>
+   <g id="text_240">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="310.721176" transform="rotate(-0, 112.235294, 310.721176)">リ</text>
+   </g>
+   <g id="text_241">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="310.721176" transform="rotate(-0, 126.24, 310.721176)">ス</text>
+   </g>
+   <g id="text_242">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="310.721176" transform="rotate(-0, 140.244706, 310.721176)">　</text>
+   </g>
+   <g id="text_243">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="310.721176" transform="rotate(-0, 154.249412, 310.721176)">僕</text>
+   </g>
+   <g id="text_244">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="310.721176" transform="rotate(-0, 168.254118, 310.721176)">ら</text>
+   </g>
+   <g id="text_245">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="310.721176" transform="rotate(-0, 182.258824, 310.721176)">は</text>
+   </g>
+   <g id="text_246">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="310.721176" transform="rotate(-0, 196.263529, 310.721176)">冒</text>
+   </g>
+   <g id="text_247">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="310.721176" transform="rotate(-0, 210.268235, 310.721176)">険</text>
+   </g>
+   <g id="text_248">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="310.721176" transform="rotate(-0, 224.272941, 310.721176)">へ</text>
+   </g>
+   <g id="text_249">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="324.725882" transform="rotate(-0, 14.202353, 324.725882)">悠</text>
+   </g>
+   <g id="text_250">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="324.725882" transform="rotate(-0, 28.207059, 324.725882)">久</text>
+   </g>
+   <g id="text_251">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="324.725882" transform="rotate(-0, 42.211765, 324.725882)">た</text>
+   </g>
+   <g id="text_252">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="324.725882" transform="rotate(-0, 56.216471, 324.725882)">る</text>
+   </g>
+   <g id="text_253">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="324.725882" transform="rotate(-0, 70.221176, 324.725882)">時</text>
+   </g>
+   <g id="text_254">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="324.725882" transform="rotate(-0, 84.225882, 324.725882)">間</text>
+   </g>
+   <g id="text_255">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="324.725882" transform="rotate(-0, 98.230588, 324.725882)">　</text>
+   </g>
+   <g id="text_256">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="324.725882" transform="rotate(-0, 112.235294, 324.725882)">沢</text>
+   </g>
+   <g id="text_257">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="324.725882" transform="rotate(-0, 126.24, 324.725882)">山</text>
+   </g>
+   <g id="text_258">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="324.725882" transform="rotate(-0, 140.244706, 324.725882)">の</text>
+   </g>
+   <g id="text_259">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="324.725882" transform="rotate(-0, 154.249412, 324.725882)">仲</text>
+   </g>
+   <g id="text_260">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="324.725882" transform="rotate(-0, 168.254118, 324.725882)">間</text>
+   </g>
+   <g id="text_261">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="324.725882" transform="rotate(-0, 182.258824, 324.725882)">に</text>
+   </g>
+   <g id="text_262">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="338.730588" transform="rotate(-0, 14.202353, 338.730588)">別</text>
+   </g>
+   <g id="text_263">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="338.730588" transform="rotate(-0, 28.207059, 338.730588)">れ</text>
+   </g>
+   <g id="text_264">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="338.730588" transform="rotate(-0, 42.211765, 338.730588)">を</text>
+   </g>
+   <g id="text_265">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="338.730588" transform="rotate(-0, 56.216471, 338.730588)">告</text>
+   </g>
+   <g id="text_266">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="338.730588" transform="rotate(-0, 70.221176, 338.730588)">げ</text>
+   </g>
+   <g id="text_267">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="338.730588" transform="rotate(-0, 84.225882, 338.730588)">ら</text>
+   </g>
+   <g id="text_268">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="338.730588" transform="rotate(-0, 98.230588, 338.730588)">れ</text>
+   </g>
+   <g id="text_269">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="338.730588" transform="rotate(-0, 112.235294, 338.730588)">た</text>
+   </g>
+   <g id="text_270">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="338.730588" transform="rotate(-0, 126.24, 338.730588)">　</text>
+   </g>
+   <g id="text_271">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="338.730588" transform="rotate(-0, 140.244706, 338.730588)">無</text>
+   </g>
+   <g id="text_272">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="338.730588" transform="rotate(-0, 154.249412, 338.730588)">数</text>
+   </g>
+   <g id="text_273">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="338.730588" transform="rotate(-0, 168.254118, 338.730588)">の</text>
+   </g>
+   <g id="text_274">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="338.730588" transform="rotate(-0, 182.258824, 338.730588)">分</text>
+   </g>
+   <g id="text_275">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="338.730588" transform="rotate(-0, 196.263529, 338.730588)">岐</text>
+   </g>
+   <g id="text_276">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="338.730588" transform="rotate(-0, 210.268235, 338.730588)">点</text>
+   </g>
+   <g id="text_277">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="352.735294" transform="rotate(-0, 14.202353, 352.735294)">無</text>
+   </g>
+   <g id="text_278">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="352.735294" transform="rotate(-0, 28.207059, 352.735294)">限</text>
+   </g>
+   <g id="text_279">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="352.735294" transform="rotate(-0, 42.211765, 352.735294)">の</text>
+   </g>
+   <g id="text_280">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="352.735294" transform="rotate(-0, 56.216471, 352.735294)">フ</text>
+   </g>
+   <g id="text_281">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="352.735294" transform="rotate(-0, 70.221176, 352.735294)">ラ</text>
+   </g>
+   <g id="text_282">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="352.735294" transform="rotate(-0, 84.225882, 352.735294)">ク</text>
+   </g>
+   <g id="text_283">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="352.735294" transform="rotate(-0, 98.230588, 352.735294)">タ</text>
+   </g>
+   <g id="text_284">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="352.735294" transform="rotate(-0, 112.235294, 352.735294)">ル</text>
+   </g>
+   <g id="text_285">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="352.735294" transform="rotate(-0, 126.24, 352.735294)">　</text>
+   </g>
+   <g id="text_286">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="352.735294" transform="rotate(-0, 140.244706, 352.735294)">彼</text>
+   </g>
+   <g id="text_287">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="352.735294" transform="rotate(-0, 154.249412, 352.735294)">ら</text>
+   </g>
+   <g id="text_288">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="352.735294" transform="rotate(-0, 168.254118, 352.735294)">は</text>
+   </g>
+   <g id="text_289">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="352.735294" transform="rotate(-0, 182.258824, 352.735294)">次</text>
+   </g>
+   <g id="text_290">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="352.735294" transform="rotate(-0, 196.263529, 352.735294)">々</text>
+   </g>
+   <g id="text_291">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="352.735294" transform="rotate(-0, 210.268235, 352.735294)">と</text>
+   </g>
+   <g id="text_292">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="366.74" transform="rotate(-0, 14.202353, 366.74)">落</text>
+   </g>
+   <g id="text_293">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="366.74" transform="rotate(-0, 28.207059, 366.74)">命</text>
+   </g>
+   <g id="text_294">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="366.74" transform="rotate(-0, 42.211765, 366.74)">し</text>
+   </g>
+   <g id="text_295">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="366.74" transform="rotate(-0, 56.216471, 366.74)">て</text>
+   </g>
+   <g id="text_296">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="366.74" transform="rotate(-0, 70.221176, 366.74)">行</text>
+   </g>
+   <g id="text_297">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="366.74" transform="rotate(-0, 84.225882, 366.74)">っ</text>
+   </g>
+   <g id="text_298">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="366.74" transform="rotate(-0, 98.230588, 366.74)">て</text>
+   </g>
+   <g id="text_299">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="366.74" transform="rotate(-0, 112.235294, 366.74)">　</text>
+   </g>
+   <g id="text_300">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="366.74" transform="rotate(-0, 126.24, 366.74)">消</text>
+   </g>
+   <g id="text_301">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="366.74" transform="rotate(-0, 140.244706, 366.74)">滅</text>
+   </g>
+   <g id="text_302">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="366.74" transform="rotate(-0, 154.249412, 366.74)">し</text>
+   </g>
+   <g id="text_303">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="366.74" transform="rotate(-0, 168.254118, 366.74)">て</text>
+   </g>
+   <g id="text_304">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="366.74" transform="rotate(-0, 182.258824, 366.74)">し</text>
+   </g>
+   <g id="text_305">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="366.74" transform="rotate(-0, 196.263529, 366.74)">ま</text>
+   </g>
+   <g id="text_306">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="366.74" transform="rotate(-0, 210.268235, 366.74)">う</text>
+   </g>
+   <g id="text_307">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="394.749412" transform="rotate(-0, 14.202353, 394.749412)">-</text>
+   </g>
+   <g id="text_308">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="21.204706" y="394.749412" transform="rotate(-0, 21.204706, 394.749412)"> </text>
+   </g>
+   <g id="text_309">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="394.749412" transform="rotate(-0, 28.207059, 394.749412)">-</text>
+   </g>
+   <g id="text_310">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="35.209412" y="394.749412" transform="rotate(-0, 35.209412, 394.749412)"> </text>
+   </g>
+   <g id="text_311">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="394.749412" transform="rotate(-0, 42.211765, 394.749412)">-</text>
+   </g>
+   <g id="text_312">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="422.758824" transform="rotate(-0, 14.202353, 422.758824)">犠</text>
+   </g>
+   <g id="text_313">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="422.758824" transform="rotate(-0, 28.207059, 422.758824)">牲</text>
+   </g>
+   <g id="text_314">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="422.758824" transform="rotate(-0, 42.211765, 422.758824)">の</text>
+   </g>
+   <g id="text_315">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="422.758824" transform="rotate(-0, 56.216471, 422.758824)">血</text>
+   </g>
+   <g id="text_316">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="422.758824" transform="rotate(-0, 70.221176, 422.758824)">に</text>
+   </g>
+   <g id="text_317">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="422.758824" transform="rotate(-0, 84.225882, 422.758824)">染</text>
+   </g>
+   <g id="text_318">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="422.758824" transform="rotate(-0, 98.230588, 422.758824)">ま</text>
+   </g>
+   <g id="text_319">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="422.758824" transform="rotate(-0, 112.235294, 422.758824)">る</text>
+   </g>
+   <g id="text_320">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="422.758824" transform="rotate(-0, 126.24, 422.758824)">　</text>
+   </g>
+   <g id="text_321">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="422.758824" transform="rotate(-0, 140.244706, 422.758824)">果</text>
+   </g>
+   <g id="text_322">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="422.758824" transform="rotate(-0, 154.249412, 422.758824)">て</text>
+   </g>
+   <g id="text_323">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="422.758824" transform="rotate(-0, 168.254118, 422.758824)">し</text>
+   </g>
+   <g id="text_324">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="422.758824" transform="rotate(-0, 182.258824, 422.758824)">な</text>
+   </g>
+   <g id="text_325">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="422.758824" transform="rotate(-0, 196.263529, 422.758824)">い</text>
+   </g>
+   <g id="text_326">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="422.758824" transform="rotate(-0, 210.268235, 422.758824)">道</text>
+   </g>
+   <g id="text_327">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="422.758824" transform="rotate(-0, 224.272941, 422.758824)">程</text>
+   </g>
+   <g id="text_328">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="436.763529" transform="rotate(-0, 14.202353, 436.763529)">屍</text>
+   </g>
+   <g id="text_329">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="436.763529" transform="rotate(-0, 28.207059, 436.763529)">を</text>
+   </g>
+   <g id="text_330">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="436.763529" transform="rotate(-0, 42.211765, 436.763529)">背</text>
+   </g>
+   <g id="text_331">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="436.763529" transform="rotate(-0, 56.216471, 436.763529)">後</text>
+   </g>
+   <g id="text_332">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="436.763529" transform="rotate(-0, 70.221176, 436.763529)">に</text>
+   </g>
+   <g id="text_333">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="436.763529" transform="rotate(-0, 84.225882, 436.763529)">　</text>
+   </g>
+   <g id="text_334">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="436.763529" transform="rotate(-0, 98.230588, 436.763529)">髑</text>
+   </g>
+   <g id="text_335">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="436.763529" transform="rotate(-0, 112.235294, 436.763529)">髏</text>
+   </g>
+   <g id="text_336">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="436.763529" transform="rotate(-0, 126.24, 436.763529)">を</text>
+   </g>
+   <g id="text_337">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="436.763529" transform="rotate(-0, 140.244706, 436.763529)">階</text>
+   </g>
+   <g id="text_338">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="436.763529" transform="rotate(-0, 154.249412, 436.763529)">段</text>
+   </g>
+   <g id="text_339">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="436.763529" transform="rotate(-0, 168.254118, 436.763529)">に</text>
+   </g>
+   <g id="text_340">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="450.768235" transform="rotate(-0, 14.202353, 450.768235)">重</text>
+   </g>
+   <g id="text_341">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="450.768235" transform="rotate(-0, 28.207059, 450.768235)">た</text>
+   </g>
+   <g id="text_342">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="450.768235" transform="rotate(-0, 42.211765, 450.768235)">い</text>
+   </g>
+   <g id="text_343">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="450.768235" transform="rotate(-0, 56.216471, 450.768235)">足</text>
+   </g>
+   <g id="text_344">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="450.768235" transform="rotate(-0, 70.221176, 450.768235)">取</text>
+   </g>
+   <g id="text_345">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="450.768235" transform="rotate(-0, 84.225882, 450.768235)">り</text>
+   </g>
+   <g id="text_346">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="450.768235" transform="rotate(-0, 98.230588, 450.768235)">で</text>
+   </g>
+   <g id="text_347">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="450.768235" transform="rotate(-0, 112.235294, 450.768235)">　</text>
+   </g>
+   <g id="text_348">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="450.768235" transform="rotate(-0, 126.24, 450.768235)">上</text>
+   </g>
+   <g id="text_349">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="450.768235" transform="rotate(-0, 140.244706, 450.768235)">へ</text>
+   </g>
+   <g id="text_350">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="450.768235" transform="rotate(-0, 154.249412, 450.768235)">上</text>
+   </g>
+   <g id="text_351">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="450.768235" transform="rotate(-0, 168.254118, 450.768235)">り</text>
+   </g>
+   <g id="text_352">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="450.768235" transform="rotate(-0, 182.258824, 450.768235)">詰</text>
+   </g>
+   <g id="text_353">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="450.768235" transform="rotate(-0, 196.263529, 450.768235)">め</text>
+   </g>
+   <g id="text_354">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="450.768235" transform="rotate(-0, 210.268235, 450.768235)">る</text>
+   </g>
+   <g id="text_355">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="464.772941" transform="rotate(-0, 14.202353, 464.772941)">君</text>
+   </g>
+   <g id="text_356">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="464.772941" transform="rotate(-0, 28.207059, 464.772941)">の</text>
+   </g>
+   <g id="text_357">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="464.772941" transform="rotate(-0, 42.211765, 464.772941)">い</text>
+   </g>
+   <g id="text_358">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="464.772941" transform="rotate(-0, 56.216471, 464.772941)">る</text>
+   </g>
+   <g id="text_359">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="464.772941" transform="rotate(-0, 70.221176, 464.772941)">所</text>
+   </g>
+   <g id="text_360">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="464.950441" transform="rotate(-0, 84.225882, 464.950441)">（</text>
+   </g>
+   <g id="text_361">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="464.772941" transform="rotate(-0, 98.230588, 464.772941)">ば</text>
+   </g>
+   <g id="text_362">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="464.772941" transform="rotate(-0, 112.235294, 464.772941)">し</text>
+   </g>
+   <g id="text_363">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="464.772941" transform="rotate(-0, 126.24, 464.772941)">ょ</text>
+   </g>
+   <g id="text_364">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="464.950441" transform="rotate(-0, 140.244706, 464.950441)">）</text>
+   </g>
+   <g id="text_365">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="464.772941" transform="rotate(-0, 154.249412, 464.772941)">へ</text>
+   </g>
+   <g id="text_366">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="464.772941" transform="rotate(-0, 168.254118, 464.772941)">　</text>
+   </g>
+   <g id="text_367">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="464.772941" transform="rotate(-0, 182.258824, 464.772941)">た</text>
+   </g>
+   <g id="text_368">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="464.772941" transform="rotate(-0, 196.263529, 464.772941)">ど</text>
+   </g>
+   <g id="text_369">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="464.772941" transform="rotate(-0, 210.268235, 464.772941)">り</text>
+   </g>
+   <g id="text_370">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="464.772941" transform="rotate(-0, 224.272941, 464.772941)">着</text>
+   </g>
+   <g id="text_371">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="238.277647" y="464.772941" transform="rotate(-0, 238.277647, 464.772941)">け</text>
+   </g>
+   <g id="text_372">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="252.282353" y="464.772941" transform="rotate(-0, 252.282353, 464.772941)">る</text>
+   </g>
+   <g id="text_373">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="266.287059" y="464.772941" transform="rotate(-0, 266.287059, 464.772941)">為</text>
+   </g>
+   <g id="text_374">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="280.291765" y="464.772941" transform="rotate(-0, 280.291765, 464.772941)">に</text>
+   </g>
+   <g id="text_375">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="478.777647" transform="rotate(-0, 14.202353, 478.777647)">君</text>
+   </g>
+   <g id="text_376">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="478.777647" transform="rotate(-0, 28.207059, 478.777647)">を</text>
+   </g>
+   <g id="text_377">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="478.777647" transform="rotate(-0, 42.211765, 478.777647)">悲</text>
+   </g>
+   <g id="text_378">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="478.777647" transform="rotate(-0, 56.216471, 478.777647)">し</text>
+   </g>
+   <g id="text_379">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="478.777647" transform="rotate(-0, 70.221176, 478.777647)">み</text>
+   </g>
+   <g id="text_380">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="478.777647" transform="rotate(-0, 84.225882, 478.777647)">か</text>
+   </g>
+   <g id="text_381">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="478.777647" transform="rotate(-0, 98.230588, 478.777647)">ら</text>
+   </g>
+   <g id="text_382">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="478.777647" transform="rotate(-0, 112.235294, 478.777647)">　</text>
+   </g>
+   <g id="text_383">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="478.777647" transform="rotate(-0, 126.24, 478.777647)">解</text>
+   </g>
+   <g id="text_384">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="478.777647" transform="rotate(-0, 140.244706, 478.777647)">放</text>
+   </g>
+   <g id="text_385">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="478.777647" transform="rotate(-0, 154.249412, 478.777647)">す</text>
+   </g>
+   <g id="text_386">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="478.777647" transform="rotate(-0, 168.254118, 478.777647)">る</text>
+   </g>
+   <g id="text_387">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="478.777647" transform="rotate(-0, 182.258824, 478.777647)">為</text>
+   </g>
+   <g id="text_388">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="478.777647" transform="rotate(-0, 196.263529, 478.777647)">に</text>
+   </g>
+   <g id="text_389">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="506.787059" transform="rotate(-0, 14.202353, 506.787059)">*</text>
+   </g>
+   <g id="text_390">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="21.204706" y="506.787059" transform="rotate(-0, 21.204706, 506.787059)"> </text>
+   </g>
+   <g id="text_391">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="506.787059" transform="rotate(-0, 28.207059, 506.787059)">*</text>
+   </g>
+   <g id="text_392">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="35.209412" y="506.787059" transform="rotate(-0, 35.209412, 506.787059)"> </text>
+   </g>
+   <g id="text_393">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="506.787059" transform="rotate(-0, 42.211765, 506.787059)">*</text>
+   </g>
+   <g id="text_394">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="534.796471" transform="rotate(-0, 14.202353, 534.796471)">や</text>
+   </g>
+   <g id="text_395">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="534.796471" transform="rotate(-0, 28.207059, 534.796471)">が</text>
+   </g>
+   <g id="text_396">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="534.796471" transform="rotate(-0, 42.211765, 534.796471)">て</text>
+   </g>
+   <g id="text_397">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="534.796471" transform="rotate(-0, 56.216471, 534.796471)">人</text>
+   </g>
+   <g id="text_398">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="534.796471" transform="rotate(-0, 70.221176, 534.796471)">に</text>
+   </g>
+   <g id="text_399">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="534.796471" transform="rotate(-0, 84.225882, 534.796471)">な</text>
+   </g>
+   <g id="text_400">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="534.796471" transform="rotate(-0, 98.230588, 534.796471)">っ</text>
+   </g>
+   <g id="text_401">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="534.796471" transform="rotate(-0, 112.235294, 534.796471)">て</text>
+   </g>
+   <g id="text_402">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="534.796471" transform="rotate(-0, 126.24, 534.796471)">　</text>
+   </g>
+   <g id="text_403">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="534.796471" transform="rotate(-0, 140.244706, 534.796471)">僕</text>
+   </g>
+   <g id="text_404">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="534.796471" transform="rotate(-0, 154.249412, 534.796471)">ら</text>
+   </g>
+   <g id="text_405">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="534.796471" transform="rotate(-0, 168.254118, 534.796471)">は</text>
+   </g>
+   <g id="text_406">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="534.796471" transform="rotate(-0, 182.258824, 534.796471)">迷</text>
+   </g>
+   <g id="text_407">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="534.796471" transform="rotate(-0, 196.263529, 534.796471)">い</text>
+   </g>
+   <g id="text_408">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="534.796471" transform="rotate(-0, 210.268235, 534.796471)">だ</text>
+   </g>
+   <g id="text_409">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="534.796471" transform="rotate(-0, 224.272941, 534.796471)">す</text>
+   </g>
+   <g id="text_410">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="548.801176" transform="rotate(-0, 14.202353, 548.801176)">君</text>
+   </g>
+   <g id="text_411">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="548.801176" transform="rotate(-0, 28.207059, 548.801176)">の</text>
+   </g>
+   <g id="text_412">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="548.801176" transform="rotate(-0, 42.211765, 548.801176)">こ</text>
+   </g>
+   <g id="text_413">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="548.801176" transform="rotate(-0, 56.216471, 548.801176)">と</text>
+   </g>
+   <g id="text_414">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="548.801176" transform="rotate(-0, 70.221176, 548.801176)">を</text>
+   </g>
+   <g id="text_415">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="548.801176" transform="rotate(-0, 84.225882, 548.801176)">忘</text>
+   </g>
+   <g id="text_416">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="548.801176" transform="rotate(-0, 98.230588, 548.801176)">れ</text>
+   </g>
+   <g id="text_417">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="548.801176" transform="rotate(-0, 112.235294, 548.801176)">　</text>
+   </g>
+   <g id="text_418">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="548.801176" transform="rotate(-0, 126.24, 548.801176)">始</text>
+   </g>
+   <g id="text_419">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="548.801176" transform="rotate(-0, 140.244706, 548.801176)">ま</text>
+   </g>
+   <g id="text_420">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="548.801176" transform="rotate(-0, 154.249412, 548.801176)">り</text>
+   </g>
+   <g id="text_421">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="548.801176" transform="rotate(-0, 168.254118, 548.801176)">も</text>
+   </g>
+   <g id="text_422">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="548.801176" transform="rotate(-0, 182.258824, 548.801176)">忘</text>
+   </g>
+   <g id="text_423">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="548.801176" transform="rotate(-0, 196.263529, 548.801176)">れ</text>
+   </g>
+   <g id="text_424">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="548.801176" transform="rotate(-0, 210.268235, 548.801176)">た</text>
+   </g>
+   <g id="text_425">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="562.805882" transform="rotate(-0, 14.202353, 562.805882)">不</text>
+   </g>
+   <g id="text_426">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="562.805882" transform="rotate(-0, 28.207059, 562.805882)">完</text>
+   </g>
+   <g id="text_427">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="562.805882" transform="rotate(-0, 42.211765, 562.805882)">全</text>
+   </g>
+   <g id="text_428">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="562.805882" transform="rotate(-0, 56.216471, 562.805882)">な</text>
+   </g>
+   <g id="text_429">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="562.805882" transform="rotate(-0, 70.221176, 562.805882)">未</text>
+   </g>
+   <g id="text_430">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="562.805882" transform="rotate(-0, 84.225882, 562.805882)">来</text>
+   </g>
+   <g id="text_431">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="562.805882" transform="rotate(-0, 98.230588, 562.805882)">　</text>
+   </g>
+   <g id="text_432">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="562.805882" transform="rotate(-0, 112.235294, 562.805882)">自</text>
+   </g>
+   <g id="text_433">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="562.805882" transform="rotate(-0, 126.24, 562.805882)">分</text>
+   </g>
+   <g id="text_434">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="562.805882" transform="rotate(-0, 140.244706, 562.805882)">を</text>
+   </g>
+   <g id="text_435">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="562.805882" transform="rotate(-0, 154.249412, 562.805882)">紛</text>
+   </g>
+   <g id="text_436">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="562.805882" transform="rotate(-0, 168.254118, 562.805882)">失</text>
+   </g>
+   <g id="text_437">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="562.805882" transform="rotate(-0, 182.258824, 562.805882)">し</text>
+   </g>
+   <g id="text_438">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="562.805882" transform="rotate(-0, 196.263529, 562.805882)">た</text>
+   </g>
+   <g id="text_439">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="576.810588" transform="rotate(-0, 14.202353, 576.810588)">残</text>
+   </g>
+   <g id="text_440">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="576.810588" transform="rotate(-0, 28.207059, 576.810588)">酷</text>
+   </g>
+   <g id="text_441">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="576.810588" transform="rotate(-0, 42.211765, 576.810588)">な</text>
+   </g>
+   <g id="text_442">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="576.810588" transform="rotate(-0, 56.216471, 576.810588)">未</text>
+   </g>
+   <g id="text_443">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="576.810588" transform="rotate(-0, 70.221176, 576.810588)">来</text>
+   </g>
+   <g id="text_444">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="576.810588" transform="rotate(-0, 84.225882, 576.810588)">が</text>
+   </g>
+   <g id="text_445">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="576.810588" transform="rotate(-0, 98.230588, 576.810588)">　</text>
+   </g>
+   <g id="text_446">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="576.810588" transform="rotate(-0, 112.235294, 576.810588)">軋</text>
+   </g>
+   <g id="text_447">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="576.810588" transform="rotate(-0, 126.24, 576.810588)">ん</text>
+   </g>
+   <g id="text_448">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="576.810588" transform="rotate(-0, 140.244706, 576.810588)">で</text>
+   </g>
+   <g id="text_449">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="576.810588" transform="rotate(-0, 154.249412, 576.810588)">狂</text>
+   </g>
+   <g id="text_450">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="576.810588" transform="rotate(-0, 168.254118, 576.810588)">い</text>
+   </g>
+   <g id="text_451">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="576.810588" transform="rotate(-0, 182.258824, 576.810588)">だ</text>
+   </g>
+   <g id="text_452">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="576.810588" transform="rotate(-0, 196.263529, 576.810588)">す</text>
+   </g>
+   <g id="text_453">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="590.815294" transform="rotate(-0, 14.202353, 590.815294)">君</text>
+   </g>
+   <g id="text_454">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="590.815294" transform="rotate(-0, 28.207059, 590.815294)">の</text>
+   </g>
+   <g id="text_455">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="590.815294" transform="rotate(-0, 42.211765, 590.815294)">い</text>
+   </g>
+   <g id="text_456">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="590.815294" transform="rotate(-0, 56.216471, 590.815294)">る</text>
+   </g>
+   <g id="text_457">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="590.815294" transform="rotate(-0, 70.221176, 590.815294)">所</text>
+   </g>
+   <g id="text_458">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="590.992794" transform="rotate(-0, 84.225882, 590.992794)">（</text>
+   </g>
+   <g id="text_459">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="590.815294" transform="rotate(-0, 98.230588, 590.815294)">と</text>
+   </g>
+   <g id="text_460">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="590.815294" transform="rotate(-0, 112.235294, 590.815294)">こ</text>
+   </g>
+   <g id="text_461">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="590.815294" transform="rotate(-0, 126.24, 590.815294)">ろ</text>
+   </g>
+   <g id="text_462">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="590.992794" transform="rotate(-0, 140.244706, 590.992794)">）</text>
+   </g>
+   <g id="text_463">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="590.815294" transform="rotate(-0, 154.249412, 590.815294)">も</text>
+   </g>
+   <g id="text_464">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="590.815294" transform="rotate(-0, 168.254118, 590.815294)">　</text>
+   </g>
+   <g id="text_465">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="590.815294" transform="rotate(-0, 182.258824, 590.815294)">こ</text>
+   </g>
+   <g id="text_466">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="590.815294" transform="rotate(-0, 196.263529, 590.815294)">ん</text>
+   </g>
+   <g id="text_467">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="590.815294" transform="rotate(-0, 210.268235, 590.815294)">な</text>
+   </g>
+   <g id="text_468">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="590.815294" transform="rotate(-0, 224.272941, 590.815294)">世</text>
+   </g>
+   <g id="text_469">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="238.277647" y="590.815294" transform="rotate(-0, 238.277647, 590.815294)">界</text>
+   </g>
+   <g id="text_470">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="252.282353" y="590.815294" transform="rotate(-0, 252.282353, 590.815294)">な</text>
+   </g>
+   <g id="text_471">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="266.287059" y="590.815294" transform="rotate(-0, 266.287059, 590.815294)">の</text>
+   </g>
+   <g id="text_472">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="280.291765" y="590.815294" transform="rotate(-0, 280.291765, 590.815294)">か</text>
+   </g>
+   <g id="text_473">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="618.824706" transform="rotate(-0, 14.202353, 618.824706)">そ</text>
+   </g>
+   <g id="text_474">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="618.824706" transform="rotate(-0, 28.207059, 618.824706)">れ</text>
+   </g>
+   <g id="text_475">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="618.824706" transform="rotate(-0, 42.211765, 618.824706)">は</text>
+   </g>
+   <g id="text_476">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="618.824706" transform="rotate(-0, 56.216471, 618.824706)">星</text>
+   </g>
+   <g id="text_477">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="618.824706" transform="rotate(-0, 70.221176, 618.824706)">な</text>
+   </g>
+   <g id="text_478">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="618.824706" transform="rotate(-0, 84.225882, 618.824706)">き</text>
+   </g>
+   <g id="text_479">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="618.824706" transform="rotate(-0, 98.230588, 618.824706)">夜</text>
+   </g>
+   <g id="text_480">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="618.824706" transform="rotate(-0, 112.235294, 618.824706)">の</text>
+   </g>
+   <g id="text_481">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="618.824706" transform="rotate(-0, 126.24, 618.824706)">こ</text>
+   </g>
+   <g id="text_482">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="618.824706" transform="rotate(-0, 140.244706, 618.824706)">と</text>
+   </g>
+   <g id="text_483">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="618.824706" transform="rotate(-0, 154.249412, 618.824706)">　</text>
+   </g>
+   <g id="text_484">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="618.824706" transform="rotate(-0, 168.254118, 618.824706)">終</text>
+   </g>
+   <g id="text_485">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="618.824706" transform="rotate(-0, 182.258824, 618.824706)">焉</text>
+   </g>
+   <g id="text_486">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="618.824706" transform="rotate(-0, 196.263529, 618.824706)">を</text>
+   </g>
+   <g id="text_487">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="618.824706" transform="rotate(-0, 210.268235, 618.824706)">迎</text>
+   </g>
+   <g id="text_488">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="618.824706" transform="rotate(-0, 224.272941, 618.824706)">え</text>
+   </g>
+   <g id="text_489">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="238.277647" y="618.824706" transform="rotate(-0, 238.277647, 618.824706)">る</text>
+   </g>
+   <g id="text_490">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="252.282353" y="618.824706" transform="rotate(-0, 252.282353, 618.824706)">前</text>
+   </g>
+   <g id="text_491">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="266.287059" y="618.824706" transform="rotate(-0, 266.287059, 618.824706)">夜</text>
+   </g>
+   <g id="text_492">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="632.829412" transform="rotate(-0, 14.202353, 632.829412)">終</text>
+   </g>
+   <g id="text_493">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="632.829412" transform="rotate(-0, 28.207059, 632.829412)">わ</text>
+   </g>
+   <g id="text_494">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="632.829412" transform="rotate(-0, 42.211765, 632.829412)">り</text>
+   </g>
+   <g id="text_495">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="632.829412" transform="rotate(-0, 56.216471, 632.829412)">の</text>
+   </g>
+   <g id="text_496">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="632.829412" transform="rotate(-0, 70.221176, 632.829412)">ア</text>
+   </g>
+   <g id="text_497">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="632.829412" transform="rotate(-0, 84.225882, 632.829412)">リ</text>
+   </g>
+   <g id="text_498">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="632.829412" transform="rotate(-0, 98.230588, 632.829412)">ア</text>
+   </g>
+   <g id="text_499">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="632.829412" transform="rotate(-0, 112.235294, 632.829412)">が</text>
+   </g>
+   <g id="text_500">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="632.829412" transform="rotate(-0, 126.24, 632.829412)">始</text>
+   </g>
+   <g id="text_501">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="632.829412" transform="rotate(-0, 140.244706, 632.829412)">ま</text>
+   </g>
+   <g id="text_502">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="632.829412" transform="rotate(-0, 154.249412, 632.829412)">る</text>
+   </g>
+   <g id="text_503">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="632.829412" transform="rotate(-0, 168.254118, 632.829412)">　</text>
+   </g>
+   <g id="text_504">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="632.829412" transform="rotate(-0, 182.258824, 632.829412)">進</text>
+   </g>
+   <g id="text_505">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="632.829412" transform="rotate(-0, 196.263529, 632.829412)">化</text>
+   </g>
+   <g id="text_506">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="632.829412" transform="rotate(-0, 210.268235, 632.829412)">の</text>
+   </g>
+   <g id="text_507">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="632.829412" transform="rotate(-0, 224.272941, 632.829412)">最</text>
+   </g>
+   <g id="text_508">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="238.277647" y="632.829412" transform="rotate(-0, 238.277647, 632.829412)">終</text>
+   </g>
+   <g id="text_509">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="252.282353" y="632.829412" transform="rotate(-0, 252.282353, 632.829412)">日</text>
+   </g>
+   <g id="text_510">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="266.287059" y="632.829412" transform="rotate(-0, 266.287059, 632.829412)">だ</text>
+   </g>
+   <g id="text_511">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="280.291765" y="632.829412" transform="rotate(-0, 280.291765, 632.829412)">っ</text>
+   </g>
+   <g id="text_512">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="294.296471" y="632.829412" transform="rotate(-0, 294.296471, 632.829412)">た</text>
+   </g>
+   <g id="text_513">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="646.834118" transform="rotate(-0, 14.202353, 646.834118)">美</text>
+   </g>
+   <g id="text_514">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="646.834118" transform="rotate(-0, 28.207059, 646.834118)">し</text>
+   </g>
+   <g id="text_515">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="646.834118" transform="rotate(-0, 42.211765, 646.834118)">き</text>
+   </g>
+   <g id="text_516">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="646.834118" transform="rotate(-0, 56.216471, 646.834118)">光</text>
+   </g>
+   <g id="text_517">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="646.834118" transform="rotate(-0, 70.221176, 646.834118)">を</text>
+   </g>
+   <g id="text_518">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="646.834118" transform="rotate(-0, 84.225882, 646.834118)">湛</text>
+   </g>
+   <g id="text_519">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="646.834118" transform="rotate(-0, 98.230588, 646.834118)">え</text>
+   </g>
+   <g id="text_520">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="646.834118" transform="rotate(-0, 112.235294, 646.834118)">　</text>
+   </g>
+   <g id="text_521">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="646.834118" transform="rotate(-0, 126.24, 646.834118)">僕</text>
+   </g>
+   <g id="text_522">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="646.834118" transform="rotate(-0, 140.244706, 646.834118)">が</text>
+   </g>
+   <g id="text_523">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="646.834118" transform="rotate(-0, 154.249412, 646.834118)">見</text>
+   </g>
+   <g id="text_524">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="646.834118" transform="rotate(-0, 168.254118, 646.834118)">届</text>
+   </g>
+   <g id="text_525">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="646.834118" transform="rotate(-0, 182.258824, 646.834118)">け</text>
+   </g>
+   <g id="text_526">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="646.834118" transform="rotate(-0, 196.263529, 646.834118)">た</text>
+   </g>
+   <g id="text_527">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="646.834118" transform="rotate(-0, 210.268235, 646.834118)">最</text>
+   </g>
+   <g id="text_528">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="646.834118" transform="rotate(-0, 224.272941, 646.834118)">後</text>
+   </g>
+   <g id="text_529">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="238.277647" y="646.834118" transform="rotate(-0, 238.277647, 646.834118)">は</text>
+   </g>
+   <g id="text_530">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="660.838824" transform="rotate(-0, 14.202353, 660.838824)">血</text>
+   </g>
+   <g id="text_531">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="660.838824" transform="rotate(-0, 28.207059, 660.838824)">の</text>
+   </g>
+   <g id="text_532">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="660.838824" transform="rotate(-0, 42.211765, 660.838824)">味</text>
+   </g>
+   <g id="text_533">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="660.838824" transform="rotate(-0, 56.216471, 660.838824)">も</text>
+   </g>
+   <g id="text_534">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="660.838824" transform="rotate(-0, 70.221176, 660.838824)">残</text>
+   </g>
+   <g id="text_535">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="660.838824" transform="rotate(-0, 84.225882, 660.838824)">さ</text>
+   </g>
+   <g id="text_536">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="660.838824" transform="rotate(-0, 98.230588, 660.838824)">な</text>
+   </g>
+   <g id="text_537">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="660.838824" transform="rotate(-0, 112.235294, 660.838824)">か</text>
+   </g>
+   <g id="text_538">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="660.838824" transform="rotate(-0, 126.24, 660.838824)">っ</text>
+   </g>
+   <g id="text_539">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="660.838824" transform="rotate(-0, 140.244706, 660.838824)">た</text>
+   </g>
+   <g id="text_540">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="660.838824" transform="rotate(-0, 154.249412, 660.838824)">　</text>
+   </g>
+   <g id="text_541">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="660.838824" transform="rotate(-0, 168.254118, 660.838824)">絶</text>
+   </g>
+   <g id="text_542">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="660.838824" transform="rotate(-0, 182.258824, 660.838824)">望</text>
+   </g>
+   <g id="text_543">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="660.838824" transform="rotate(-0, 196.263529, 660.838824)">と</text>
+   </g>
+   <g id="text_544">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="660.838824" transform="rotate(-0, 210.268235, 660.838824)">悲</text>
+   </g>
+   <g id="text_545">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="660.838824" transform="rotate(-0, 224.272941, 660.838824)">鳴</text>
+   </g>
+   <g id="text_546">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="238.277647" y="660.838824" transform="rotate(-0, 238.277647, 660.838824)">に</text>
+   </g>
+   <g id="text_547">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="252.282353" y="660.838824" transform="rotate(-0, 252.282353, 660.838824)">満</text>
+   </g>
+   <g id="text_548">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="266.287059" y="660.838824" transform="rotate(-0, 266.287059, 660.838824)">ち</text>
+   </g>
+   <g id="text_549">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="280.291765" y="660.838824" transform="rotate(-0, 280.291765, 660.838824)">た</text>
+   </g>
+   <g id="text_550">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="674.843529" transform="rotate(-0, 14.202353, 674.843529)">そ</text>
+   </g>
+   <g id="text_551">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="674.843529" transform="rotate(-0, 28.207059, 674.843529)">ん</text>
+   </g>
+   <g id="text_552">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="674.843529" transform="rotate(-0, 42.211765, 674.843529)">な</text>
+   </g>
+   <g id="text_553">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="674.843529" transform="rotate(-0, 56.216471, 674.843529)">凄</text>
+   </g>
+   <g id="text_554">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="674.843529" transform="rotate(-0, 70.221176, 674.843529)">惨</text>
+   </g>
+   <g id="text_555">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="674.843529" transform="rotate(-0, 84.225882, 674.843529)">な</text>
+   </g>
+   <g id="text_556">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="674.843529" transform="rotate(-0, 98.230588, 674.843529)">光</text>
+   </g>
+   <g id="text_557">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="674.843529" transform="rotate(-0, 112.235294, 674.843529)">景</text>
+   </g>
+   <g id="text_558">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="702.852941" transform="rotate(-0, 14.202353, 702.852941)">僕</text>
+   </g>
+   <g id="text_559">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="702.852941" transform="rotate(-0, 28.207059, 702.852941)">は</text>
+   </g>
+   <g id="text_560">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="702.852941" transform="rotate(-0, 42.211765, 702.852941)">キ</text>
+   </g>
+   <g id="text_561">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="702.852941" transform="rotate(-0, 56.216471, 702.852941)">ミ</text>
+   </g>
+   <g id="text_562">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="702.852941" transform="rotate(-0, 70.221176, 702.852941)">に</text>
+   </g>
+   <g id="text_563">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="702.852941" transform="rotate(-0, 84.225882, 702.852941)">届</text>
+   </g>
+   <g id="text_564">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="702.852941" transform="rotate(-0, 98.230588, 702.852941)">く</text>
+   </g>
+   <g id="text_565">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="702.852941" transform="rotate(-0, 112.235294, 702.852941)">は</text>
+   </g>
+   <g id="text_566">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="702.852941" transform="rotate(-0, 126.24, 702.852941)">ず</text>
+   </g>
+   <g id="text_567">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="702.852941" transform="rotate(-0, 140.244706, 702.852941)">だ</text>
+   </g>
+   <g id="text_568">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="702.852941" transform="rotate(-0, 154.249412, 702.852941)">っ</text>
+   </g>
+   <g id="text_569">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="702.852941" transform="rotate(-0, 168.254118, 702.852941)">た</text>
+   </g>
+   <g id="text_570">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="702.852941" transform="rotate(-0, 182.258824, 702.852941)">未</text>
+   </g>
+   <g id="text_571">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="702.852941" transform="rotate(-0, 196.263529, 702.852941)">来</text>
+   </g>
+   <g id="text_572">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="702.852941" transform="rotate(-0, 210.268235, 702.852941)">の</text>
+   </g>
+   <g id="text_573">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="702.852941" transform="rotate(-0, 224.272941, 702.852941)">海</text>
+   </g>
+   <g id="text_574">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="238.277647" y="702.852941" transform="rotate(-0, 238.277647, 702.852941)">辺</text>
+   </g>
+   <g id="text_575">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="252.282353" y="702.852941" transform="rotate(-0, 252.282353, 702.852941)">で</text>
+   </g>
+   <g id="text_576">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="716.857647" transform="rotate(-0, 14.202353, 716.857647)">誰</text>
+   </g>
+   <g id="text_577">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="716.857647" transform="rotate(-0, 28.207059, 716.857647)">も</text>
+   </g>
+   <g id="text_578">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="716.857647" transform="rotate(-0, 42.211765, 716.857647)">知</text>
+   </g>
+   <g id="text_579">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="716.857647" transform="rotate(-0, 56.216471, 716.857647)">ら</text>
+   </g>
+   <g id="text_580">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="716.857647" transform="rotate(-0, 70.221176, 716.857647)">な</text>
+   </g>
+   <g id="text_581">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="716.857647" transform="rotate(-0, 84.225882, 716.857647)">い</text>
+   </g>
+   <g id="text_582">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="716.857647" transform="rotate(-0, 98.230588, 716.857647)">始</text>
+   </g>
+   <g id="text_583">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="716.857647" transform="rotate(-0, 112.235294, 716.857647)">ま</text>
+   </g>
+   <g id="text_584">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="716.857647" transform="rotate(-0, 126.24, 716.857647)">り</text>
+   </g>
+   <g id="text_585">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="716.857647" transform="rotate(-0, 140.244706, 716.857647)">の</text>
+   </g>
+   <g id="text_586">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="716.857647" transform="rotate(-0, 154.249412, 716.857647)">歌</text>
+   </g>
+   <g id="text_587">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="716.857647" transform="rotate(-0, 168.254118, 716.857647)">を</text>
+   </g>
+   <g id="text_588">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="716.857647" transform="rotate(-0, 182.258824, 716.857647)">歌</text>
+   </g>
+   <g id="text_589">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="716.857647" transform="rotate(-0, 196.263529, 716.857647)">い</text>
+   </g>
+   <g id="text_590">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="716.857647" transform="rotate(-0, 210.268235, 716.857647)">始</text>
+   </g>
+   <g id="text_591">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="224.272941" y="716.857647" transform="rotate(-0, 224.272941, 716.857647)">め</text>
+   </g>
+   <g id="text_592">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="238.277647" y="716.857647" transform="rotate(-0, 238.277647, 716.857647)">る</text>
+   </g>
+   <g id="text_593">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="730.862353" transform="rotate(-0, 14.202353, 730.862353)">そ</text>
+   </g>
+   <g id="text_594">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="730.862353" transform="rotate(-0, 28.207059, 730.862353)">の</text>
+   </g>
+   <g id="text_595">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="730.862353" transform="rotate(-0, 42.211765, 730.862353)">歌</text>
+   </g>
+   <g id="text_596">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="730.862353" transform="rotate(-0, 56.216471, 730.862353)">は</text>
+   </g>
+   <g id="text_597">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="730.862353" transform="rotate(-0, 70.221176, 730.862353)">轟</text>
+   </g>
+   <g id="text_598">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="730.862353" transform="rotate(-0, 84.225882, 730.862353)">く</text>
+   </g>
+   <g id="text_599">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="730.862353" transform="rotate(-0, 98.230588, 730.862353)">地</text>
+   </g>
+   <g id="text_600">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="730.862353" transform="rotate(-0, 112.235294, 730.862353)">球</text>
+   </g>
+   <g id="text_601">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="730.862353" transform="rotate(-0, 126.24, 730.862353)">の</text>
+   </g>
+   <g id="text_602">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="730.862353" transform="rotate(-0, 140.244706, 730.862353)">叫</text>
+   </g>
+   <g id="text_603">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="154.249412" y="730.862353" transform="rotate(-0, 154.249412, 730.862353)">び</text>
+   </g>
+   <g id="text_604">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="168.254118" y="730.862353" transform="rotate(-0, 168.254118, 730.862353)">に</text>
+   </g>
+   <g id="text_605">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="182.258824" y="730.862353" transform="rotate(-0, 182.258824, 730.862353)">遮</text>
+   </g>
+   <g id="text_606">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="196.263529" y="730.862353" transform="rotate(-0, 196.263529, 730.862353)">ら</text>
+   </g>
+   <g id="text_607">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="210.268235" y="730.862353" transform="rotate(-0, 210.268235, 730.862353)">れ</text>
+   </g>
+   <g id="text_608">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="744.867059" transform="rotate(-0, 14.202353, 744.867059)">や</text>
+   </g>
+   <g id="text_609">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="744.867059" transform="rotate(-0, 28.207059, 744.867059)">が</text>
+   </g>
+   <g id="text_610">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="744.867059" transform="rotate(-0, 42.211765, 744.867059)">て</text>
+   </g>
+   <g id="text_611">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="744.867059" transform="rotate(-0, 56.216471, 744.867059)">　</text>
+   </g>
+   <g id="text_612">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="744.867059" transform="rotate(-0, 70.221176, 744.867059)">僕</text>
+   </g>
+   <g id="text_613">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="744.867059" transform="rotate(-0, 84.225882, 744.867059)">も</text>
+   </g>
+   <g id="text_614">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="98.230588" y="744.867059" transform="rotate(-0, 98.230588, 744.867059)">君</text>
+   </g>
+   <g id="text_615">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="112.235294" y="744.867059" transform="rotate(-0, 112.235294, 744.867059)">と</text>
+   </g>
+   <g id="text_616">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="126.24" y="744.867059" transform="rotate(-0, 126.24, 744.867059)">同</text>
+   </g>
+   <g id="text_617">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="140.244706" y="744.867059" transform="rotate(-0, 140.244706, 744.867059)">じ</text>
+   </g>
+   <g id="text_618">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="758.871765" transform="rotate(-0, 14.202353, 758.871765)">燃</text>
+   </g>
+   <g id="text_619">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="758.871765" transform="rotate(-0, 28.207059, 758.871765)">え</text>
+   </g>
+   <g id="text_620">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="42.211765" y="758.871765" transform="rotate(-0, 42.211765, 758.871765)">上</text>
+   </g>
+   <g id="text_621">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="56.216471" y="758.871765" transform="rotate(-0, 56.216471, 758.871765)">が</text>
+   </g>
+   <g id="text_622">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="70.221176" y="758.871765" transform="rotate(-0, 70.221176, 758.871765)">っ</text>
+   </g>
+   <g id="text_623">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="84.225882" y="758.871765" transform="rotate(-0, 84.225882, 758.871765)">た</text>
+   </g>
+   <g id="text_624">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="14.202353" y="786.881176" transform="rotate(-0, 14.202353, 786.881176)">E</text>
+   </g>
+   <g id="text_625">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="21.204706" y="786.881176" transform="rotate(-0, 21.204706, 786.881176)">N</text>
+   </g>
+   <g id="text_626">
+    <text style="font: 8px 'sans-serif'; text-anchor: middle" x="28.207059" y="786.881176" transform="rotate(-0, 28.207059, 786.881176)">D</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p1c7a9bd8c2">
+   <rect x="7.2" y="7.2" width="357.12" height="784.263529"/>
+  </clipPath>
+ </defs>
+</svg>

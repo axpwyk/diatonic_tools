@@ -21,7 +21,7 @@ from functools import wraps
 # most basic constants (generate named nnrels from starting point `S` using step length `G` modulo `N`)
 N = 12  # `N`-tone equal temperament (`N`-TET)
 G = 7   # generator (step length)
-S = 7   # starter (starting point)
+S = 5   # starter (starting point)
 
 # most basic calculations
 M = pow(G, -1, N)                            # number of tones in diatonic scale

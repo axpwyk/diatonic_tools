@@ -1,0 +1,58 @@
+「星空バラード -retake-」
+
+作詞　　sisouja
+作曲　　ykykyukai
+編曲　　ykykyukai
+歌　　　初音ミク
+
+1<IIIm/VI> 2 3 4　　1<VIm> 2 3 4　　1<Vsus2/VII> 2 3 4　　1<Vsus2maj7/VII> 2 3 4
+1<IVmaj7(#11)/I> 2 3 4　　1<IVmaj7/I> 2 3 4　　1<IIIm7/VII> 2 3 4　　1<III7(b3)> 2 3 4
+1<VIsus2> 2 3 4　　1<VIm> 2 3 4　　1<Vsus2/VII> 2 3 4　　1<Vsus2maj7/VII> 2 3 4
+1<IVmaj7/I> 2 3 4　　1<IVmaj7/I> 2 3 4　　1<IIIm7/VII> 2 3 4　　1<III7/VII> 2 3 4<III7(b13)/VII>
+
+迸（ほとば<VIm>し）る銀河の雫
+ぽろりと<IIm7>星屑の<IIIm>涙を<VIm>
+手に乗<Imaj7>せて　一息（ひといき<IVmaj7>）吹きかける<Vsus4>　　<V>
+
+飛び散<I>る星座たちの夢
+幾千（せん<VIm>）万の時（とき<IIIm7/VII>）を経</VII>　</IV#>　</VII>　て<IVmaj7>
+解き放（は<Imaj7>な）つ　太古か<IIm7>らの<V>祈り<I>
+
+もし生<VIm>まれ<V>　変われ<IIIm7>るの<VIm>な<V>ら<IV>　（星光<I>）　<V/VII>
+点々<VIm>と<V>光る<IIIm>　孤独（こ<IIIm7>　ど<VIm>く<V>）の<IV>　一（ひ<IV5>と<III5>）つ<IV5>に<V>　<IIIm>
+まだ生<VIm>まれて<V>きてい<IIIm>ない<VIm>　生命（い<Vsus4>　の<V>ち<IV>）のため<I>に　<Vsus2/VII>
+可<VIm>能<V>性<VIm>とい<V>う名の希<IIIm>望を<IV#m7-5>　作（つく<IV>）り出すためー<V>　<IIIm>
+
+僕は<VIm>永久<IIIm/VI>の命<IIIm>を燃<IV>　え<V/IV>　尽<IV>く<V>す<I>　　<V/VII>
+存在<VIm9>の意味は<V6>　ま<V6sus4>　だ<V>こ<IV>　れ<Vsus2/IV>　か<IVmaj9>　ー<Vsus2/IV>　ら<V>
+存（そ<I/V>　ん<V>）在<VIm>する　そし<IIIm/V>て　壊滅<IV>すー<I/IV>　る<I/III>　　<V/II>
+星の<VIm>夢　そし<Vsus2>て　光<IIIm>る可<IV>能<V>　性<VI9sus4>　　<VI>
+
+- - -
+
+遥か<I(9)>なる星への知らせ
+ぽつりと<VIm(9)>悲嘆の言<IIIm>葉を<IV(9)>
+口に<IIIm7(b13)>して　心に<IVmaj7>鳴り響く<Vsus4>　　<V>
+
+吹き荒<I>ぶ時空線の風（か<I6>　ぜ<Vsus2/I>）
+何極回（なんごく<VIm>かい）の今（いま<IIIm>）を経て<IVmaj9>
+打ち破<Imaj7>る　永劫に<IV>よる<V>呪い<Isus2>
+
+もしゼロに　戻れるのなら　（星光）
+転々と変わる　ラインの　一つに
+まだ辿り着いていない　未来の為に
+可能性という名の光を　取り崩すため
+
+僕は永久の命をも尽くした
+存在の意味は　疾うの昔に
+忘却する　そして　存続する
+時の夢　そして　消し去る夢
+
+* * *
+
+僕は<I>永続する<I7>
+悲しい<VIm>時の彼方（かな<IIIm>た）まで<IV>
+生まれ<V>も　死ぬこと<IV>もない<V7>
+寂しいところへ<I>
+
+END
