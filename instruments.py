@@ -53,7 +53,7 @@ def note_colors(i, n_notes, mode='face'):
     return rgb_shader(i * n_notes / (n_notes - 1), 0, n_notes, color1=colors_lr[0], color2=colors_lr[1])
 
 
-def br357t_colors(br357t, step_length=STEP_CHD_LIN, mode='face'):
+def br357t_colors(br357t, step_length=STEP_LENGTH_CHD_LIN, mode='face'):
     if mode == 'face':
         colors = BR357T_FACE_COLORS
     elif mode == 'edge':
@@ -187,9 +187,9 @@ class _NoteList(object):
                 note.set_message(text_color=note_colors(i, len(self._notes), 'text'))
         elif color_style == 'br357t':
             for note in self._notes:
-                note.set_message(face_color=br357t_colors(note.get_message('br357t'), STEP_CHD_LIN, 'face'))
-                note.set_message(edge_color=br357t_colors(note.get_message('br357t'), STEP_CHD_LIN, 'edge'))
-                note.set_message(text_color=br357t_colors(note.get_message('br357t'), STEP_CHD_LIN, 'text'))
+                note.set_message(face_color=br357t_colors(note.get_message('br357t'), STEP_LENGTH_CHD_LIN, 'face'))
+                note.set_message(edge_color=br357t_colors(note.get_message('br357t'), STEP_LENGTH_CHD_LIN, 'edge'))
+                note.set_message(text_color=br357t_colors(note.get_message('br357t'), STEP_LENGTH_CHD_LIN, 'text'))
         elif color_style == 'degree':
             for i, note in enumerate(self._notes):
                 note.set_message(face_color=degree_colors(note.get_message('degree'), len(self._notes), 'face'))
@@ -1222,7 +1222,7 @@ class Tonnetz(_NoteList):
 
         # constants
         itv_gen = (Note(NAMED_STR_GEN[1]) - Note(NAMED_STR_GEN[0])).normalize()
-        itv_major = (Note(NAMED_STR_LIN[STEP_CHD_LIN]) - Note(NAMED_STR_LIN[0])).normalize()
+        itv_major = (Note(NAMED_STR_LIN[STEP_LENGTH_CHD_LIN]) - Note(NAMED_STR_LIN[0])).normalize()
         itv_minor = itv_gen - itv_major
 
         step_x = 3
@@ -1280,7 +1280,7 @@ class Tonnetz(_NoteList):
 
         # plot
         notes_nnrel = [int(note) % N for note in self._notes]
-        notes_vec2 = [note.get_vector(return_register=False) for note in self._notes]
+        notes_vec2 = [note.get_vector()[:2] for note in self._notes]
 
         for cur_note, cur_xy in zip(notes_bg, notes_bg_xy):
             circ = plt.Circle(cur_xy, step_x / 3, facecolor=cur_note.get_message('face_color'), edgecolor='black')
@@ -1289,7 +1289,7 @@ class Tonnetz(_NoteList):
             if enharmonic:
                 if_chosen = int(cur_note) % N in notes_nnrel
             else:
-                if_chosen = cur_note.get_vector(return_register=False) in notes_vec2
+                if_chosen = cur_note.get_vector()[:2] in notes_vec2
 
             if if_chosen:
                 idx = notes_nnrel.index(int(cur_note) % N)

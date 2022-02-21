@@ -2,7 +2,7 @@ from theories import *
 from utils_io import dict2csv
 
 
-notes = [Note('Db').add_generator(k) for k in range(12)]
+notes = [Note('Db').add_gidx(k) for k in range(12)]
 diatonic_scales = [DiatonicScale('C E-mode').add_accidental(k) for k in range(6)]
 tendencies = [Interval('-M2'), Interval('-m2'), Interval('P1'), Interval('m2'), Interval('M2')]
 

@@ -4,7 +4,7 @@ from theories import Note
 
 
 KEY_CENTER = 'C'
-NOTES = [Note(KEY_CENTER).add_generator(k) for k in range(-5, 7)]
+NOTES = [Note(KEY_CENTER).add_gidx(k) for k in range(-5, 7)]
 NOTES.sort(key=lambda x: x.get_nnabs() % 12)
 NOTE_NAMES = [note.get_name(show_register=False) for note in NOTES]
 

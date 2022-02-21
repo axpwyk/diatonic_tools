@@ -41,7 +41,7 @@ root = Note()._from_name('G#')
 M3 = Interval()._from_name('M3')
 m3 = Interval()._from_name('m3')
 print(f'[{root.get_note()}, {root.get_accidental_list()}, {root.get_group()}]')
-print(M3, f'[{M3.get_delta_note()}, {M3.get_delta_step()}]')
+print(M3, f'[{M3.get_delta_note()}, {M3.get_delta_lidx()}]')
 
 dominant = [root, root+M3, root+M3+m3, root+M3+m3+m3]
 print(dominant)

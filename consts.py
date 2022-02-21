@@ -7,14 +7,11 @@ from functools import wraps
 ''' ----------------------------------------------------------------------------------------- '''
 ''' [terms used in this library]                                                              '''
 '''                                                                                           '''
-''' NN = note number, ABS = absolute, REL = relative                                          '''
-''' NNREL/NNABS = int type, STR = str type, LST = list type, LIN = linear, GEN = generative   '''
+''' NN = note number | ABS = absolute | REL = relative | LIN = linear | GEN = generative      '''
+''' NNREL/NNABS: int type | STR: str type | LST: list type                                    '''
 '''                                                                                           '''
-''' * we call [index of element in `NAMED_NNREL_LIN` or `NAMED_NNREL_GEN`] `step`             '''
-'''   `step` is short for `step_lin`, while `step_gen` always comes with `_gen` appendix      '''
-''' * we call [distance of 0 and another note in generative sequence] `span`                  '''
-''' * we call [number of notes contained in an interval] `degree`                             '''
-''' * we call [index of element in a scale + 1] also `degree`                                 '''
+''' * we call [index of element in `NAMED_NNREL_LIN`] `lidx`                                  '''
+''' * we call [index of element in `NAMED_NNREL_GEN`] `gidx`                                  '''
 ''' ----------------------------------------------------------------------------------------- '''
 
 
@@ -29,7 +26,7 @@ T = 2 ** (1 / N)                             # ratio of semi-tone frequencies
 C3 = 440 * (T ** (36 - 45))                  # frequency of C3
 NGS = '.'.join([str(k) for k in [N, G, S]])  # NGS for dict indexing
 
-# define named note names in linear order, e.g. '12.7.5' -> 'CDEFGAB' | fallback: greek letters
+# define named note names in linear order, e.g. '12.7.5' -> 'CDEFGAB'
 NAMED_STR_LIN = {
     '12.5.4': 'CDEGA',
     '12.7.0': 'cdeFgab',  # F == f#
@@ -54,14 +51,23 @@ STR_TO_NNREL = dict((v, k) for k, v in NNREL_TO_STR.items())
 # change `NAMED_STR_LIN` into generative order, e.g. 'CDEFGAB' -> 'FCGDAEB'
 NAMED_STR_GEN = ''.join([NNREL_TO_STR[k] for k in NAMED_NNREL_GEN])
 
-# span of starter note `S` (from center)
-SPAN_S_OFFSET = 0
+# offset of gidx, will affect `Note.get_gidx` method
+GIDX_OFFSET = 0
 
-# generative step length of 2nd interval TODO: not satisfied with this
-STEP_2ND_GEN = [(i * G) % N for i in range(M)].index(min([(i * G) % N for i in range(1, M)]))
+# TODO: how to calculate this step length instead of indexing?
+# generative step length of 2nd degree interval
+STEP_LENGTH_2ND_GEN = [(i * G) % N for i in range(M)].index(min([(i * G) % N for i in range(1, M)]))
 
-# linear step length of stacked chord notes
-STEP_CHD_LIN = 2
+# TODO: how to define the most reasonable interval for stacked chord in any TET system?
+# linear step length of stacked chord interval
+STEP_LENGTH_CHD_LIN = 2
+
+# defaults
+DEFAULT_NOTE_NAME = f'{NAMED_STR_LIN[0]}0'
+DEFAULT_KEY_CENTER = f'{NAMED_STR_LIN[0]}0'
+DEFAULT_INTERVAL_NAME = 'P1'
+DEFAULT_DIATONIC_SCALE_NAME = f'{NAMED_STR_LIN[0]} {NAMED_STR_LIN[0]}-mode'
+DEFAULT_CHORD_NAME = f'{NAMED_STR_LIN[0]}0'
 
 
 ''' ----------------------------------------------------------------------------------------- '''
@@ -74,14 +80,16 @@ def sign(x):
     return 1 if x > 0 else -1 if x < 0 else 0
 
 
-# make elements of a list `lst` unique
-def unique(lst):
+# make elements of a list unique
+def unique(lst, key=lambda x: x):
     out = []
+    attributes = []
     for e in lst:
-        if e in out:
+        if key(e) in attributes:
             continue
         else:
             out.append(e)
+            attributes.append(key(e))
     return out
 
 
@@ -138,12 +146,12 @@ class ngs_checker(object):
 ''' ----------------------------------------------------------------------------------------- '''
 ''' ********************************** for `Interval` Class ********************************* '''
 ''' naming scheme 0 (NS0): ..., dd, d, m, M, A, AA, ...                                       '''
-''' naming scheme 1 (NS1): ..., dd, d, P, A, AA, ...                                          '''
+''' naming scheme 1 (NS1): ..., ddd, dd, d, P, A, AA, ... (P(ns1) = M(ns0), d(ns1) = m(ns0)   '''
 ''' ----------------------------------------------------------------------------------------- '''
 
 
-# convert delta step to naming scheme 0 or 1
-DELTA_STEP_TO_NS = {
+# convert delta lidx to naming scheme 0 or 1
+DELTA_LIDX_TO_NS = {
     '12.7.5': [1, 0, 0, 1, 1, 0, 0],
     '19.11.8': [1, 0, 0, 1, 1, 0, 0]
 }
@@ -151,7 +159,7 @@ DELTA_STEP_TO_NS = {
 # major delta nnrels for interval
 DELTA_NNREL_MAJOR = sorted([(i * G) % N for i in range(M)])
 
-# for the sake of perfect 4th
+# for the sake of perfect 4th (P5(ns1) = M5(ns0), but P4(ns1) = m4(ns0) in traditional music theory)
 DELTA_NNREL_OFFSET = {
     '12.7.5': [0, 0, 0, -1, 0, 0, 0],
     '19.11.8': [0, 0, 0, -1, 0, 0, 0]

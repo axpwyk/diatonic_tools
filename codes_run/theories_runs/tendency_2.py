@@ -34,9 +34,9 @@ def chord_tendency_value(key_center, chord):
 def min_tendency_key_center(chord):
     tvs = []
     offset = -5
-    for kc in [Note().add_generator(i) for i in range(offset, offset + 12)]:
+    for kc in [Note().add_gidx(i) for i in range(offset, offset + 12)]:
         tvs.append(chord_tendency_value(kc, chord))
-    return Note().add_generator(tvs.index(min(tvs)) + offset)
+    return Note().add_gidx(tvs.index(min(tvs)) + offset)
 
 
 def random_major_chord(key_center):

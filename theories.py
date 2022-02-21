@@ -127,7 +127,7 @@ class Note(object):
 
         return named_nnrel, accidental, register
 
-    def __init__(self, note_name=f'{NAMED_STR_LIN[0]}0'):
+    def __init__(self, note_name=DEFAULT_NOTE_NAME):
         # get note vector
         self._named_nnrel, self._accidental, self._register = self.note_name_to_note_vector(note_name)
 
@@ -143,9 +143,9 @@ class Note(object):
     def __sub__(self, other):
         # `Note` - `Note` = `Interval`
         if isinstance(other, Note):
-            step1 = NAMED_NNREL_LIN.index(self._named_nnrel) + self._register * M
-            step2 = NAMED_NNREL_LIN.index(other._named_nnrel) + other._register * M
-            return Interval().set_vector(int(self) - int(other), step1 - step2)
+            lidx1 = NAMED_NNREL_LIN.index(self._named_nnrel) + self._register * M
+            lidx2 = NAMED_NNREL_LIN.index(other._named_nnrel) + other._register * M
+            return Interval().set_vector(int(self) - int(other), lidx1 - lidx2)
         # `Note` - `Interval` = `Note`
         if isinstance(other, Interval):
             return self + (-other)
@@ -155,10 +155,10 @@ class Note(object):
     def __add__(self, other):
         # `Note` + `Interval` = `Note`
         if isinstance(other, Interval):
-            delta_nnabs, delta_step = other.get_vector()
-            new_step = NAMED_NNREL_LIN.index(self._named_nnrel) + delta_step
-            new_named_nnrel = NAMED_NNREL_LIN[new_step % M]
-            new_register = self._register + new_step // M
+            delta_nnabs, delta_lidx = other.get_vector()
+            new_lidx = NAMED_NNREL_LIN.index(self._named_nnrel) + delta_lidx
+            new_named_nnrel = NAMED_NNREL_LIN[new_lidx % M]
+            new_register = self._register + new_lidx // M
             new_accidental = int(self) + delta_nnabs - new_named_nnrel - N * new_register
             return Note().set_vector(new_named_nnrel, new_accidental, new_register).set_message_dict(**self.get_message_dict())
         else:
@@ -272,11 +272,8 @@ class Note(object):
             self._register = register
         return self
 
-    def get_vector(self, return_register=True):
-        if return_register:
-            return self._named_nnrel, self._accidental, self._register
-        else:
-            return self._named_nnrel, self._accidental
+    def get_vector(self):
+        return self._named_nnrel, self._accidental, self._register
 
     def get_nnabs(self):
         return int(self)
@@ -293,8 +290,18 @@ class Note(object):
     def get_register(self):
         return self._register
 
-    def get_span(self):
-        return ((self._named_nnrel - S) * M) % N + self._accidental * M + SPAN_S_OFFSET
+    def get_gidx(self):
+        return ((self._named_nnrel - S) * M) % N + self._accidental * M + GIDX_OFFSET
+
+    def get_frequency(self):
+        """
+        (in [12, 7, 5] diatonic scale)
+        A4 concerto pitch == nnabs: 57 == 440Hz
+        A3 cubase pitch == nnabs: 45 == 440Hz
+
+        :return: frequency of current note (float type)
+        """
+        return C3 * (T ** (int(self) - N * 3))
 
     def get_name(self, show_register=True):
         # get name of `Note`, e.g. Note('C0').get_name() = 'C0', Note('C0').get_name(show_register=False) = 'C', etc.
@@ -307,10 +314,21 @@ class Note(object):
         self._named_nnrel, self._accidental, self._register = self.note_name_to_note_vector(note_name)
         return self
 
-    def add_generator(self, n=0):
-        span = self.get_span() + n
-        accidental = (span - SPAN_S_OFFSET) // M
-        named_nnrel = (G * (span - SPAN_S_OFFSET - accidental * M) + S) % N
+    def from_nnabs(self, nnabs, key_center=DEFAULT_KEY_CENTER):
+        nnrel = nnabs % N
+
+        named_nnrel = NAMED_NNREL_LIN[0]
+        accidental = nnrel - named_nnrel
+        register = nnabs // N
+
+        self._named_nnrel, self._accidental, self._register = Note().set_vector(named_nnrel, accidental, register).get_enharmonic_note_by_key_center(key_center).get_vector()
+
+        return self
+
+    def add_gidx(self, n=0):
+        gidx = self.get_gidx() + n
+        accidental = (gidx - GIDX_OFFSET) // M
+        named_nnrel = (G * (gidx - GIDX_OFFSET - accidental * M) + S) % N
         self._accidental = accidental
         self._named_nnrel = named_nnrel
         return self
@@ -344,7 +362,7 @@ class Note(object):
 
     def get_enharmonic_note(self, direction='auto'):
         """
-        change a note to its enharmonic note, e.g.
+        enharmonic note examples:
 
         (in '12.7.5' diatonic scale) [C, _, D, _, E, F, _, G, _, A, _, B]
         C#0 -> Db0; C##0 -> D0; D0 -> D0, etc.
@@ -354,9 +372,6 @@ class Note(object):
 
         (in '19.11.8' diatonic scale) [C, _, _, D, _, _, E, _, F, _, _, G, _, _, A, _, _, B, _]
         C#0 -> Dbb0; C##0 -> Db0; C###0 -> D0; D0 -> D0, etc.
-
-        :param direction: direction of delta step
-        :return: enharmonic note (Note type)
         """
         nnabs = int(self)
 
@@ -369,22 +384,38 @@ class Note(object):
         else:
             raise ValueError("Illegal direction! Please choose from ['up', 'down', 'auto']!")
 
-        step = NAMED_NNREL_LIN.index(self._named_nnrel)
-        new_step = step + offset
+        lidx = NAMED_NNREL_LIN.index(self._named_nnrel)
+        new_lidx = lidx + offset
 
-        new_named_nnrel = NAMED_NNREL_LIN[new_step % M]
-        new_register = self._register + new_step // M
+        new_named_nnrel = NAMED_NNREL_LIN[new_lidx % M]
+        new_register = self._register + new_lidx // M
         new_accidental = nnabs - new_named_nnrel - new_register * N
 
         return Note().set_vector(new_named_nnrel, new_accidental, new_register)
+
+    def get_enharmonic_note_by_key_center(self, key_center=DEFAULT_KEY_CENTER):
+        gidx_left = Note(key_center).get_gidx() - (N - 1) // 2
+        gidx_self = self.get_gidx()
+        span = (gidx_self - gidx_left) // N * N
+
+        note_out = Note().set_vector(*self.get_vector()).add_gidx(-span)
+
+        # when key_center = C: B#0 -> C1 (not C0)
+        # when key_center = B#: C1 -> B#0 (not B#1)
+        if span == 0:
+            register_change = 0
+        else:
+            register_change = self.get_nnrel() // N - note_out.get_nnrel() // N
+
+        return note_out.add_register(register_change)
 
 
 class Interval(object):
     @staticmethod
     def interval_name_to_interval_vector(interval_name, ns=-1):
         """
-        when NGS in `DELTA_STEP_TO_NS.keys()`, will choose naming scheme according to `DELTA_STEP_TO_NS`
-        when NGS not in `DELTA_STEP_TO_NS.keys()`, will use naming scheme 0
+        when NGS in `DELTA_LIDX_TO_NS.keys()`, will choose naming scheme according to `DELTA_LIDX_TO_NS`
+        when NGS not in `DELTA_LIDX_TO_NS.keys()`, will use naming scheme 0
 
         :param interval_name: interval name, e.g. 'P1', 'M2', etc.
         :param ns: interval naming scheme, -1 = auto, 0 = dmMA, 1 = dPA
@@ -400,12 +431,12 @@ class Interval(object):
         # get interval degree, positive integer
         degree = int(par['degree_str'])
 
-        # get `abs(delta_step)`
-        delta_step = degree - 1
+        # get `abs(delta_lidx)`
+        delta_lidx = degree - 1
 
         # get naming scheme automatically
         if ns == -1:
-            ns = DELTA_STEP_TO_NS.get(NGS, [1] + [0] * (M - 1))[delta_step % M]
+            ns = DELTA_LIDX_TO_NS.get(NGS, [1] + [0] * (M - 1))[delta_lidx % M]
 
         if ns == 0:
             if 'd' in interval_type:
@@ -418,17 +449,17 @@ class Interval(object):
             raise ValueError(f'No naming scheme {ns}! Please choose from [0, 1]!')
 
         # calculate `delta_nnabs`
-        delta_step_rel = delta_step % M
-        delta_register = delta_step // M
+        delta_lidx_rel = delta_lidx % M
+        delta_register = delta_lidx // M
 
-        delta_nnrel = DELTA_NNREL_MAJOR[delta_step_rel] + DELTA_NNREL_OFFSET.get(NGS, [0] * M)[delta_step_rel]
+        delta_nnrel = DELTA_NNREL_MAJOR[delta_lidx_rel] + DELTA_NNREL_OFFSET.get(NGS, [0] * M)[delta_lidx_rel]
         delta_nnabs = delta_nnrel_0 + delta_nnrel + N * delta_register
 
         # get interval vector
-        return sgn * delta_nnabs, sgn * delta_step
+        return sgn * delta_nnabs, sgn * delta_lidx
 
     @staticmethod
-    def interval_vector_to_interval_name(delta_nnabs, delta_step, ns=-1):
+    def interval_vector_to_interval_name(delta_nnabs, delta_lidx, ns=-1):
         """
         there only exists 2 types of interval that contain same number of named notes in diatonic scale
 
@@ -450,24 +481,24 @@ class Interval(object):
         for example, when `NGS` == '12.7.5', P4 is actually the smaller one of 2 kinds of diatonic 4th intervals
         so `DELTA_NNREL_OFFSET` was given for such irregularities
 
-        * notice: '-M2' and 'M-2' are different, we will use the former one when `delta_step` < 0
+        * notice: '-M2' and 'M-2' are different, we will use the former one when `delta_lidx` < 0
 
         :return: interval name (type: str)
         """
-        sgn = sign(delta_step)
+        sgn = sign(delta_lidx)
 
         if sgn < 0:
-            delta_nnabs, delta_step = -delta_nnabs, -delta_step
+            delta_nnabs, delta_lidx = -delta_nnabs, -delta_lidx
 
-        delta_step_rel = delta_step % M
-        delta_register = delta_step // M
+        delta_lidx_rel = delta_lidx % M
+        delta_register = delta_lidx // M
 
-        delta_nnrel = DELTA_NNREL_MAJOR[delta_step_rel] + DELTA_NNREL_OFFSET.get(NGS, [0] * M)[delta_step_rel]
+        delta_nnrel = DELTA_NNREL_MAJOR[delta_lidx_rel] + DELTA_NNREL_OFFSET.get(NGS, [0] * M)[delta_lidx_rel]
         delta_nnrel_0 = delta_nnabs - N * delta_register - delta_nnrel
 
         # get naming scheme automatically
         if ns == -1:
-            ns = DELTA_STEP_TO_NS.get(NGS, [1] + [0] * (M - 1))[delta_step % M]
+            ns = DELTA_LIDX_TO_NS.get(NGS, [1] + [0] * (M - 1))[delta_lidx % M]
 
         if ns == 0:
             if delta_nnrel_0 > 0:
@@ -488,10 +519,10 @@ class Interval(object):
         else:
             raise ValueError(f'No naming scheme {ns}! Please choose from [0, 1]!')
 
-        return -sgn * '-' + itv_type + f'{delta_step + 1}'
+        return -sgn * '-' + itv_type + f'{delta_lidx + 1}'
 
-    def __init__(self, interval_name='P1'):
-        self._delta_nnabs, self._delta_step = self.interval_name_to_interval_vector(interval_name)
+    def __init__(self, interval_name=DEFAULT_INTERVAL_NAME):
+        self._delta_nnabs, self._delta_lidx = self.interval_name_to_interval_vector(interval_name)
 
     def __str__(self):
         return self.get_name()
@@ -505,35 +536,35 @@ class Interval(object):
             return other + self
         # `Interval` + `Interval` = `Interval`
         elif isinstance(other, Interval):
-            return Interval().set_vector(self._delta_nnabs + other._delta_nnabs, self._delta_step + other._delta_step)
+            return Interval().set_vector(self._delta_nnabs + other._delta_nnabs, self._delta_lidx + other._delta_lidx)
         else:
             raise TypeError('`Interval` can only add a `Note` or an `Interval`!')
 
     def __sub__(self, other):
         # `Interval` - `Interval` = `Interval`
         if isinstance(other, Interval):
-            return Interval().set_vector(self._delta_nnabs - other._delta_nnabs, self._delta_step - other._delta_step)
+            return Interval().set_vector(self._delta_nnabs - other._delta_nnabs, self._delta_lidx - other._delta_lidx)
         else:
             raise TypeError('`Interval` can only subtract an `Interval`!')
 
     def __mul__(self, other):
         if isinstance(other, int):
-            return Interval().set_vector(self._delta_nnabs*other, self._delta_step*other)
+            return Interval().set_vector(self._delta_nnabs * other, self._delta_lidx * other)
         else:
             raise TypeError('`Interval` can only multiply an integer!')
 
     def __rmul__(self, other):
         if isinstance(other, int):
-            return Interval().set_vector(other*self._delta_nnabs, other*self._delta_step)
+            return Interval().set_vector(other * self._delta_nnabs, other * self._delta_lidx)
         else:
             raise TypeError('`Interval` can only multiply an integer!')
 
     def __neg__(self):
-        return Interval().set_vector(-self._delta_nnabs, -self._delta_step)
+        return Interval().set_vector(-self._delta_nnabs, -self._delta_lidx)
 
     def __abs__(self):
-        sgn = sign(self._delta_step)
-        return Interval().set_vector(sgn * self._delta_nnabs, sgn * self._delta_step)
+        sgn = sign(self._delta_lidx)
+        return Interval().set_vector(sgn * self._delta_nnabs, sgn * self._delta_lidx)
 
     def __int__(self):
         return self._delta_nnabs
@@ -560,23 +591,23 @@ class Interval(object):
 
     def __eq__(self, other):
         if isinstance(other, Interval):
-            return all([self._delta_nnabs == other._delta_nnabs, self._delta_step == other._delta_step])
+            return all([self._delta_nnabs == other._delta_nnabs, self._delta_lidx == other._delta_lidx])
         elif isinstance(other, int) or isinstance(other, float):
             return self._delta_nnabs == other
         elif isinstance(other, str):
-            tmp_delta_nnabs, tmp_delta_step = Interval(other).get_vector()
-            return all([self._delta_nnabs == tmp_delta_nnabs, self._delta_step == tmp_delta_step])
+            tmp_delta_nnabs, tmp_delta_lidx = Interval(other).get_vector()
+            return all([self._delta_nnabs == tmp_delta_nnabs, self._delta_lidx == tmp_delta_lidx])
         else:
             raise TypeError('`Interval` can only compare with `Interval`, `int`, `float` or `str`!')
 
     def __ne__(self, other):
         if isinstance(other, Interval):
-            return all([self._delta_nnabs != other._delta_nnabs, self._delta_step != other._delta_step])
+            return all([self._delta_nnabs != other._delta_nnabs, self._delta_lidx != other._delta_lidx])
         elif isinstance(other, int) or isinstance(other, float):
             return self._delta_nnabs != other
         elif isinstance(other, str):
-            tmp_delta_nnabs, tmp_delta_step = Interval(other).get_vector()
-            return any([self._delta_nnabs != tmp_delta_nnabs, self._delta_step != tmp_delta_step])
+            tmp_delta_nnabs, tmp_delta_lidx = Interval(other).get_vector()
+            return any([self._delta_nnabs != tmp_delta_nnabs, self._delta_lidx != tmp_delta_lidx])
         else:
             raise TypeError('`Interval` can only compare with `Interval`, `int`, `float` or `str`!')
 
@@ -600,33 +631,33 @@ class Interval(object):
         else:
             raise TypeError('`Interval` can only compare with `Interval`, `int`, `float` or `str`!')
 
-    def set_vector(self, delta_nnabs=None, delta_step=None):
-        # set interval vector (delta_nnabs, delta_step) manually
+    def set_vector(self, delta_nnabs=None, delta_lidx=None):
+        # set interval vector (delta_nnabs, delta_lidx) manually
         if delta_nnabs is not None:
             self._delta_nnabs = delta_nnabs
-        if delta_step is not None:
-            self._delta_step = delta_step
+        if delta_lidx is not None:
+            self._delta_lidx = delta_lidx
         return self
 
     def get_vector(self):
-        return self._delta_nnabs, self._delta_step
+        return self._delta_nnabs, self._delta_lidx
 
     def get_delta_nnabs(self):
         return int(self)
 
-    def get_delta_step(self):
-        return self._delta_step
+    def get_delta_lidx(self):
+        return self._delta_lidx
 
     def get_name(self):
-        return self.interval_vector_to_interval_name(self._delta_nnabs, self._delta_step)
+        return self.interval_vector_to_interval_name(self._delta_nnabs, self._delta_lidx)
 
     def from_name(self, interval_name):
-        self._delta_nnabs, self._delta_step = self.interval_name_to_interval_vector(interval_name)
+        self._delta_nnabs, self._delta_lidx = self.interval_name_to_interval_vector(interval_name)
         return self
 
     def get_r357t(self):
         # (when `NGS` == '12.7.5') P2 -> 2, d2 -> b2, A2 -> #2, etc.
-        r357t = self.interval_vector_to_interval_name(self._delta_nnabs, self._delta_step, ns=1)
+        r357t = self.interval_vector_to_interval_name(self._delta_nnabs, self._delta_lidx, ns=1)
         r357t = r357t.replace('P', '').replace('d', 'b').replace('A', '#')
         r357t = 'R' if r357t == '1' else r357t
 
@@ -635,23 +666,23 @@ class Interval(object):
     def from_r357t(self, r357t):
         # this is similar to interval naming scheme 1, 'P' -> '', 'd' -> 'b', 'A' -> '#'
         if r357t in ['', 'R']:
-            self._delta_nnabs, self._delta_step = 0, 0
+            self._delta_nnabs, self._delta_lidx = 0, 0
             return self
         else:
             interval_name = 'P' + r357t.replace('b', 'd').replace('#', 'A')
-            self._delta_nnabs, self._delta_step = self.interval_name_to_interval_vector(interval_name, ns=1)
+            self._delta_nnabs, self._delta_lidx = self.interval_name_to_interval_vector(interval_name, ns=1)
 
         return self
 
     def normalize(self):
-        delta_register = self._delta_step // M
-        self._delta_step = self._delta_step % M
+        delta_register = self._delta_lidx // M
+        self._delta_lidx = self._delta_lidx % M
         self._delta_nnabs = self._delta_nnabs - N * delta_register
         return self
 
 
 class DiatonicScale(object):
-    def __init__(self, scale_name=f'{NAMED_STR_LIN[0]} {NAMED_STR_LIN[0]}-mode'):
+    def __init__(self, scale_name=DEFAULT_DIATONIC_SCALE_NAME):
         """
         Create a note list, which has diatonic property in `N`-TET system
         `self._meta_notes` are the notes in sequence of generative order
@@ -673,10 +704,10 @@ class DiatonicScale(object):
         mt_named_nnrel, mt_accidental, mt_register = Note.note_name_to_note_vector(mode_tonic_name)
 
         # [!] get scale tonic index in `NAMED_GEN_NNREL` and number of accidentals
-        st_step_gen = NAMED_NNREL_GEN.index(st_named_nnrel)
-        mt_step_gen = NAMED_NNREL_GEN.index(mt_named_nnrel)
-        accidentals = st_step_gen - mt_step_gen + M * (st_accidental + mt_accidental)
-        self._st_step_gen = st_step_gen
+        st_gidx = NAMED_NNREL_GEN.index(st_named_nnrel)
+        mt_gidx = NAMED_NNREL_GEN.index(mt_named_nnrel)
+        accidentals = st_gidx - mt_gidx + M * (st_accidental + mt_accidental)
+        self._st_gidx = st_gidx
         self._accidentals = accidentals
 
         # get meta notes (generative order)
@@ -700,7 +731,7 @@ class DiatonicScale(object):
         linear view of `self._meta_notes` (remember that `self._meta_notes` is of generative order)
         changes will affect `self._meta_notes`
         """
-        return [self._meta_notes[(self._st_step_gen + STEP_2ND_GEN * k) % M] for k in range(M)][item]
+        return [self._meta_notes[(self._st_gidx + STEP_LENGTH_2ND_GEN * k) % M] for k in range(M)][item]
 
     def __str__(self):
         note_names = [note.get_name(self._printoptions['show_register']) for note in self]
@@ -757,7 +788,7 @@ class DiatonicScale(object):
     def set_scale_tonic_str(self, scale_tonic_name):
         # the default scale tonic note is in inputting `scale_name`, e.g. `C# Ionian` -> 'C#'
         st_named_nnrel, _, st_register = Note.note_name_to_note_vector(scale_tonic_name)
-        self._st_step_gen = NAMED_NNREL_GEN.index(st_named_nnrel)
+        self._st_gidx = NAMED_NNREL_GEN.index(st_named_nnrel)
 
         self._refresh_register(st_register)
         self._refresh_messages()
@@ -768,7 +799,7 @@ class DiatonicScale(object):
         # set `degree` note of current diatonic scale as new scale tonic note
         st_new_named_nnrel = self[degree % M].get_named_nnrel()
 
-        self._st_step_gen = NAMED_NNREL_GEN.index(st_new_named_nnrel)
+        self._st_gidx = NAMED_NNREL_GEN.index(st_new_named_nnrel)
 
         self._refresh_register(st_register)
         self._refresh_messages()
@@ -784,10 +815,10 @@ class DiatonicScale(object):
 
         st_named_nnrel, st_accidental, st_register = Note.note_name_to_note_vector(scale_tonic_name)
 
-        st_step_gen = NAMED_NNREL_GEN.index(st_named_nnrel)
-        mt_step_gen = st_step_gen + M * st_accidental - self._accidentals
+        st_gidx = NAMED_NNREL_GEN.index(st_named_nnrel)
+        mt_gidx = st_gidx + M * st_accidental - self._accidentals
 
-        scale_type = NAMED_STR_GEN[mt_step_gen] + '-mode'
+        scale_type = NAMED_STR_GEN[mt_gidx] + '-mode'
 
         if self._printoptions['ns'] == 1:
             scale_type = scale_type_convertor(scale_type, 0, 1)
@@ -826,7 +857,7 @@ class DiatonicScale(object):
             note.add_register(n)
         return self
 
-    def get_chord(self, root_degree, n_notes, n_step_length=STEP_CHD_LIN):
+    def get_chord(self, root_degree, n_notes, step_length=STEP_LENGTH_CHD_LIN):
         """
         notice: this method will return copies of `self._meta_notes` elements
         """
@@ -834,7 +865,7 @@ class DiatonicScale(object):
 
         notes = []
         for i in range(n_notes):
-            idx = root_degree + n_step_length * i
+            idx = root_degree + step_length * i
             notes.append(copy(self[idx % M]) if idx < M else copy(self[idx % M]).add_register(idx // M))
 
         for note in notes:
@@ -1153,13 +1184,16 @@ class Chord(object):
     def notes_to_chord_type(bass, body, tension):
         # get bass type
         if bass:
-            bass_type = '/' + bass[0].get_name(show_register=False)
+            if bass[0].get_name(show_register=False) != body[0].get_name(show_register=False):
+                bass_type = '/' + bass[0].get_name(show_register=False)
+            else:
+                bass_type = ''
         else:
             bass_type = ''
 
         # get body type
-        intervals = [note - body[0] for note in body]
-        r357s = [interval.get_r357t() for interval in intervals]
+        intervals = [(note - body[0]).normalize() for note in body]
+        r357s = unique([interval.get_r357t() for interval in intervals])
         body_type = '.'.join(r357s)
 
         # get tension type
@@ -1172,7 +1206,36 @@ class Chord(object):
 
         return body_type, tension_type, bass_type
 
-    def __init__(self, chord_name=f'{NAMED_STR_LIN[0]}0'):
+    @staticmethod
+    def extract_parts_from_notes(notes):
+        # make note in notes unique (regardless of registers)
+        notes = unique(notes, key=lambda note: note.get_nnrel())
+
+        bass = []
+        body = []
+        tension = []
+        n_base_chord_notes = 0
+        for root in notes:
+            # sort intervals from root by 3rd degree
+            # if multiple degree types are contained, regard the smaller one as tension
+            itvs = [(note - root).normalize() for note in notes]
+            if sum([(itv.get_delta_lidx() + 1) % STEP_LENGTH_CHD_LIN for itv in itvs]) > n_base_chord_notes:
+                n_base_chord_notes = sum([(itv.get_delta_lidx() + 1) % STEP_LENGTH_CHD_LIN for itv in itvs])
+
+                itvs.sort(key=lambda itv: (itv.get_delta_lidx(), -itv.get_delta_nnabs()))
+
+                body_itvs = [itv for itv in unique(itvs, key=lambda itv: itv.get_delta_lidx()) if itv.get_delta_lidx() % STEP_LENGTH_CHD_LIN == 0]
+                tension_itvs = [itv for itv in itvs if itv not in body_itvs]
+
+                bass = [notes[0], ]
+                body = [root + itv for itv in body_itvs]
+                tension = [(root + itv).add_register(1) for itv in tension_itvs]
+            else:
+                continue
+
+        return bass, body, tension
+
+    def __init__(self, chord_name=DEFAULT_CHORD_NAME):
         self._bass, self._body, self._tension = self.chord_name_to_notes(chord_name)
 
         # print options initialization
@@ -1194,6 +1257,9 @@ class Chord(object):
 
     def __getitem__(self, item):
         return (self._bass + self._body + self._tension)[item]
+
+    def __len__(self):
+        return len(self._bass) + len(self._body) + len(self._tension)
 
     def set_notes(self, bass=None, body=None, tension=None):
         if bass is not None:
@@ -1239,17 +1305,17 @@ class Chord(object):
         return [note - self[0] for note in self.get_notes(return_bass=use_bass)]
 
     @ngs_checker(['12.7.5'])
-    def get_negative_chord(self, major_tonic=Note()):
-        phrygian_p5_tonic = major_tonic + Interval('P5')
+    def get_negative_chord(self, key_center=DEFAULT_KEY_CENTER):
+        phrygian_p5_tonic = Note(key_center) + Interval('P5')
 
-        bass_itvs = [note - major_tonic for note in self._bass]
+        bass_itvs = [note - Note(key_center) for note in self._bass]
         bass_itvs_neg_rev = [-itv for itv in reversed(bass_itvs)]
 
-        main_itvs = [note - major_tonic for note in self._body + self._tension]
+        main_itvs = [note - Note(key_center) for note in self._body + self._tension]
         main_itvs_neg_rev = [-itv for itv in reversed(main_itvs)]
 
-        body_bool = [(itv - main_itvs_neg_rev[0]).normalize().get_delta_step() in [0, 2, 4, 6] for itv in main_itvs_neg_rev]
-        tension_bool = [(itv - main_itvs_neg_rev[0]).normalize().get_delta_step() in [1, 3, 5] for itv in main_itvs_neg_rev]
+        body_bool = [(itv - main_itvs_neg_rev[0]).normalize().get_delta_lidx() in [0, 2, 4, 6] for itv in main_itvs_neg_rev]
+        tension_bool = [(itv - main_itvs_neg_rev[0]).normalize().get_delta_lidx() in [1, 3, 5] for itv in main_itvs_neg_rev]
 
         bass = [phrygian_p5_tonic + itv for itv in bass_itvs_neg_rev]
         body = [phrygian_p5_tonic + itv for itv, b in zip(main_itvs_neg_rev, body_bool) if b]
@@ -1257,7 +1323,50 @@ class Chord(object):
 
         return Chord().set_notes(bass=bass, body=body, tension=tension)
 
+    @ngs_checker(['12.7.5', '19.11.8'])
+    def get_sorted_chord(self):
+        notes = self._bass + self._body + self._tension
+        bass_new, body_new, tension_new = self.extract_parts_from_notes(notes)
+        return Chord().set_notes(bass=bass_new, body=body_new, tension=tension_new)
+
+    @ngs_checker(['12.7.5'])
+    def get_major_converged_chord(self, key_center=DEFAULT_KEY_CENTER):
+        # movements for [bII, bVI, bIII, bVII, IV, I, V, II, VI, III, VII, #IV]
+        movements = [Interval('-m2'), Interval('-m2'), Interval('m2'), Interval('M2'), Interval('-m2'),
+                     Interval('P1'), Interval('P1'),
+                     Interval('M2'), Interval('-M2'), Interval('P1'), Interval('m2'), Interval('m2')]
+        bass_new = [
+            (bass + movements[(bass.get_gidx() - Note(key_center).get_gidx() + 5) % 12]).get_enharmonic_note_by_key_center(
+                key_center) for bass in self._bass]
+        body_new = [
+            (body + movements[(body.get_gidx() - Note(key_center).get_gidx() + 5) % 12]).get_enharmonic_note_by_key_center(
+                key_center) for body in self._body]
+        tension_new = [(tension + movements[
+            (tension.get_gidx() - Note(key_center).get_gidx() + 5) % 12]).get_enharmonic_note_by_key_center(
+            key_center) for tension in self._tension]
+        return Chord().set_notes(bass=bass_new, body=body_new, tension=tension_new)
+
+    @ngs_checker(['12.7.5'])
+    def get_minor_converged_chord(self, key_center=DEFAULT_KEY_CENTER):
+        # movements for [bII, bVI, bIII, bVII, IV, I, V, II, VI, III, VII, #IV]
+        movements = [Interval('-m2'), Interval('-m2'), Interval('P1'), Interval('M2'), Interval('-M2'),
+                     Interval('P1'), Interval('P1'),
+                     Interval('m2'), Interval('-M2'), Interval('-m2'), Interval('m2'), Interval('m2')]
+        bass_new = [
+            (bass + movements[(bass.get_gidx() - Note(key_center).get_gidx() + 5) % 12]).get_enharmonic_note_by_key_center(
+                key_center) for bass in self._bass]
+        body_new = [
+            (body + movements[(body.get_gidx() - Note(key_center).get_gidx() + 5) % 12]).get_enharmonic_note_by_key_center(
+                key_center) for body in self._body]
+        tension_new = [(tension + movements[
+            (tension.get_gidx() - Note(key_center).get_gidx() + 5) % 12]).get_enharmonic_note_by_key_center(
+            key_center) for tension in self._tension]
+        return Chord().set_notes(bass=bass_new, body=body_new, tension=tension_new)
+
     def get_name(self, type_only=False):
+        if all([not self._bass, not self._body, not self._tension]):
+            return 'null'
+
         body_type, tension_type, bass_type = self.notes_to_chord_type(self._bass, self._body, self._tension)
 
         if self._printoptions['ns'] == 1:
@@ -1413,8 +1522,9 @@ class SlashChord(object):
     def get_intervals_cum(self):
         return [note - self[0] for note in self]
 
-    def get_negative_chord(self, major_tonic=Note()):
-        return SlashChord(self._nu.get_negative_chord(major_tonic=major_tonic), self._de.get_negative_chord(major_tonic=major_tonic))
+    def get_negative_chord(self, key_center=DEFAULT_KEY_CENTER):
+        return SlashChord(self._nu.get_negative_chord(key_center=key_center), self._de.get_negative_chord(
+            key_center=key_center))
 
     def get_name(self):
         return f'{self._nu.get_name()}/{self._de.get_name()}'
@@ -1643,51 +1753,56 @@ class MyFraction(Fraction):
 
 
 def get_span(notes, enharmonic=False):
-    # get span on generative sequence
-    spans = [note.get_span() for note in notes]
+    gidxs = [note.get_span() for note in notes]
     if enharmonic:
-        spans = sorted(unique([span % N for span in spans]))
-        spans_closed = [*spans, spans[0] + N]
-        spans_delta = [j - i for i, j in zip(spans_closed[:-1], spans_closed[1:])]
-        return N - max(spans_delta)
+        gidxs = sorted(unique([gidx % N for gidx in gidxs]))
+        gidxs_closed = [*gidxs, gidxs[0] + N]
+        gidxs_delta = [j - i for i, j in zip(gidxs_closed[:-1], gidxs_closed[1:])]
+        return N - max(gidxs_delta)
     else:
-        return max(spans) - min(spans)
+        return max(gidxs) - min(gidxs)
 
 
 def get_polar(notes, enharmonic=False):
-    spans = [note.get_span() for note in notes]
+    gidxs = [note.get_gidx() for note in notes]
     if enharmonic:
-        spans_original = [span % N for span in spans]
-        spans = sorted(unique(spans_original))
-        spans_closed = [*spans, spans[0] + N]
-        spans_delta = [j - i for i, j in zip(spans_closed[:-1], spans_closed[1:])]
+        gidxs_original = [gidx % N for gidx in gidxs]
+        gidxs = sorted(unique(gidxs_original))
+        gidxs_closed = [*gidxs, gidxs[0] + N]
+        gidxs_delta = [j - i for i, j in zip(gidxs_closed[:-1], gidxs_closed[1:])]
 
         indices_max = []
-        for idx, span in enumerate(spans_delta):
-            if span == max(spans_delta):
+        for idx, gidx in enumerate(gidxs_delta):
+            if gidx == max(gidxs_delta):
                 indices_max.append(idx)
         indices_min = [s + 1 for s in indices_max]
 
-        max_polar_spans = [spans_closed[idx] for idx in indices_max]
-        min_polar_spans = [spans_closed[idx] for idx in indices_min]
+        max_polar_gidxs = [gidxs_closed[idx] for idx in indices_max]
+        min_polar_gidxs = [gidxs_closed[idx] for idx in indices_min]
 
-        indices_min = [spans_original.index(span % N) for span in max_polar_spans]
-        indices_max = [spans_original.index(span % N) for span in min_polar_spans]
+        indices_min = [gidxs_original.index(gidx % N) for gidx in max_polar_gidxs]
+        indices_max = [gidxs_original.index(gidx % N) for gidx in min_polar_gidxs]
 
         return [(notes[idx_min], notes[idx_max]) for idx_min, idx_max in zip(indices_max, indices_min)]
     else:
-        idx_min = spans.index(min(spans))
-        idx_max = spans.index(max(spans))
+        idx_min = gidxs.index(min(gidxs))
+        idx_max = gidxs.index(max(gidxs))
 
         return [(notes[idx_min], notes[idx_max])]
 
 
 def get_color(notes, use_fraction=True):
-    spans = [note.get_span() for note in notes]
+    gidxs = [note.get_span() for note in notes]
     if use_fraction:
-        return MyFraction(sum(spans), len(spans))
+        return MyFraction(sum(gidxs), len(gidxs))
     else:
-        return sum(spans) / len(spans)
+        return sum(gidxs) / len(gidxs)
+
+
+def get_chromatic_polar_notes(key_center=DEFAULT_KEY_CENTER):
+    inf = Note(key_center).add_gidx(-((N - 1) // 2))
+    sup = Note(key_center).add_gidx(N // 2)
+    return inf, sup
 
 
 # TODO: `get_characteristic_note()` review
@@ -1722,9 +1837,9 @@ def get_characteristic_note(notes, tonic_triad_indices=(0, 2, 4)):
 # TODO: `get_functions()` review
 def get_functions(notes):
     # will regard 1st note of `notes` as tonic
-    spans = [note.get_span() for note in notes]
-    spans_delta = [s - spans[0] for s in spans]
-    return ['T' if s == 0 else 'S' * abs(s) if s < 0 else 'D' * s for s in spans_delta]
+    gidxs = [note.get_span() for note in notes]
+    gidxs_delta = [s - gidxs[0] for s in gidxs]
+    return ['T' if s == 0 else 'S' * abs(s) if s < 0 else 'D' * s for s in gidxs_delta]
 
 
 # TODO: `get_sorted_chords()` review
@@ -1765,7 +1880,7 @@ def get_sorted_chords(ads):
 ''' ----------------------------------------------------------------------------------------- '''
 
 
-class Notes(object):
+class _Notes(object):
     def __init__(self):
         self._notes = []
         self._printoptions = dict(ns=DEFAULT_DIATONIC_SCALE_NS, show_register=False)
@@ -1774,7 +1889,7 @@ class Notes(object):
         return self._notes[item]
 
     def __str__(self):
-        note_names = [note.get_name(self._printoptions['show_register']) for note in self._notes]
+        note_names = [note.get_name(show_register=self._printoptions['show_register']) for note in self._notes]
         return '[' + ', '.join(note_names) + ']'
 
     def get_notes(self):
@@ -1788,49 +1903,48 @@ class Notes(object):
         return self
 
     def get_span(self, enharmonic=False):
-        # get span on generative sequence
-        spans = [note.get_span() for note in self._notes]
+        gidxs = [note.get_span() for note in self._notes]
         if enharmonic:
-            spans = sorted(unique([span % N for span in spans]))
-            spans_closed = [*spans, spans[0] + N]
-            spans_delta = [j - i for i, j in zip(spans_closed[:-1], spans_closed[1:])]
-            return N - max(spans_delta)
+            gidxs = sorted(unique([gidx % N for gidx in gidxs]))
+            gidxs_closed = [*gidxs, gidxs[0] + N]
+            gidxs_delta = [j - i for i, j in zip(gidxs_closed[:-1], gidxs_closed[1:])]
+            return N - max(gidxs_delta)
         else:
-            return max(spans) - min(spans)
+            return max(gidxs) - min(gidxs)
 
     def get_polar(self, enharmonic=False):
-        spans = [note.get_span() for note in self._notes]
+        gidxs = [note.get_span() for note in self._notes]
         if enharmonic:
-            spans_original = [span % N for span in spans]
-            spans = sorted(unique(spans_original))
-            spans_closed = [*spans, spans[0] + N]
-            spans_delta = [j - i for i, j in zip(spans_closed[:-1], spans_closed[1:])]
+            gidxs_original = [gidx % N for gidx in gidxs]
+            gidxs = sorted(unique(gidxs_original))
+            gidxs_closed = [*gidxs, gidxs[0] + N]
+            gidxs_delta = [j - i for i, j in zip(gidxs_closed[:-1], gidxs_closed[1:])]
 
             indices_max = []
-            for idx, span in enumerate(spans_delta):
-                if span == max(spans_delta):
+            for idx, gidx in enumerate(gidxs_delta):
+                if gidx == max(gidxs_delta):
                     indices_max.append(idx)
             indices_min = [s + 1 for s in indices_max]
 
-            max_polar_spans = [spans_closed[idx] for idx in indices_max]
-            min_polar_spans = [spans_closed[idx] for idx in indices_min]
+            max_polar_gidxs = [gidxs_closed[idx] for idx in indices_max]
+            min_polar_gidxs = [gidxs_closed[idx] for idx in indices_min]
 
-            indices_min = [spans_original.index(span % N) for span in max_polar_spans]
-            indices_max = [spans_original.index(span % N) for span in min_polar_spans]
+            indices_min = [gidxs_original.index(gidx % N) for gidx in max_polar_gidxs]
+            indices_max = [gidxs_original.index(gidx % N) for gidx in min_polar_gidxs]
 
             return [(self._notes[idx_min], self._notes[idx_max]) for idx_min, idx_max in zip(indices_max, indices_min)]
         else:
-            idx_min = spans.index(min(spans))
-            idx_max = spans.index(max(spans))
+            idx_min = gidxs.index(min(gidxs))
+            idx_max = gidxs.index(max(gidxs))
 
             return [(self._notes[idx_min], self._notes[idx_max])]
 
     def get_color(self, use_fraction=True):
-        spans = [note.get_span() for note in self._notes]
+        gidxs = [note.get_span() for note in self._notes]
         if use_fraction:
-            return MyFraction(sum(spans), len(spans))
+            return MyFraction(sum(gidxs), len(gidxs))
         else:
-            return sum(spans) / len(spans)
+            return sum(gidxs) / len(gidxs)
 
 
 ''' ----------------------------------------------------------------------------------------- '''

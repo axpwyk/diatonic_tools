@@ -210,13 +210,13 @@ Interval('P8')
 **Example. 4** 获取音程二元数组
 
 ```python
->>> Interval('m3').get_vector()
+>> > Interval('m3').get_vector()
 (3, 2)
->>> Interval('m3').get_delta_nnabs()
+>> > Interval('m3').get_delta_nnabs()
 3
->>> Interval('m3').get_delta_step()
+>> > Interval('m3').get_delta_lidx()
 2
->>> int(Interval('m3'))  # 等同于 Interval('m3').get_delta_nnabs()
+>> > int(Interval('m3'))  # 等同于 Interval('m3').get_delta_nnabs()
 3
 ```
 
