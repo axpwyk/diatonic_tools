@@ -128,6 +128,10 @@ class Note(object):
         return named_nnrel, accidental, register
 
     def __init__(self, note_name=DEFAULT_NOTE_NAME):
+        # Note in Note
+        if isinstance(note_name, Note):
+            note_name = note_name.get_name(show_register=True)
+
         # get note vector
         self._named_nnrel, self._accidental, self._register = self.note_name_to_note_vector(note_name)
 

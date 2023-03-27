@@ -1,7 +1,8 @@
+# built-in libs
+import time
+import itertools
+
 # 3rd-party libs
-import mido
-import pyaudio
-import numpy as np
 import scipy.signal as ss
 
 # project libs
@@ -14,6 +15,7 @@ from theories import *
 
 
 WT_SINE = np.sin(np.linspace(0, 2 * np.pi, 65536))
+WT_SQUARE =ss.square(np.linspace(0, 2 * np.pi, 65536))
 WT_SAWTOOTH = ss.sawtooth(np.linspace(0, 2 * np.pi, 65536), 1)
 WT_TRIANGLE = ss.sawtooth(np.linspace(0, 2 * np.pi, 65536), 0.5)
 
@@ -43,11 +45,6 @@ def wave_generator(nnabs, wt=WT_TRIANGLE):
 
         values = values_left * deltas_right + values_right * deltas_left
 
-        # attack = 0.005
-        # release = 0.01
-        # values[:int(attack * SF)] = values[:int(attack * SF)] * np.linspace(0, 1, int(attack * SF))
-        # values[-int(release * SF):] = values[-int(release * SF):] * np.linspace(1, 0, int(release * SF))
-
         yield amp * values
 
 
@@ -58,7 +55,7 @@ class WavetableOscillator(object):
         self._phase = init_phase
 
         self._step = 0
-        self._wt = WT_TRIANGLE
+        self._wt = WT_SAWTOOTH
         self._wt_length = len(self._wt)
         self._refresh_step_length()
 
@@ -67,14 +64,14 @@ class WavetableOscillator(object):
 
     def __next__(self):
         pos = self._step * self._step_length + self._phase * self._wt_length / 360
-        pos_l = int(pos)
-        pos_r = pos_l + 1
-        intp_l = self._wt[pos_l % self._wt_length] * (pos_r - pos)
-        intp_r = self._wt[pos_r % self._wt_length] * (pos - pos_l)
+        # pos_l = int(pos)
+        # pos_r = pos_l + 1
+        # intp_l = self._wt[pos_l % self._wt_length] * (pos_r - pos)
+        # intp_r = self._wt[pos_r % self._wt_length] * (pos - pos_l)
 
         self._step = self._step + 1
 
-        return self._amp * (intp_l + intp_r)
+        return self._wt[int(pos) % self._wt_length]  # self._amp * (intp_l + intp_r)
 
     def _refresh_step_length(self):
         self._step_length = self._wt_length * self._freq / SF
@@ -91,6 +88,152 @@ class WavetableOscillator(object):
     def set_phase(self, phase):
         self._phase = float(phase)
         return self
+
+
+class ADSREnvelope(object):
+    """ modified from https://python.plainenglish.io/build-your-own-python-synthesizer-part-2-66396f6dad81"""
+    def __init__(self, attack_time=0.05, decay_time=0.05, sustain_level=0.5, release_time=0.1):
+        self._attack_time = attack_time
+        self._decay_time = decay_time
+        self._sustain_level = sustain_level
+        self._release_time = release_time
+
+        self._val = 0
+        self._status = 1
+        self._stepper = self._get_ads_stepper()
+
+        self._scale = 1
+
+    def _get_ads_stepper(self):
+        steppers = []
+        if self._attack_time > 0:
+            steppers.append(itertools.count(start=self._val, step=(1 - self._val) / (self._attack_time * SF)))
+        if self._decay_time > 0:
+            steppers.append(itertools.count(start=1, step=-(1 - self._sustain_level) / (self._decay_time * SF)))
+        while(1):
+            l = len(steppers)
+            if l > 0:
+                val = next(steppers[0])
+                if l == 2 and val > 1:
+                    steppers.pop(0)
+                    val = next(steppers[0])
+                elif l == 1 and val < self._sustain_level:
+                    steppers.pop(0)
+                    val = self._sustain_level
+            else:
+                val = self._sustain_level
+            yield val
+
+    def _get_r_stepper(self):
+        steppers = []
+        if self._release_time > 0:
+            release_step = - self._val / (self._release_time * SF)
+            steppers.append(itertools.count(self._val, step=release_step))
+        else:
+            steppers.append(itertools.count(0, step=0))
+        steppers.append(itertools.count(0, step=0))
+
+        while(1):
+            val = next(steppers[0])
+            if val > 0:
+                yield val
+            else:
+                yield next(steppers[1])
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self._val = next(self._stepper)
+        return self._val * self._scale
+
+    def get_status(self):
+        return self._status
+
+    def set_status(self, status):
+        if status == 1:
+            self._status = 1
+            self._stepper = self._get_ads_stepper()
+            return self
+        elif status == 0:
+            self._status = 0
+            self._stepper = self._get_r_stepper()
+            return self
+        else:
+            return self
+
+    def set_scale(self, scale):
+        self._scale = scale
+        return self
+
+
+class PolySynthMono(object):
+    def __init__(self, unison=3, detune_range=3, unison_mix=0.2):
+        self._notes = {}
+        self._oscs = {}
+        self._adsrs = {}
+        self._times = {}
+        self._locks = {}
+
+        # for unison
+        self._unison = unison
+        self._detune_range = detune_range
+        self._unison_mix = unison_mix
+
+        # for adsr
+        self._adsr_values = [0.005, 0.05, 0.2, 0.2]
+
+    def note_on(self, nnabs):
+        self._notes[nnabs] = Note().from_nnabs(nnabs)
+
+        freq = self._notes[nnabs].get_frequency()
+        freqs = np.linspace(freq - self._detune_range, freq + self._detune_range, self._unison)
+        self._oscs[nnabs] = [WavetableOscillator().set_freq(f) for f in freqs]
+
+        scales = [1 - self._unison_mix if self._unison - 2 <= 2 * i <= self._unison else self._unison_mix for i in range(self._unison)]
+        self._adsrs[nnabs] = [ADSREnvelope(*self._adsr_values).set_status(1).set_scale(scale) for scale in scales]
+
+        self._times[nnabs] = time.time()
+        self._locks[nnabs] = True
+
+        return self
+
+    def note_off(self, nnabs):
+        if nnabs in self._notes.keys():
+            for i in range(len(self._adsrs[nnabs])):
+                self._adsrs[nnabs][i].set_status(0)
+            self._times[nnabs] = time.time()
+            self._locks[nnabs] = False
+
+    def countdown_step(self):
+        del_list = []
+        for k, v in self._locks.items():
+            if not v and time.time() - self._times[k] > self._adsr_values[-1]:
+                del_list.append(k)
+
+        for k in del_list:
+            self._notes.pop(k)
+            self._oscs.pop(k)
+            self._adsrs.pop(k)
+            self._times.pop(k)
+            self._locks.pop(k)
+
+        return self
+
+    def get_samples(self):
+        chunk_size = 64
+        samples = np.zeros((chunk_size, ))
+
+        if self._oscs:
+            samples_tmp = []
+            for k, v in self._oscs.items():
+                samples_osc = [np.array([next(vi) for _ in range(chunk_size)]) for vi in v]
+                samples_adsr = [np.array([next(vi) for _ in range(chunk_size)]) for vi in self._adsrs[k]]
+                samples_tmp.append(np.sum([o * a for o, a in zip(samples_osc, samples_adsr)], axis=0))
+            samples = np.sum(samples_tmp, axis=0)
+            samples = samples / 8
+
+        return samples
 
 
 ''' ----------------------------------------------------------------------------------------- '''

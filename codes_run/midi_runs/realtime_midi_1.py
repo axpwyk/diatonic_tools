@@ -1,3 +1,6 @@
+import sys
+sys.path.extend(['D:\\Codes\\__synced__\\diatonic_tools', 'D:\\Codes\\__synced__\\diatonic_tools\\exts', 'D:/Codes/__synced__/diatonic_tools'])
+
 import os
 import math, itertools
 import mido

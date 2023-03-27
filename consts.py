@@ -54,9 +54,9 @@ NAMED_STR_GEN = ''.join([NNREL_TO_STR[k] for k in NAMED_NNREL_GEN])
 # offset of gidx, will affect `Note.get_gidx` method
 GIDX_OFFSET = 0
 
-# TODO: how to calculate this step length instead of indexing?
 # generative step length of 2nd degree interval
-STEP_LENGTH_2ND_GEN = [(i * G) % N for i in range(M)].index(min([(i * G) % N for i in range(1, M)]))
+# STEP_LENGTH_2ND_GEN = [(i * G) % N for i in range(M)].index(min([(i * G) % N for i in range(1, M)]))  # [old method]
+STEP_LENGTH_2ND_GEN = M - (N % M)  # [new method] found in 2022-06-29
 
 # TODO: how to define the most reasonable interval for stacked chord in any TET system?
 # linear step length of stacked chord interval
