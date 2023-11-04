@@ -307,12 +307,24 @@ class Note(object):
         """
         return C3 * (T ** (int(self) - N * 3))
 
-    def get_name(self, show_register=True):
+    def get_name(self, show_register=True, use_latex=False):
         # get name of `Note`, e.g. Note('C0').get_name() = 'C0', Note('C0').get_name(show_register=False) = 'C', etc.
-        if show_register:
-            return NNREL_TO_STR[self._named_nnrel] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b') + f'{self._register}'
-        else:
-            return NNREL_TO_STR[self._named_nnrel] + (self._accidental * '#' if self._accidental > 0 else -self._accidental * 'b')
+        sharp_mark = r'\sharp' if use_latex else '#'
+        flat_mark = r'\flat' if use_latex else 'b'
+
+        name_out = (
+            (r'\mathrm{' if use_latex else '') +
+            NNREL_TO_STR[self._named_nnrel] +
+            ('}' if use_latex else '') +
+            ('^{' if use_latex and self._accidental else '') +
+            (self._accidental * sharp_mark if self._accidental > 0 else -self._accidental * flat_mark) +
+            ('}' if use_latex and self._accidental else '') +
+            (f'{self._register}' if show_register else '')
+        )
+        if use_latex:
+            name_out = f'${name_out}$'
+
+        return name_out
 
     def from_name(self, note_name):
         self._named_nnrel, self._accidental, self._register = self.note_name_to_note_vector(note_name)
@@ -659,11 +671,15 @@ class Interval(object):
         self._delta_nnabs, self._delta_lidx = self.interval_name_to_interval_vector(interval_name)
         return self
 
-    def get_r357t(self):
+    def get_r357t(self, use_latex=False):
         # (when `NGS` == '12.7.5') P2 -> 2, d2 -> b2, A2 -> #2, etc.
+        sharp_mark = r'\sharp' if use_latex else '#'
+        flat_mark = r'\flat' if use_latex else 'b'
+
         r357t = self.interval_vector_to_interval_name(self._delta_nnabs, self._delta_lidx, ns=1)
-        r357t = r357t.replace('P', '').replace('d', 'b').replace('A', '#')
+        r357t = r357t.replace('P', '').replace('d', flat_mark).replace('A', sharp_mark)
         r357t = 'R' if r357t == '1' else r357t
+        r357t = f'${r357t}$' if use_latex else r357t
 
         return r357t
 
@@ -1757,7 +1773,7 @@ class MyFraction(Fraction):
 
 
 def get_span(notes, enharmonic=False):
-    gidxs = [note.get_span() for note in notes]
+    gidxs = [note.get_gidx() for note in notes]
     if enharmonic:
         gidxs = sorted(unique([gidx % N for gidx in gidxs]))
         gidxs_closed = [*gidxs, gidxs[0] + N]
